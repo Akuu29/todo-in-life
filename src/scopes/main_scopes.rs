@@ -5,6 +5,7 @@ use tera::{Tera, Context};
 pub fn get_scope() -> Scope {
     web::scope("")
         .service(index)
+        .service(render_signup)
 }
 
 #[get("/")]
@@ -14,4 +15,15 @@ async fn index(tmpl: Data<Tera>) -> impl Responder {
         .unwrap();
     
     HttpResponse::Ok().content_type("text/html").body(response_body)
+}
+
+#[get("/signup")]
+async fn render_signup(tmpl: Data<Tera>) -> impl Responder {
+    let response_body = tmpl
+        .render("signup.html", &Context::new())
+        .unwrap();
+    
+    HttpResponse::Ok()
+        .content_type("text/html")
+        .body(response_body)
 }
