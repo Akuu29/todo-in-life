@@ -1,6 +1,7 @@
 use std::env;
 use actix_web::{App, HttpServer};
 use actix_web::web::Data;
+use actix_web::middleware::Logger;
 use tera::Tera;
 use dotenv::dotenv;
 use listenfd::ListenFd;
@@ -18,7 +19,11 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(Data::new(Tera::new("templates/**/*").unwrap()))
             .service(get_scope())
+            .wrap(Logger::default())
     });
+
+    // loggerを初期化
+    env_logger::init();
 
     // systemfdによってwatchしていた場合、そのhostとportを使用
     server = if let Some(listener) = listenfd.take_tcp_listener(0)? {
