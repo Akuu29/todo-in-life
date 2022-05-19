@@ -16,6 +16,7 @@ use scopes::get_scope;
 mod scopes;
 mod users;
 mod schema;
+mod manage_cookie;
 
 pub type Pool = Data<r2d2::Pool<ConnectionManager<MysqlConnection>>>;
 
