@@ -5,6 +5,7 @@ use std::env;
 use actix_web::{App, HttpServer};
 use actix_web::web::Data;
 use actix_web::middleware::Logger;
+use actix_identity::{CookieIdentityPolicy, IdentityService};
 use diesel::prelude::*;
 use diesel::r2d2::{self, ConnectionManager};
 use tera::Tera;
@@ -31,10 +32,15 @@ async fn main() -> std::io::Result<()> {
 
     let mut listenfd = ListenFd::from_env();
     let mut server = HttpServer::new(move || {
+        let policy = CookieIdentityPolicy::new(&[0; 32])
+            .name("auth-cookie")
+            .secure(false);
+        
         App::new()
             .app_data(Data::new(pool.clone()))
             .app_data(Data::new(Tera::new("templates/**/*").unwrap()))
             .service(get_scope())
+            .wrap(IdentityService::new(policy))
             .wrap(Logger::default())
     });
 

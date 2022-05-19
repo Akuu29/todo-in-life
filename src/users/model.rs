@@ -26,12 +26,12 @@ pub struct User {
 // リクエストからUserを作成
 // ※MySqlをv8にアップグレード後、uuidの生成をやめ、DB側で生成するように変更する
 impl NewUser {
-    pub fn create_user(self) -> User {
+    pub fn create_user(&self) -> User {
         User {
             id: Uuid::new_v4().to_string(),
-            username: self.username,
-            email: self.email,
-            password: NewUser::hash_password(self.password),
+            username: self.username.clone(),
+            email: self.email.clone(),
+            password: NewUser::hash_password(self.password.clone()),
             data_created: Utc::now().naive_utc(),
         }
     }

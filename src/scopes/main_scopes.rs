@@ -1,5 +1,6 @@
 use actix_web::{get, post, Scope, Responder, HttpResponse};
 use actix_web::web::{self, Data, Form};
+use actix_identity::Identity;
 use tera::{Tera, Context};
 use diesel::prelude::*;
 // use argon2::Argon2;
@@ -39,27 +40,27 @@ async fn render_signup(tmpl: Data<Tera>) -> impl Responder {
 }
 
 #[post("/signup")]
-async fn signup(pool: Pool, form_data: Form<NewUser>) -> impl Responder {
+async fn signup(pool: Pool, identity: Identity,form_data: Form<NewUser>) -> impl Responder {
     let new_user = form_data.into_inner();
     
-    let user = NewUser::create_user(new_user);
+    let user = NewUser::create_user(&new_user);
 
     let db_connection = pool.get().expect("Failed getting db connection");
 
+    // インサート結果が返ってくるまでブロック
     match web::block(move || {
         diesel::insert_into(users::table).values(&user).execute(&db_connection)
     })
     .await
     {
         Ok(_) => {
-
+            identity.remember(new_user.username);
             // 戻り先は後変更。
             HttpResponse::Found()
                 .append_header(("location", "/"))
                 .finish()
         }
         Err(_) => {
-
             HttpResponse::Found()
                 .append_header(("location", "/signup"))
                 .finish()
