@@ -49,7 +49,12 @@ async fn app(identitiy: Identity, tmpl: Data<Tera>) -> impl Responder {
 }
 
 #[get("/signup")]
-async fn render_signup(tmpl: Data<Tera>) -> impl Responder {
+async fn render_signup(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
+    // すでにサインアップまたはログイン済みの場合、早期リターン
+    if identity.identity().is_some() {
+        return HttpResponse::Found().append_header(("location", "/")).finish();
+    }
+
     let response_body = tmpl
         .render("signup.html", &Context::new())
         .unwrap();
