@@ -7,7 +7,7 @@ use validator::Validate;
 use argon2::Argon2;
 use argon2::password_hash::{PasswordHash, PasswordVerifier};
 use crate::users::{NewUser, User};
-use crate::users::validate_form::{SignupData, LoginData};
+use crate::users::validate_users_form::{SignupData, LoginData};
 use crate::Pool;
 use crate::schema::users;
 // use crate::manage_cookie::{get_cookie, set_cookie};
