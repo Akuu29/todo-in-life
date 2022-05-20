@@ -32,6 +32,22 @@ async fn index(tmpl: Data<Tera>) -> impl Responder {
         .body(response_body)
 }
 
+#[get("/app")]
+async fn app(identitiy: Identity, tmpl: Data<Tera>) -> impl Responder {
+    // 未ログインの場合早期リターン
+    if identitiy.identity().is_none() {
+        return HttpResponse::NotFound().finish();
+    }
+
+    let response_body = tmpl
+        .render("app.html", &Context::new())
+        .unwrap();
+
+    HttpResponse::Ok()
+        .content_type("text/html")
+        .body(response_body)
+}
+
 #[get("/signup")]
 async fn render_signup(tmpl: Data<Tera>) -> impl Responder {
     let response_body = tmpl
