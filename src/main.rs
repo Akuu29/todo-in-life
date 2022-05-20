@@ -33,6 +33,7 @@ async fn main() -> std::io::Result<()> {
 
     let mut listenfd = ListenFd::from_env();
     let mut server = HttpServer::new(move || {
+        // cookieIDの生成
         let policy = CookieIdentityPolicy::new(&[0; 32])
             .name("auth-cookie")
             .secure(false);

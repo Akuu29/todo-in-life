@@ -141,7 +141,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity,form_data: Form
 
     // バリデーション
     if let Err(validation_errors) = form_data.validate() {
-// TODO クライアント作成後cookieでエラー管理
+// TODO クライアント側でエラー内容をどのように受け取るか
         // validation_errors.field_errors().iter().for_each(|(_, errors)| {
         //     errors.iter().for_each(|validation_error| {
                 
@@ -173,7 +173,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity,form_data: Form
         Ok(insert_result) => {
             match insert_result {
                 Ok(_) => {
-                    // クッキーの発行
+                    // cookieにID保存
                     identity.remember(new_user.username);
 
                     HttpResponse::Found()
@@ -202,7 +202,7 @@ async fn logout(identity: Identity) -> impl Responder{
         return HttpResponse::NotFound().finish();
     }
 
-    // cookie破棄
+    // ID破棄
     identity.forget();
 
     HttpResponse::Found()
