@@ -16,6 +16,8 @@ use crate::schema::users;
 pub fn get_scope() -> Scope {
     web::scope("")
         .service(index)
+        .service(app)
+        .service(render_login)
         .service(render_signup)
         .service(signup)
         .service(logout)
@@ -41,6 +43,22 @@ async fn app(identitiy: Identity, tmpl: Data<Tera>) -> impl Responder {
 
     let response_body = tmpl
         .render("app.html", &Context::new())
+        .unwrap();
+
+    HttpResponse::Ok()
+        .content_type("text/html")
+        .body(response_body)
+}
+
+#[get("/login")]
+async fn render_login(identitiy: Identity, tmpl: Data<Tera>) -> impl Responder {
+    // ログイン済みの場合、早期リターン
+    if identitiy.identity().is_some() {
+        return HttpResponse::Found().append_header(("location", "/")).finish();
+    }
+
+    let response_body = tmpl
+        .render("login.html", &Context::new())
         .unwrap();
 
     HttpResponse::Ok()
