@@ -92,18 +92,27 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity,form_data: Form
     let db_connection = pool.get().expect("Failed getting db connection");
 
     // インサート結果が返ってくるまでブロック
-    let insert_result = web::block(move || {
+    let result = web::block(move || {
         diesel::insert_into(users::table).values(&user).execute(&db_connection)
     }).await;
 
-    match insert_result {
-        Ok(_) => {
-            // クッキーの発行
-            identity.remember(new_user.username);
-            // 戻り先は後変更。
-            HttpResponse::Found()
-                .append_header(("location", "/"))
-                .finish()
+    match result {
+        Ok(insert_result) => {
+            match insert_result {
+                Ok(_) => {
+                    // クッキーの発行
+                    identity.remember(new_user.username);
+
+                    HttpResponse::Found()
+                        .append_header(("location", "/app"))
+                        .finish()
+                }
+                Err(_) => {
+                    HttpResponse::Found()
+                        .append_header(("location", "/signup"))
+                        .finish()
+                }
+            }
         }
         Err(_) => {
             HttpResponse::Found()
@@ -111,6 +120,8 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity,form_data: Form
                 .finish()
         }
     }
+}
+
 #[get("/logout")]
 async fn logout(identity: Identity) -> impl Responder{
     // 未ログインの場合早期リターン
