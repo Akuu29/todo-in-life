@@ -18,6 +18,7 @@ pub fn get_scope() -> Scope {
         .service(index)
         .service(render_signup)
         .service(signup)
+        .service(logout)
 }
 
 #[get("/")]
@@ -94,4 +95,17 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity,form_data: Form
                 .finish()
         }
     }
+#[get("/logout")]
+async fn logout(identity: Identity) -> impl Responder{
+    // 未ログインの場合早期リターン
+    if identity.identity().is_none() {
+        return HttpResponse::NotFound().finish();
+    }
+
+    // cookie破棄
+    identity.forget();
+
+    HttpResponse::Found()
+        .append_header(("location", "/"))
+        .finish()
 }
