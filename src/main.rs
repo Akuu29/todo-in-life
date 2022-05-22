@@ -32,6 +32,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(Data::new(pool.clone()))
             .app_data(Data::new(Tera::new("templates/**/*").unwrap()))
             .service(main_scope::get_scope())
+            .service(todos_scope::get_scope())
             .wrap(IdentityService::new(policy))
             .wrap(Logger::default())
     });
