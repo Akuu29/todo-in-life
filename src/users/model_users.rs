@@ -1,4 +1,3 @@
-use serde::Deserialize;
 use uuid::Uuid;
 use chrono::{NaiveDateTime, Utc};
 use argon2::Argon2;
@@ -6,7 +5,7 @@ use argon2::password_hash::rand_core::OsRng;
 use argon2::password_hash::{PasswordHasher, SaltString};
 use crate::schema::users;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug)]
 pub struct NewUser {
     pub username: String,
     pub email: String,
