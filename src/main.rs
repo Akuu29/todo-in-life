@@ -11,7 +11,7 @@ use diesel::r2d2::{self, ConnectionManager};
 use tera::Tera;
 use dotenv::dotenv;
 use listenfd::ListenFd;
-use scopes::get_scope;
+use scopes::{main_scope, todos_scope};
 
 mod scopes;
 mod users;
@@ -41,7 +41,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(Data::new(pool.clone()))
             .app_data(Data::new(Tera::new("templates/**/*").unwrap()))
-            .service(get_scope())
+            .service(main_scope::get_scope())
             .wrap(IdentityService::new(policy))
             .wrap(Logger::default())
     });
