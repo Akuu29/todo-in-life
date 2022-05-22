@@ -1,6 +1,3 @@
-#[macro_use]
-extern crate diesel;
-
 use std::env;
 use actix_web::{App, HttpServer};
 use actix_web::web::Data;
@@ -11,14 +8,7 @@ use diesel::r2d2::{self, ConnectionManager};
 use tera::Tera;
 use dotenv::dotenv;
 use listenfd::ListenFd;
-use scopes::{main_scope, todos_scope};
-
-mod scopes;
-mod users;
-mod schema;
-mod manage_cookie;
-
-pub type Pool = Data<r2d2::Pool<ConnectionManager<MysqlConnection>>>;
+use todo_in_life::scopes::{main_scope, todos_scope};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
