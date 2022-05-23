@@ -40,13 +40,15 @@ pub async fn get(identitiy: Identity, pool: Pool) -> impl Responder {
         .unwrap()
         .id;
 
-    let todos = todos::table
+    let get_result = todos::table
         .filter(todos::user_id.eq(user_id))
         .order(todos::date_created)
-        .first::<Todo>(&db_connection)
-        .unwrap();
+        .first::<Todo>(&db_connection);
     
-    HttpResponse::Ok().json(todos)
+    match get_result {
+        Ok(todo) => HttpResponse::Ok().json(todo),
+        Err(_) => HttpResponse::InternalServerError().finish(),
+    }
 }
 
 
