@@ -1,4 +1,4 @@
-use actix_web::{post, Scope, Responder, HttpResponse};
+use actix_web::{get, post, Scope, Responder, HttpResponse};
 use actix_web::web::{self, Form};
 use actix_identity::Identity;
 use diesel::prelude::*;
@@ -6,14 +6,40 @@ use validator::Validate;
 use serde_json::json;
 use crate::Pool;
 use crate::todos::validate_todos_form::TodoData;
-use crate::todos::NewTodo;
+use crate::todos::{NewTodo, Todo};
 use crate::schema::{users, todos};
 use crate::users::User;
 
 pub fn get_scope() -> Scope {
     web::scope("/api")
+        .service(get)
         .service(create)
 }
+
+#[get("/todos")]
+pub async fn get(identitiy: Identity, pool: Pool) -> impl Responder {
+    // 未ログイン場合、早期リターン
+    if identitiy.identity().is_none() {
+        return HttpResponse::Unauthorized().finish(); // 401
+    }
+
+    let db_connection = pool.get().expect("Failed getting db connection");
+
+    let user_id = users::table
+        .filter(users::username.eq(&identitiy.identity().unwrap()))
+        .first::<User>(&db_connection)
+        .unwrap()
+        .id;
+
+    let todos = todos::table
+        .filter(todos::user_id.eq(user_id))
+        .order(todos::date_created)
+        .first::<Todo>(&db_connection)
+        .unwrap();
+    
+    HttpResponse::Ok().json(todos)
+}
+
 
 #[post("/todos")]
 pub async fn create(identitiy: Identity, pool: Pool, todo_data: Form<TodoData>) -> impl Responder {
