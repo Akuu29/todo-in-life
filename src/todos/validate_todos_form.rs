@@ -61,7 +61,7 @@ fn validate_past_date(date_limit: &str) -> Result<(), ValidationError>{
 #[derive(Debug, Deserialize)]
 pub struct UpdateTodoDataStatus {
     pub id: String,
-    pub status: bool,
+    pub done: bool,
 }
 
 #[derive(Deserialize)]

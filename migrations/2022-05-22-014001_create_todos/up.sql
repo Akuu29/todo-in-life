@@ -5,7 +5,7 @@ CREATE TABLE todos (
     content VARCHAR(900),
     category VARCHAR(18) NOT NULL,
     date_limit DATE,
-    status BOOLEAN NOT NULL DEFAULT false,
+    done BOOLEAN NOT NULL DEFAULT false,
     date_created TIMESTAMP NOT NULL,
     user_id CHAR(36) NOT NULL
 );

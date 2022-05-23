@@ -179,7 +179,7 @@ pub async fn update_status(identity: Identity, pool: Pool, todo_data: Form<Updat
     let update_status_result = web::block(move || {
         diesel::update(todos::table.filter(todos::id.eq(&todo_data.id).and(todos::user_id.eq(user_id))))
             .set(
-                todos::status.eq(true)
+                todos::done.eq(true)
             )
             .execute(&db_connection)
     }).await;

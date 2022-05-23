@@ -19,7 +19,7 @@ pub struct Todo {
     pub content: Option<String>,
     pub category: String,
     pub date_limit: Option<NaiveDate>,
-    pub status: bool,
+    pub done: bool,
     pub date_created: NaiveDateTime,
     pub user_id: String,
 }
@@ -33,7 +33,7 @@ impl NewTodo {
             content: self.content.clone(),
             category: self.return_category(),
             date_limit: self.convert_date_limit_to_navidate(),
-            status: false,
+            done: false,
             date_created: Utc::now().naive_utc(),
             user_id: id
         }
