@@ -46,7 +46,7 @@ pub async fn get(identity: Identity, pool: Pool) -> impl Responder {
         .first::<Todo>(&db_connection);
     
     match get_result {
-        Ok(todo) => HttpResponse::Ok().json(todo), // 200
+        Ok(todo) => HttpResponse::Ok().json(json!({"status": "success", "todo": todo})), // 200
         Err(_) => HttpResponse::InternalServerError().finish(), // 500
     }
 }
@@ -89,7 +89,7 @@ pub async fn create(identity: Identity, pool: Pool, todo_data: Json<TodoData>) -
 
     match result {
         // ブロック、インサートのResultで二重にラップされている
-        Ok(Ok(_)) => HttpResponse::Created().json(json!({"status": "201"})), // 201
+        Ok(Ok(_)) => HttpResponse::Created().json(json!({"status": "success"})), // 201
         _ => HttpResponse::InternalServerError().finish(), // 500
     }
 }
@@ -144,7 +144,7 @@ pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData
 
     match update_result {
         // ブロック、アップデートのResultで二重にラップされている
-        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "200"})), // 200
+        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "success"})), // 200
         _ => HttpResponse::InternalServerError().finish() // 500
     }
 }
@@ -188,7 +188,7 @@ pub async fn update_status(identity: Identity, pool: Pool, todo_data: Json<Updat
 
     match update_status_result {
         // ブロック、アップデートのResultで二重にラップされている
-        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "200"})), //200
+        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "success"})), //200
         _ => HttpResponse::InternalServerError().finish(), // 500
     }
 }
@@ -229,7 +229,7 @@ pub async fn delete(identity: Identity, pool: Pool, todo_data: Json<DeleteTodoDa
 
     match delete_result {
         // ブロック、デリートのResultで二重にラップされている
-        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "201"})), // 201
+        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "success"})), // 201
         _ => HttpResponse::InternalServerError().finish(), // 500
     }
 }
