@@ -27,7 +27,7 @@ pub fn get_scope() -> Scope {
 
 #[get("/todos")]
 pub async fn get(identitiy: Identity, pool: Pool) -> impl Responder {
-    // 未ログイン場合、早期リターン
+    // 未ログインの場合、エラー
     if identitiy.identity().is_none() {
         return HttpResponse::Unauthorized().finish(); // 401
     }
@@ -46,15 +46,15 @@ pub async fn get(identitiy: Identity, pool: Pool) -> impl Responder {
         .first::<Todo>(&db_connection);
     
     match get_result {
-        Ok(todo) => HttpResponse::Ok().json(todo),
-        Err(_) => HttpResponse::InternalServerError().finish(),
+        Ok(todo) => HttpResponse::Ok().json(todo), // 200
+        Err(_) => HttpResponse::InternalServerError().finish(), // 500
     }
 }
 
 
 #[post("/todos")]
 pub async fn create(identitiy: Identity, pool: Pool, todo_data: Json<TodoData>) -> impl Responder {
-    // 未ログインの場合、早期リターン
+    // 未ログインの場合、エラー
     if identitiy.identity().is_none() {
         return HttpResponse::Unauthorized().finish(); // 401
     }
@@ -88,16 +88,15 @@ pub async fn create(identitiy: Identity, pool: Pool, todo_data: Json<TodoData>) 
     }).await;
 
     match result {
-// TODO insertされたTodo構造対をレスポンスにjsonでセットしたい。
-        // Ok(Ok(_)) => HttpResponse::Created().json(),
-        Ok(Ok(_)) => HttpResponse::Created().json(json!({"status": "201"})),
+        // ブロック、インサートのResultで二重にラップされている
+        Ok(Ok(_)) => HttpResponse::Created().json(json!({"status": "201"})), // 201
         _ => HttpResponse::InternalServerError().finish(), // 500
     }
 }
 
 #[put("/todos")]
 pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData>) -> impl Responder {
-    // 未ログインの場合、早期リターン
+    // 未ログインの場合、エラー
     if identity.identity().is_none() {
         return HttpResponse::Unauthorized().finish(); // 401
     }
@@ -144,16 +143,17 @@ pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData
     }).await;
 
     match update_result {
-        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "200"})),
-        _ => HttpResponse::InternalServerError().finish()
+        // ブロック、アップデートのResultで二重にラップされている
+        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "200"})), // 200
+        _ => HttpResponse::InternalServerError().finish() // 500
     }
 }
 
 #[patch("/todos")]
 pub async fn update_status(identity: Identity, pool: Pool, todo_data: Json<UpdateTodoDataStatus>) -> impl Responder {
-    // 未ログインの場合
+    // 未ログインの場合、エラー
     if identity.identity().is_none() {
-        return HttpResponse::Unauthorized().finish();
+        return HttpResponse::Unauthorized().finish(); // 401
     }
 
     let db_connection = pool.get().expect("Failed getting db connection");
@@ -187,14 +187,15 @@ pub async fn update_status(identity: Identity, pool: Pool, todo_data: Json<Updat
     }).await;
 
     match update_status_result {
-        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "200"})),
+        // ブロック、アップデートのResultで二重にラップされている
+        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "200"})), //200
         _ => HttpResponse::InternalServerError().finish(), // 500
     }
 }
 
 #[delete("/todos")]
 pub async fn delete(identity: Identity, pool: Pool, todo_data: Json<DeleteTodoData>) -> impl Responder {
-    // 未ログインの場合、早期リターン
+    // 未ログインの場合、エラー
     if identity.identity().is_none() {
         return HttpResponse::Unauthorized().finish(); // 401
     }
@@ -227,7 +228,8 @@ pub async fn delete(identity: Identity, pool: Pool, todo_data: Json<DeleteTodoDa
     }).await;
 
     match delete_result {
-        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "201"})),
-        _ => HttpResponse::InternalServerError().finish(),
+        // ブロック、デリートのResultで二重にラップされている
+        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "201"})), // 201
+        _ => HttpResponse::InternalServerError().finish(), // 500
     }
 }

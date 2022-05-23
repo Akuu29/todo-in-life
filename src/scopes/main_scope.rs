@@ -31,14 +31,14 @@ async fn index(tmpl: Data<Tera>) -> impl Responder {
     
     HttpResponse::Ok()
         .content_type("text/html")
-        .body(response_body)
+        .body(response_body) // 200
 }
 
 #[get("/app")]
 async fn app(identitiy: Identity, tmpl: Data<Tera>) -> impl Responder {
-    // 未ログインの場合早期リターン
+    // 未ログインの場合、エラー
     if identitiy.identity().is_none() {
-        return HttpResponse::NotFound().finish();
+        return HttpResponse::NotFound().finish(); // 404
     }
 
     let response_body = tmpl
@@ -47,14 +47,14 @@ async fn app(identitiy: Identity, tmpl: Data<Tera>) -> impl Responder {
 
     HttpResponse::Ok()
         .content_type("text/html")
-        .body(response_body)
+        .body(response_body) // 200
 }
 
 #[get("/login")]
 async fn render_login(identitiy: Identity, tmpl: Data<Tera>) -> impl Responder {
-    // ログイン済みの場合、早期リターン
+    // サインアップ済みまたはログイン済みの場合、エラー
     if identitiy.identity().is_some() {
-        return HttpResponse::Found().append_header(("location", "/")).finish();
+        return HttpResponse::Found().append_header(("location", "/")).finish(); // 302
     }
 
     let response_body = tmpl
@@ -63,14 +63,14 @@ async fn render_login(identitiy: Identity, tmpl: Data<Tera>) -> impl Responder {
 
     HttpResponse::Ok()
         .content_type("text/html")
-        .body(response_body)
+        .body(response_body) // 200
 }
 
 #[post("/login")]
 async fn login(identity: Identity, pool: Pool, form_data: Form<LoginData>) -> impl Responder {
-    // すでにサインアップまたはログイン済みの場合、早期リターン
+    // サインアップ済みまたはログイン済みの場合、エラー
     if identity.identity().is_some() {
-        return HttpResponse::Found().append_header(("location", "/")).finish();
+        return HttpResponse::Found().append_header(("location", "/")).finish(); // 302
     }
 
     // バリデーション
@@ -78,7 +78,7 @@ async fn login(identity: Identity, pool: Pool, form_data: Form<LoginData>) -> im
 // TODO クライアント側でエラー内容をどのように受け取るか
         return HttpResponse::Found()
             .append_header(("location", "/login"))
-            .finish()
+            .finish() // 302
     }
 
     let db_connection = pool.get().expect("Failed getting db connection");
@@ -99,28 +99,28 @@ async fn login(identity: Identity, pool: Pool, form_data: Form<LoginData>) -> im
 // TODO クライアント側でcookie管理
                     HttpResponse::Found()
                         .append_header(("location", "/app"))
-                        .finish()
+                        .finish() // 302
                 }
                 Err(_) => {
                     HttpResponse::Found()
                         .append_header(("location", "/login"))
-                        .finish()
+                        .finish() // 302
                 }
             }
         }
         Err(_) => {
             HttpResponse::Found()
                 .append_header(("location", "/login"))
-                .finish()
+                .finish() // 302
         }
     }
 }
 
 #[get("/signup")]
 async fn render_signup(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
-    // すでにサインアップまたはログイン済みの場合、早期リターン
+    // サインアップ済みまたはログイン済みの場合、エラー
     if identity.identity().is_some() {
-        return HttpResponse::Found().append_header(("location", "/")).finish();
+        return HttpResponse::Found().append_header(("location", "/")).finish(); // 302
     }
 
     let response_body = tmpl
@@ -129,14 +129,14 @@ async fn render_signup(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
     
     HttpResponse::Ok()
         .content_type("text/html")
-        .body(response_body)
+        .body(response_body) // 200
 }
 
 #[post("/signup")]
 async fn signup(req: HttpRequest, pool: Pool, identity: Identity,form_data: Form<SignupData>) -> impl Responder {
-    // すでにサインアップまたはログイン済みの場合、早期リターン
+    // サインアップまたはログイン済みの場合、早期リターン
     if identity.identity().is_some() {
-        return HttpResponse::Found().append_header(("location", "/")).finish();
+        return HttpResponse::Found().append_header(("location", "/")).finish(); // 302
     }
 
     // バリデーション
@@ -149,7 +149,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity,form_data: Form
         // });
         return HttpResponse::Found()
             .append_header(("location", "/signup"))
-            .finish();
+            .finish(); // 302
     }
     
     let signup_data = form_data.into_inner();
@@ -169,6 +169,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity,form_data: Form
         diesel::insert_into(users::table).values(&user).execute(&db_connection)
     }).await;
 
+    // ブロック、インサートのResultで二重にラップされている
     match result {
         Ok(insert_result) => {
             match insert_result {
@@ -178,28 +179,28 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity,form_data: Form
 
                     HttpResponse::Found()
                         .append_header(("location", "/app"))
-                        .finish()
+                        .finish() // 302
                 }
                 Err(_) => {
                     HttpResponse::Found()
                         .append_header(("location", "/signup"))
-                        .finish()
+                        .finish() // 302
                 }
             }
         }
         Err(_) => {
             HttpResponse::Found()
                 .append_header(("location", "/signup"))
-                .finish()
+                .finish() // 302
         }
     }
 }
 
 #[get("/logout")]
 async fn logout(identity: Identity) -> impl Responder{
-    // 未ログインの場合早期リターン
+    // 未ログインの場合エラー
     if identity.identity().is_none() {
-        return HttpResponse::NotFound().finish();
+        return HttpResponse::NotFound().finish(); // 404
     }
 
     // ID破棄
@@ -207,5 +208,5 @@ async fn logout(identity: Identity) -> impl Responder{
 
     HttpResponse::Found()
         .append_header(("location", "/"))
-        .finish()
+        .finish() // 302
 }
