@@ -26,16 +26,16 @@ pub fn get_scope() -> Scope {
 }
 
 #[get("/todos")]
-pub async fn get(identitiy: Identity, pool: Pool) -> impl Responder {
+pub async fn get(identity: Identity, pool: Pool) -> impl Responder {
     // 未ログインの場合、エラー
-    if identitiy.identity().is_none() {
+    if identity.identity().is_none() {
         return HttpResponse::Unauthorized().finish(); // 401
     }
 
     let db_connection = pool.get().expect("Failed getting db connection");
 
     let user_id = users::table
-        .filter(users::username.eq(&identitiy.identity().unwrap()))
+        .filter(users::username.eq(&identity.identity().unwrap()))
         .first::<User>(&db_connection)
         .unwrap()
         .id;
@@ -53,9 +53,9 @@ pub async fn get(identitiy: Identity, pool: Pool) -> impl Responder {
 
 
 #[post("/todos")]
-pub async fn create(identitiy: Identity, pool: Pool, todo_data: Json<TodoData>) -> impl Responder {
+pub async fn create(identity: Identity, pool: Pool, todo_data: Json<TodoData>) -> impl Responder {
     // 未ログインの場合、エラー
-    if identitiy.identity().is_none() {
+    if identity.identity().is_none() {
         return HttpResponse::Unauthorized().finish(); // 401
     }
 
@@ -67,7 +67,7 @@ pub async fn create(identitiy: Identity, pool: Pool, todo_data: Json<TodoData>) 
     let db_connection = pool.get().expect("Failed getting db connection");
 
     let user_id = users::table
-        .filter(users::username.eq(&identitiy.identity().unwrap()))
+        .filter(users::username.eq(&identity.identity().unwrap()))
         .first::<User>(&db_connection)
         .unwrap()
         .id;

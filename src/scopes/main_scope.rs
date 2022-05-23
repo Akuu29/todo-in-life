@@ -35,9 +35,9 @@ async fn index(tmpl: Data<Tera>) -> impl Responder {
 }
 
 #[get("/app")]
-async fn app(identitiy: Identity, tmpl: Data<Tera>) -> impl Responder {
+async fn app(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
     // 未ログインの場合、エラー
-    if identitiy.identity().is_none() {
+    if identity.identity().is_none() {
         return HttpResponse::NotFound().finish(); // 404
     }
 
@@ -51,9 +51,9 @@ async fn app(identitiy: Identity, tmpl: Data<Tera>) -> impl Responder {
 }
 
 #[get("/login")]
-async fn render_login(identitiy: Identity, tmpl: Data<Tera>) -> impl Responder {
+async fn render_login(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
     // サインアップ済みまたはログイン済みの場合、エラー
-    if identitiy.identity().is_some() {
+    if identity.identity().is_some() {
         return HttpResponse::Found().append_header(("location", "/")).finish(); // 302
     }
 
