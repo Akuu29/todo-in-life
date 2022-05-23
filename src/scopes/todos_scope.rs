@@ -1,11 +1,15 @@
-use actix_web::{get, post, put,Scope, Responder, HttpResponse};
+use actix_web::{get,post, put, patch, Scope, Responder, HttpResponse};
 use actix_web::web::{self, Form};
 use actix_identity::Identity;
 use diesel::prelude::*;
 use validator::Validate;
 use serde_json::json;
 use crate::Pool;
-use crate::todos::validate_todos_form::{TodoData, EditTodoData};
+use crate::todos::validate_todos_form::{
+    TodoData, 
+    EditTodoData, 
+    UpdateTodoDataStatus,
+};
 use crate::todos::{NewTodo, Todo};
 use crate::schema::{users, todos};
 use crate::users::User;
@@ -16,6 +20,7 @@ pub fn get_scope() -> Scope {
         .service(get)
         .service(create)
         .service(update)
+        .service(update_status)
 }
 
 #[get("/todos")]
@@ -137,5 +142,48 @@ pub async fn update(identity: Identity, pool: Pool, todo_data: Form<EditTodoData
     match update_result {
         Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "200"})),
         _ => HttpResponse::InternalServerError().finish()
+    }
+}
+
+#[patch("/todos")]
+pub async fn update_status(identity: Identity, pool: Pool, todo_data: Form<UpdateTodoDataStatus>) -> impl Responder {
+    // 未ログインの場合
+    if identity.identity().is_none() {
+        return HttpResponse::Unauthorized().finish();
+    }
+
+    let db_connection = pool.get().expect("Failed getting db connection");
+
+    let user_id = users::table
+        .filter(users::username.eq(&identity.identity().unwrap()))
+        .first::<User>(&db_connection)
+        .unwrap()
+        .id;
+    
+    // todoからuser_idを取得
+    let get_todo_result = todos::table
+        .filter(todos::id.eq(&todo_data.id))
+        .first::<Todo>(&db_connection);
+    let todo_user_id = match get_todo_result  {
+        Ok(todo) => todo.user_id,
+        Err(_) => return HttpResponse::Forbidden().finish(), // 403
+    };
+
+    // user_id と todo_user_idが一致しない場合エラー
+    if user_id != todo_user_id {
+        return HttpResponse::Forbidden().finish(); // 403
+    }
+
+    let update_status_result = web::block(move || {
+        diesel::update(todos::table.filter(todos::id.eq(&todo_data.id).and(todos::user_id.eq(user_id))))
+            .set(
+                todos::status.eq(true)
+            )
+            .execute(&db_connection)
+    }).await;
+
+    match update_status_result {
+        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "200"})),
+        _ => HttpResponse::InternalServerError().finish(), // 500
     }
 }
