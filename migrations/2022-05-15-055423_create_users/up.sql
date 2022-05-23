@@ -5,5 +5,5 @@ CREATE TABLE users (
     username VARCHAR(32) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(96) NOT NULL,
-    data_created TIMESTAMP NOT NULL
+    date_created TIMESTAMP NOT NULL
 )

@@ -19,7 +19,7 @@ pub struct User {
     pub username: String,
     pub email: String,
     pub password: String,
-    pub data_created: NaiveDateTime,
+    pub date_created: NaiveDateTime,
 }
 
 // リクエストからUserを作成
@@ -31,7 +31,7 @@ impl NewUser {
             username: self.username.clone(),
             email: self.email.clone(),
             password: NewUser::hash_password(self.password.clone()),
-            data_created: Utc::now().naive_utc(),
+            date_created: Utc::now().naive_utc(),
         }
     }
 

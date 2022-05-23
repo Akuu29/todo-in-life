@@ -17,7 +17,7 @@ table! {
         username -> Varchar,
         email -> Varchar,
         password -> Varchar,
-        data_created -> Timestamp,
+        date_created -> Timestamp,
     }
 }
 
