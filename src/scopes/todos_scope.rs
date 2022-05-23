@@ -1,5 +1,5 @@
-use actix_web::{get,post, put, patch, delete, Scope, Responder, HttpResponse};
-use actix_web::web::{self, Form};
+use actix_web::{get, post, put, patch, delete, Scope, Responder, HttpResponse};
+use actix_web::web::{self, Json};
 use actix_identity::Identity;
 use diesel::prelude::*;
 use validator::Validate;
@@ -51,7 +51,7 @@ pub async fn get(identitiy: Identity, pool: Pool) -> impl Responder {
 
 
 #[post("/todos")]
-pub async fn create(identitiy: Identity, pool: Pool, todo_data: Form<TodoData>) -> impl Responder {
+pub async fn create(identitiy: Identity, pool: Pool, todo_data: Json<TodoData>) -> impl Responder {
     // 未ログインの場合、早期リターン
     if identitiy.identity().is_none() {
         return HttpResponse::Unauthorized().finish(); // 401
@@ -94,7 +94,7 @@ pub async fn create(identitiy: Identity, pool: Pool, todo_data: Form<TodoData>) 
 }
 
 #[put("/todos")]
-pub async fn update(identity: Identity, pool: Pool, todo_data: Form<EditTodoData>) -> impl Responder {
+pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData>) -> impl Responder {
     // 未ログインの場合、早期リターン
     if identity.identity().is_none() {
         return HttpResponse::Unauthorized().finish(); // 401
@@ -148,7 +148,7 @@ pub async fn update(identity: Identity, pool: Pool, todo_data: Form<EditTodoData
 }
 
 #[patch("/todos")]
-pub async fn update_status(identity: Identity, pool: Pool, todo_data: Form<UpdateTodoDataStatus>) -> impl Responder {
+pub async fn update_status(identity: Identity, pool: Pool, todo_data: Json<UpdateTodoDataStatus>) -> impl Responder {
     // 未ログインの場合
     if identity.identity().is_none() {
         return HttpResponse::Unauthorized().finish();
@@ -191,7 +191,7 @@ pub async fn update_status(identity: Identity, pool: Pool, todo_data: Form<Updat
 }
 
 #[delete("/todos")]
-pub async fn delete(identity: Identity, pool: Pool, todo_data: Form<DeleteTodoData>) -> impl Responder {
+pub async fn delete(identity: Identity, pool: Pool, todo_data: Json<DeleteTodoData>) -> impl Responder {
     // 未ログインの場合、早期リターン
     if identity.identity().is_none() {
         return HttpResponse::Unauthorized().finish(); // 401
