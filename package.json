@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/Akuu29/todo-in-life#readme",
   "devDependencies": {
+    "@emotion/react": "^11.9.0",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.5",
     "react": "^18.1.0",
