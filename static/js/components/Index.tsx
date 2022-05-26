@@ -1,19 +1,18 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import {css} from "@emotion/react";
-import Header from "./components/common/Header";
-import Footer from "./components/common/Footer";
+import GlobalStyles from "../styles/Global";
+import Header from "./common/Header";
+import Footer from "./common/Footer";
 
-const content = css({
+const messageWrapper = css({
   height: 600,
   maxWidth: 800,
   margin: "0 auto",
   textAlign: "center",
   marginTop: 80,
-  fontFamily: "Arial Black"
 });
 
-const contentMain = css({
+const message = css({
   display: "inline-block",
   textAlign: "left",
   fontSize: 30,
@@ -22,9 +21,10 @@ const contentMain = css({
 const Index: React.FC = () => {
   return (
     <div>
+      <GlobalStyles />
       <Header />
-      <div css={content}>
-        <p css={contentMain}>
+      <div css={messageWrapper}>
+        <p css={message}>
           There is much todo in life.<br/>
           Manage them here.<br/>
           Todo can be managed in three categories:<br/>
@@ -36,5 +36,4 @@ const Index: React.FC = () => {
   );
 }
 
-const index = document.getElementById("index");
-ReactDOM.render(<Index />, index);
+export default Index;
