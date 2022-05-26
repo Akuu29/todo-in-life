@@ -3,7 +3,9 @@ import {css} from "@emotion/react";
 
 const header = css({
   width: "100%",
-  fontFamily: "Arial Black"
+  paddingTop: 60,
+  paddingBottom: 40,
+  borderBottom: "solid 5px #000000"
 });
 
 const titleWrapper = css({

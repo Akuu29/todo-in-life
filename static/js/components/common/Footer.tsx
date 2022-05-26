@@ -3,11 +3,12 @@ import {css} from "@emotion/react";
 
 const footer = css({
   width: "100%",
-  fontFamily: "Arial Black"
 });
 
 const footerTitle = css({
   textAlign: "center",
+  opacity: 0.5,
+  margin: 50,
 });
 
 const Footer: React.FC = () => {
