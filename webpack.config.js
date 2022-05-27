@@ -3,7 +3,8 @@ const path = require('path');
 /** @type {import('webpack').Configuration} */
 module.exports = {
   entry: {
-    index: path.join(__dirname, "static/js", "index.tsx"),
+    index: path.join(__dirname, "static/js", "client_index.tsx"),
+    signup: path.join(__dirname, "static/js", "client_signup.tsx")
   },
   module: {
     rules: [
