@@ -5,7 +5,8 @@ module.exports = {
   entry: {
     index: path.join(__dirname, "static/js", "client_index.tsx"),
     signup: path.join(__dirname, "static/js", "client_signup.tsx"),
-    login: path.join(__dirname, "static/js", "client_login.tsx")
+    login: path.join(__dirname, "static/js", "client_login.tsx"),
+    app: path.join(__dirname, "static/js", "client_app.tsx")
   },
   module: {
     rules: [
