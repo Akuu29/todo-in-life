@@ -1,5 +1,6 @@
 import { css } from "@emotion/react";
 import React, {useState} from "react";
+import { SetCreateForm } from "../App";
 
 const todoFormWrapper = css({
   display: "flex",
@@ -67,12 +68,20 @@ const btnWrapper = css({
     }
   }
 });
+
+const AppForm: React.FC<{
+  isShow: boolean;
+  category: string;
+  setCreateForm: SetCreateForm;}> 
+  = ({isShow, category, setCreateForm}) => {
   const [todo, setTodo] = useState({
     title: "",
     content: "",
     category: "",
     date_limit: "",
   });
+
+  const isRender = isShow ? css({display: ""}) : css({display: "none"});
 
   const handleChange: React.ChangeEventHandler = () => {
 
@@ -103,10 +112,9 @@ const btnWrapper = css({
           <select
             name="category"
             onChange={handleChange} >
-            <option value=""></option>
-            <option value="short">short</option>
-            <option value="medium">medium</option>
-            <option value="long">long</option>
+            <option value="short" selected={category=="short"}>short</option>
+            <option value="medium" selected={category=="medium"}>medium</option>
+            <option value="long" selected={category=="long"}>long</option>
           </select>
         </div>
         <div css={todoFormContent}>

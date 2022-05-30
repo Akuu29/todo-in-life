@@ -1,17 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import GlobalStyles from "../styles/Global";
 import Header from "./common/Header";
 import Footer from "./common/Footer";
 import AppForm from "./App/AppForm";
-// import AppTodos from "./App/AppTodos";
+export type SetCreateForm = React.Dispatch<React.SetStateAction<[boolean, string]>>;
 
 const App: React.FC = () => {
+  // isShowCreateForm: todo作成フォームの表示非表示用
+  // category: todo作成フォームのcategoryの初期値の判定に使用
+  const [[isShowCreateForm, category], setCreateForm] = useState([
+    false,
+    ""
+  ]);
+
   return (
     <div>
       <GlobalStyles />
       <Header />
-      <AppForm />
-      {/* <AppTodos /> */}
+      <AppForm
+        isShow={isShowCreateForm}
+        category={category}
+        setCreateForm={setCreateForm} />
       <Footer />
     </div>
   );
