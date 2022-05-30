@@ -1,5 +1,7 @@
 import { css } from "@emotion/react";
-import React, {useState} from "react";
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 import { SetCreateForm } from "../App";
 
 const todoFormWrapper = css({
@@ -54,7 +56,7 @@ const todoFormContent = css({
   }
 });
 
-const btnWrapper = css({
+const submitBtnWrapper = css({
   textAlign: "center",
   paddingTop: 20,
   "& input": {
@@ -64,8 +66,19 @@ const btnWrapper = css({
     color: "#ffffff",
     borderRadius: 6,
     "&:hover": {
-      backgroundColor: "#2b2b2b",
+      opacity: 0.6,
     }
+  }
+});
+
+const closeBtnkWrapper = css({
+  textAlign: "center",
+  marginTop: 20,
+});
+
+const closeBtn = css({
+  "&:hover": {
+    opacity: 0.6,
   }
 });
 
@@ -85,6 +98,10 @@ const AppForm: React.FC<{
 
   const handleChange: React.ChangeEventHandler = () => {
 
+  }
+
+  const handleCloseBtn = () => {
+    setCreateForm([false, ""]);
   }
 
   return (
@@ -125,8 +142,15 @@ const AppForm: React.FC<{
             name="date_limit"
             onChange={handleChange} />
         </div>
-        <div css={btnWrapper}>
+        <div css={submitBtnWrapper}>
           <input type="submit" value="POST" />
+        </div>
+        <div css={closeBtnkWrapper}>
+          <FontAwesomeIcon
+            icon={faRectangleXmark}
+            size="2x"
+            css={closeBtn}
+            onClick={handleCloseBtn} />
         </div>
       </form>
     </div>
