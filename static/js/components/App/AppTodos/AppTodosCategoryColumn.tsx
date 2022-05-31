@@ -1,6 +1,6 @@
-import { css } from "@emotion/react";
-import React, { ReactNode } from "react";
+import { FC, ReactNode } from "react";
 import { useDrop } from "react-dnd";
+import { css } from "@emotion/react";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SetCreateForm } from "../../App";
@@ -44,20 +44,20 @@ const todoOrderBtn = css({
   }
 });
 
-const AppTodosCategoryColumn: React.FC<{
-  children: ReactNode;
-  title: string;
-  setCreateForm: SetCreateForm;}>
-  = ({children, title,  setCreateForm}) => {
+const AppTodosCategoryColumn: FC<{
+    children: ReactNode;
+    title: string;
+    setCreateForm: SetCreateForm;
+  }> = ({
+    children,
+    title,
+    setCreateForm
+  }) => {
   
   const [, drop] = useDrop({
     accept: "todo",
     drop: () => ({name: title}),
   });
-
-  const handleCreateForm = () => {
-    setCreateForm([true, title]);
-  };
 
   return (
     <div>
@@ -67,7 +67,7 @@ const AppTodosCategoryColumn: React.FC<{
           {title !== "completed" &&
             <li>
               <Tooltip tooltipType="plusIcon">
-                <a css={displayFormBtn} onClick={handleCreateForm}>
+                <a css={displayFormBtn} onClick={() => {setCreateForm([true, title])}}>
                   <FontAwesomeIcon icon={faPlus} />
                 </a>
               </Tooltip>

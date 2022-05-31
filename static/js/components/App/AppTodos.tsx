@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import { DndProvider }  from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -13,7 +13,7 @@ const AppTodosWrapper = css({
   justifyContent: "space-around",
 });
 
-const AppTodos: React.FC<{setCreateForm: SetCreateForm}> = ({setCreateForm}) => {
+const AppTodos: FC<{setCreateForm: SetCreateForm}> = ({setCreateForm}) => {
   const [todos, setTodos] = useState<Array<CreatedTodo>>([]);
 
   useEffect(() => {
@@ -94,7 +94,7 @@ const AppTodos: React.FC<{setCreateForm: SetCreateForm}> = ({setCreateForm}) => 
           date_created={todo.date_created}
           setTodos={setTodos} />
       ));
-  }
+  };
  
   return (
     <div css={AppTodosWrapper}>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { FC, useState, Dispatch, SetStateAction } from "react";
 import GlobalStyles from "../styles/Global";
 import Header from "./common/Header";
 import Footer from "./common/Footer";
@@ -15,9 +15,10 @@ export interface CreatedTodo {
   date_created: string;
 };
 
-export type SetCreateForm = React.Dispatch<React.SetStateAction<[boolean, string]>>;
+export type SetCreateForm = Dispatch<SetStateAction<[boolean, string]>>;
 
-const App: React.FC = () => {
+const App: FC = () => {
+
   // isShowCreateForm: todo作成フォームの表示非表示用
   // category: todo作成フォームのcategoryの初期値の判定に使用
   const [[isShowCreateForm, category], setCreateForm] = useState([

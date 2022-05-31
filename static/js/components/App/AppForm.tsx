@@ -1,5 +1,5 @@
 import { css } from "@emotion/react";
-import React, { useState } from "react";
+import { FC, useState, ChangeEventHandler } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 import { SetCreateForm } from "../App";
@@ -84,11 +84,16 @@ const closeBtn = css({
   }
 });
 
-const AppForm: React.FC<{
-  isShow: boolean;
-  category: string;
-  setCreateForm: SetCreateForm;}> 
-  = ({isShow, category, setCreateForm}) => {
+const AppForm: FC<{
+    isShow: boolean;
+    category: string;
+    setCreateForm: SetCreateForm;
+  }> = ({
+    isShow,
+    category,
+    setCreateForm
+  }) => {
+
   const [todo, setTodo] = useState({
     title: "",
     content: "",
@@ -98,9 +103,9 @@ const AppForm: React.FC<{
 
   const isRender = isShow ? css({display: ""}) : css({display: "none"});
 
-  const handleChange: React.ChangeEventHandler = () => {
+  const handleChange: ChangeEventHandler = () => {
 
-  }
+  };
 
   return (
     <div css={[todoFormWrapper, isRender]}>

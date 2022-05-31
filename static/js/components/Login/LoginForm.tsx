@@ -1,11 +1,11 @@
-import React, {useState} from "react";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
+import { FC, useState, ChangeEventHandler, ChangeEvent, MouseEventHandler } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import GlobalUserForm from "../../styles/GlobalUserForm";
 
 type HundleSubmit = () => void;
 
-const LoginForm: React.FC = () => {
+const LoginForm: FC = () => {
   const [userInfo, setUserInfo] = useState({
     username: "",
     password: "",
@@ -26,14 +26,14 @@ const LoginForm: React.FC = () => {
     const loginResult = await fetch("/login", params);
   };
 
-  const handleChange: React.ChangeEventHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange: ChangeEventHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const key = event.target.name;
     const val = event.target.value;
     setUserInfo({...userInfo, [key]: val});
 // TODO formバリデーション
   };
 
-  const handleChangeIsShow: React.MouseEventHandler = () => {
+  const handleChangeIsShow: MouseEventHandler = () => {
     setIsShowPassword((prevState) => !prevState);
   };
 

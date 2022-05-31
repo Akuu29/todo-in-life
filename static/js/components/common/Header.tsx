@@ -1,5 +1,5 @@
-import React from "react";
-import {css} from "@emotion/react";
+import { FC, MouseEventHandler } from "react";
+import { css } from "@emotion/react";
 
 const header = css({
   width: "100%",
@@ -39,8 +39,9 @@ const btn = css({
   })
 });
 
-const Header: React.FC = () => {
-  const logout: React.MouseEventHandler = async () => {
+const Header: FC = () => {
+
+  const logout: MouseEventHandler = async () => {
     const params = {
       method: "POST",
     };

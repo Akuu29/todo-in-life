@@ -1,5 +1,5 @@
 import React from "react";
-import {css} from "@emotion/react";
+import { css } from "@emotion/react";
 import GlobalStyles from "../styles/Global";
 import Header from "./common/Header";
 import Footer from "./common/Footer";

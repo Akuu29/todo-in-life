@@ -1,4 +1,4 @@
-import React from "react";
+import { FC, Dispatch, SetStateAction } from "react";
 import { useDrag } from "react-dnd";
 import { css } from "@emotion/react";
 import { CreatedTodo } from "../../App";
@@ -9,9 +9,6 @@ const todoWrapper = css({
   border: "solid",
   borderRadius: 8,
   margin: 20,
-  "& label": {
-    
-  },
   "& p": {
     marginTop: 3,
   }
@@ -26,20 +23,27 @@ interface CurrentTodo {
 };
 
 interface DropResultMember {
-  dropEffect: string,
-  name: string,
+  dropEffect: string;
+  name: string;
 };
 
 type DropResult = DropResultMember | null;
 
-const AppTodo: React.FC<{
-  id: string; 
-  title: string;
-  content: string; 
-  date_limit: string;
-  date_created: string;
-  setTodos: React.Dispatch<React.SetStateAction<Array<CreatedTodo>>>;}> =
-  ({id, title, content, date_limit, date_created, setTodos}) => {
+const AppTodo: FC<{
+    id: string; 
+    title: string;
+    content: string; 
+    date_limit: string;
+    date_created: string;
+    setTodos: Dispatch<SetStateAction<Array<CreatedTodo>>>;
+  }> = ({
+    id,
+    title,
+    content,
+    date_limit,
+    date_created,
+    setTodos
+  }) => {
 
   // 他カテゴリーへのdrag&dropがあった際に変更をstateに反映する
   const changeTodoColumn = (currentTodo: CurrentTodo, columnName: string) => {
@@ -48,9 +52,9 @@ const AppTodo: React.FC<{
         return {
           ...prevTodo,
           category: prevTodo.id == currentTodo.id ? columnName : prevTodo.category,
-        }
-      })
-    })
+        };
+      });
+    });
   };
 
   const [{isDragging}, drag] = useDrag({

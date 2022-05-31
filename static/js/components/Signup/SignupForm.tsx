@@ -1,16 +1,17 @@
-import React, {useState} from "react";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
+import { FC, useState, ChangeEventHandler, ChangeEvent, MouseEventHandler } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import GlobalUserForm from "../../styles/GlobalUserForm";
 
 type HundleSubmit = () => void;
 
-const SinupForm: React.FC = () => {
+const SinupForm: FC = () => {
   const [userInfo, setUserInfo] = useState({
     username: "",
     email: "",
     password: "",
   });
+
   // パスワードの表示、非表示の切り替え用のstate
   const [isShowPassword, setIsShowPassword] = useState(false);
 
@@ -26,14 +27,14 @@ const SinupForm: React.FC = () => {
     const createUserResult = await fetch("/signup", params);
   };
 
-  const handleChange: React.ChangeEventHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange: ChangeEventHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const key = event.target.name;
     const val = event.target.value;
     setUserInfo({...userInfo, [key]: val});
 // TODO formバリデーション
   };
 
-  const handleChangeIsShow: React.MouseEventHandler = () => {
+  const handleChangeIsShow: MouseEventHandler = () => {
     setIsShowPassword((prevState) => !prevState);
   };
 

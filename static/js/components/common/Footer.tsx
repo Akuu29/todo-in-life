@@ -1,5 +1,5 @@
-import React from "react";
-import {css} from "@emotion/react";
+import { FC } from "react";
+import { css } from "@emotion/react";
 
 const footer = css({
   width: "100%",
@@ -11,7 +11,7 @@ const footerTitle = css({
   margin: 50,
 });
 
-const Footer: React.FC = () => {
+const Footer: FC = () => {
   return (
     <div css={footer}>
       <h4 css={footerTitle}>TODO IN LIFE@2022</h4>

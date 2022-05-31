@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import { FC, ReactNode, useState } from "react";
 import { css } from "@emotion/react";
 
 const tooltipStylesCommon = css({
@@ -45,14 +45,18 @@ const TOOLTIP_MSG = {
 };
 
 interface TooltopType {
-  plusIcon: string,
-  DL: string,
-  DC: string,
+  plusIcon: string;
+  DL: string;
+  DC: string;
 };
 
-const Tooltip: React.FC<{
-  children: ReactNode;
-  tooltipType: keyof TooltopType}> = ({children, tooltipType}) => {
+const Tooltip: FC<{
+    children: ReactNode;
+    tooltipType: keyof TooltopType;
+  }> = ({
+    children,
+    tooltipType
+  }) => {
 
   const [isShowTooltip, setIsTooltip] = useState(false);
 
