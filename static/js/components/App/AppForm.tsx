@@ -18,8 +18,7 @@ const todoFormWrapper = css({
 
 const todoForm = css({
   zIndex: 2,
-  height: "70%",
-  width: "30%",
+  height: "74%",
   padding: "3em",
   background: "#ffffff",
   border: "solid",
@@ -37,13 +36,13 @@ const titleWrapper = css({
 });
 
 const todoFormContent = css({
-  width: 400,
+  width: 430,
   marginBottom: 20,
   "& input": {
-    width: 400,
+    width: 420,
   },
   "& textarea": {
-    width: 400,
+    width: 420,
     height: 150,
   },
   "& select": {
@@ -58,13 +57,15 @@ const todoFormContent = css({
 
 const submitBtnWrapper = css({
   textAlign: "center",
-  paddingTop: 20,
+  paddingTop: 10,
   "& input": {
     width: "100%",
     height: 30,
     backgroundColor: "#000000",
     color: "#ffffff",
     borderRadius: 6,
+    cursor: "pointer",
+    fontFamily: "Arial Black",
     "&:hover": {
       opacity: 0.6,
     }
@@ -77,6 +78,7 @@ const closeBtnkWrapper = css({
 });
 
 const closeBtn = css({
+  cursor: "pointer",
   "&:hover": {
     opacity: 0.6,
   }
@@ -98,10 +100,6 @@ const AppForm: React.FC<{
 
   const handleChange: React.ChangeEventHandler = () => {
 
-  }
-
-  const handleCloseBtn = () => {
-    setCreateForm([false, ""]);
   }
 
   return (
@@ -150,7 +148,7 @@ const AppForm: React.FC<{
             icon={faRectangleXmark}
             size="2x"
             css={closeBtn}
-            onClick={handleCloseBtn} />
+            onClick={() => {setCreateForm([false, ""])}} />
         </div>
       </form>
     </div>
