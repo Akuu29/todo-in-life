@@ -3,6 +3,18 @@ import GlobalStyles from "../styles/Global";
 import Header from "./common/Header";
 import Footer from "./common/Footer";
 import AppForm from "./App/AppForm";
+import AppTodos from "./App/AppTodos";
+
+export interface CreatedTodo {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  date_limit: string;
+  done: boolean;
+  date_created: string;
+};
+
 export type SetCreateForm = React.Dispatch<React.SetStateAction<[boolean, string]>>;
 
 const App: React.FC = () => {
@@ -21,6 +33,7 @@ const App: React.FC = () => {
         isShow={isShowCreateForm}
         category={category}
         setCreateForm={setCreateForm} />
+      <AppTodos setCreateForm={setCreateForm} />
       <Footer />
     </div>
   );
