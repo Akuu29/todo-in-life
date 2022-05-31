@@ -40,6 +40,14 @@ const btn = css({
 });
 
 const Header: React.FC = () => {
+  const logout: React.MouseEventHandler = async () => {
+    const params = {
+      method: "POST",
+    };
+
+    await fetch("/logout", params);
+  };
+
   return (
     <div css={header}>
       <h1 css={titleWrapper}>
@@ -57,7 +65,7 @@ const Header: React.FC = () => {
             <a css={btn} href="/login">Log in</a>
           </li>
           <li css={navgationBtn}>
-            <a css={btn} href="/logout">Log out</a>
+            <a css={btn} onClick={logout}>Log out</a>
           </li>
         </ul>
       </nav>
