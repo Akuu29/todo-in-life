@@ -1,7 +1,7 @@
 import { FC, Dispatch, SetStateAction } from "react";
 import { useDrag } from "react-dnd";
 import { css } from "@emotion/react";
-import { CreatedTodo } from "../../App";
+import { Todos } from "../AppTodos";
 
 const todoWrapper = css({
   width: 290,
@@ -20,6 +20,7 @@ const todoContent = css({
 
 interface CurrentTodo {
   id: string;
+  category: string;
 };
 
 interface DropResultMember {
@@ -32,34 +33,52 @@ type DropResult = DropResultMember | null;
 const AppTodo: FC<{
     id: string; 
     title: string;
-    content: string; 
+    content: string;
+    category: string;
     date_limit: string;
     date_created: string;
-    setTodos: Dispatch<SetStateAction<Array<CreatedTodo>>>;
+    setTodos: Dispatch<SetStateAction<Todos>>;
   }> = ({
     id,
     title,
     content,
+    category,
     date_limit,
     date_created,
-    setTodos
+    setTodos,
   }) => {
 
-  // 他カテゴリーへのdrag&dropがあった際に変更をstateに反映する
+  // 他カテゴリーへのdrag&dropがあった際のstate更新
   const changeTodoColumn = (currentTodo: CurrentTodo, columnName: string) => {
-    setTodos((prevTodos: Array<CreatedTodo>) => {
-      return prevTodos.map((prevTodo: CreatedTodo) => {
-        return {
-          ...prevTodo,
-          category: prevTodo.id == currentTodo.id ? columnName : prevTodo.category,
-        };
+  // TODO! もっとスッキリした書き方はないのか
+    setTodos((prevTodos) => {
+      // 移動するtodoインデックスの取得
+      const targetTodoIndex = prevTodos[currentTodo.category]
+        .findIndex((prevTodo) => prevTodo.id == currentTodo.id);
+      // 移動するtodoの取得
+      const targetTodo = prevTodos[currentTodo.category].splice(targetTodoIndex, 1);
+      // categoryの書き換え
+      targetTodo.forEach((todo) => {
+        todo.category = columnName;
       });
+  
+      // DB更新
+
+      // 移動元のtodosと移動先のtodoの更新
+      return {
+        ...prevTodos,
+        [currentTodo.category]: prevTodos[currentTodo.category],
+        [columnName]: prevTodos[columnName].concat(targetTodo),
+      }
     });
   };
 
   const [{isDragging}, drag] = useDrag({
     type: "todo",
-    item: {id},
+    item: {
+      id,
+      category,
+    },
     end: (item, monitor) => {
       const dropResult: DropResult = monitor.getDropResult();
       if(dropResult && dropResult.name === "short") {

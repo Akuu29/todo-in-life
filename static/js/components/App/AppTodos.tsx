@@ -6,6 +6,9 @@ import AppTodo from "./AppTodos/AppTodo";
 import AppTodosCategoryColumn from "./AppTodos/AppTodosCategoryColumn";
 import { CreatedTodo, SetCreateForm } from "../App";
 
+// 後削除
+import { SampleGetTodos } from "./SampleGetTodos";
+
 const AppTodosWrapper = css({
   marginTop: 40,
   display: "flex",
@@ -14,15 +17,15 @@ const AppTodosWrapper = css({
 });
 
 export interface Todos {
-  [key: string]: Array<Array<CreatedTodo>>;
+  [key: string]: Array<CreatedTodo>;
 }
 
 const AppTodos: FC<{setCreateForm: SetCreateForm}> = ({setCreateForm}) => {
   const [todos, setTodos] = useState<Todos>({
-    "short": [],
-    "medium": [],
-    "long": [],
-    "completed": [],
+    short: [],
+    medium: [],
+    long: [],
+    completed: [],
   });
 
   // カテゴリごとにstateを持つ
@@ -38,13 +41,13 @@ const AppTodos: FC<{setCreateForm: SetCreateForm}> = ({setCreateForm}) => {
   const [pageCompleted, setPageCompleted] =useState(0);
 
   useEffect(() => {
-    const get_todos = () => {
-
+    // todoの取得
+    const getTodos = () => {
       let todosData: Todos = {
-        "short": [],
-        "medium": [],
-        "long": [],
-        "completed": [],
+        short: [],
+        medium: [],
+        long: [],
+        completed: [],
       };
 
       // TODO! 後にsampleGetTodos()を削除
@@ -52,30 +55,13 @@ const AppTodos: FC<{setCreateForm: SetCreateForm}> = ({setCreateForm}) => {
 
       todosGetted.forEach((todo: CreatedTodo) => {
         const key: keyof Todos = todo.category;
-        
-        if(!todosData[key].length) {
-          todosData[key].push([]);
-        }
-
-        todosData[key][0].push(todo);
-      });
-
-      // 1pageに6件todoを表示するため、todoが格納されている配列の長さを最大6配列に分割する
-      Object.keys(todosData).forEach((key) => {
-        if(todosData[key][0] && todosData[key][0].length >= 6) {
-          const numOfArr = Math.ceil(todosData[key][0].length / 6);
-
-          let todos = todosData[key].pop();
-          for(let i = 0; i < numOfArr; i++) {
-            todosData[key].push(todos!.slice(i * 6, (i + 1) * 6));
-          }
-        }
+        todosData[key].push(todo);
       });
 
       setTodos(todosData);
     };
 
-    get_todos();
+    getTodos();
   }, []);
 
   const returnTodosForColumn = (columnName: string, page: number) => {
@@ -87,12 +73,12 @@ const AppTodos: FC<{setCreateForm: SetCreateForm}> = ({setCreateForm}) => {
             id={todo.id}
             title={todo.title}
             content={todo.content}
+            category={todo.category}
             date_limit={todo.date_limit}
             date_created={todo.date_created}
-            setTodos={setTodos} />
+            setTodos={setTodos}/>
         ));
     }
-
   };
  
   return (
