@@ -28,17 +28,11 @@ const AppTodos: FC<{setCreateForm: SetCreateForm}> = ({setCreateForm}) => {
     completed: [],
   });
 
-  // カテゴリごとにstateを持つ
-  // const [todosShort, setTodosShort] = useState<Todos>([]);
-  // const [todosMedium, setTodosMedium] = useState<Todos>([]);
-  // const [todosLong, setTodosLong] = useState<Todos>([]);
-  // const [todosCompleted, setTodosCompleted] = useState<Todos>([]);
-
-  // それぞれのカテゴリ内でのページを保持
-  const [pageShort, setPageShort] = useState(0);
-  const [pageMedium, setPageMedium] = useState(0);
-  const [pageLong, setPageLong] = useState(0);
-  const [pageCompleted, setPageCompleted] =useState(0);
+  // それぞれのカテゴリ内における現在のページと最大のページ数
+  const [[currentPageShort, maxPageShort], setPageShort] = useState([0, 0]);
+  const [[currentPageMedium, maxPageMedium], setPageMedium] = useState([0, 0]);
+  const [[currentPageLong, maxPageLong], setPageLong] = useState([0, 0]);
+  const [[currentPageCompleted, maxPageCompleted], setPageCompleted] = useState([0, 0]);
 
   useEffect(() => {
     // todoの取得
@@ -64,9 +58,33 @@ const AppTodos: FC<{setCreateForm: SetCreateForm}> = ({setCreateForm}) => {
     getTodos();
   }, []);
 
+  // todosの更新時に実行される
+  useEffect(() => {
+    // 各カテゴリの最大ページの設定
+    const setMaxPage = () => {
+      Object.keys(todos).forEach((key) => {
+        let todosLen = todos[key].length;
+        let todosMaxPage = Math.ceil(todosLen / 6) - 1;
+        if(key == "short") {
+          setPageShort([currentPageShort, todosMaxPage]);
+        }else if(key == "medium") {
+          setPageMedium([currentPageMedium, todosMaxPage]);
+        }else if(key == "long") {
+          setPageLong([currentPageLong, todosMaxPage]);
+        }else {
+          setPageCompleted([currentPageCompleted, todosMaxPage]);
+        }
+      })
+    };
+
+    setMaxPage();
+  }, [todos]);
+
   const returnTodosForColumn = (columnName: string, page: number) => {
-    if(todos[columnName][page]) {
-      return todos[columnName][page]
+    if(todos[columnName].length) {
+      // 1pageに6件表示
+      return todos[columnName]
+        .filter((_, i) => ((i >= 6 * page) && (i < 6 * (page + 1))))
         .map((todo) => (
           <AppTodo
             key={todo.id}
@@ -88,34 +106,34 @@ const AppTodos: FC<{setCreateForm: SetCreateForm}> = ({setCreateForm}) => {
         <AppTodosCategoryColumn
           title="short"
           setCreateForm={setCreateForm}
-          currentPage={pageShort}
-          maxPage={todos["short"].length - 1}
+          currentPage={currentPageShort}
+          maxPage={maxPageShort}
           setPage={setPageShort} >
-          {returnTodosForColumn("short", pageShort)}
+          {returnTodosForColumn("short", currentPageShort)}
         </AppTodosCategoryColumn>
         <AppTodosCategoryColumn
           title="medium"
           setCreateForm={setCreateForm}
-          currentPage={pageMedium}
-          maxPage={todos["medium"].length - 1}
+          currentPage={currentPageMedium}
+          maxPage={maxPageMedium}
           setPage={setPageMedium} >
-          {returnTodosForColumn("medium", pageMedium)}
+          {returnTodosForColumn("medium", currentPageMedium)}
         </AppTodosCategoryColumn>
         <AppTodosCategoryColumn
           title="long"
           setCreateForm={setCreateForm}
-          currentPage={pageLong}
-          maxPage={todos["long"].length - 1}
+          currentPage={currentPageLong}
+          maxPage={maxPageLong}
           setPage={setPageLong} >
-          {returnTodosForColumn("long", pageLong)}
+          {returnTodosForColumn("long", currentPageLong)}
         </AppTodosCategoryColumn>
         <AppTodosCategoryColumn
           title="completed"
           setCreateForm={setCreateForm}
-          currentPage={pageCompleted}
-          maxPage={todos["completed"].length - 1}
+          currentPage={currentPageCompleted}
+          maxPage={maxPageCompleted}
           setPage={setPageCompleted}>
-          {returnTodosForColumn("completed", pageCompleted)}
+          {returnTodosForColumn("completed", currentPageCompleted)}
         </AppTodosCategoryColumn>
       </DndProvider>
     </div>

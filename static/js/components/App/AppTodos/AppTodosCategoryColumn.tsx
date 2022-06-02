@@ -1,4 +1,4 @@
-import { Dispatch, FC, ReactNode, SetStateAction } from "react";
+import { FC, ReactNode, Dispatch, SetStateAction } from "react";
 import { useDrop } from "react-dnd";
 import { css } from "@emotion/react";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -65,15 +65,13 @@ const nextBtn = css({
   }
 });
 
-type SetPage = Dispatch<SetStateAction<number>>;
-
 const AppTodosCategoryColumn: FC<{
     children: ReactNode;
     title: string;
     setCreateForm: SetCreateForm;
     currentPage: number,
     maxPage: number,
-    setPage: SetPage;
+    setPage: Dispatch<SetStateAction<[number, number]>>;
   }> = ({
     children,
     title,
@@ -89,11 +87,11 @@ const AppTodosCategoryColumn: FC<{
   });
 
   const switchToPrev = () => {
-    setPage(currentPage - 1);
+    setPage([currentPage - 1, maxPage]);
   }
 
   const switchToNext = () => {
-    setPage(currentPage + 1);
+    setPage([currentPage + 1, maxPage]);
   };
 
   return (
