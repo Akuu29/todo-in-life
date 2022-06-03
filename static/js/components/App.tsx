@@ -1,11 +1,11 @@
-import React, { FC, useState, Dispatch, SetStateAction } from "react";
+import { FC, useState, Dispatch, SetStateAction } from "react";
 import GlobalStyles from "../styles/Global";
 import Header from "./common/Header";
 import Footer from "./common/Footer";
 import AppForm from "./App/AppForm";
 import AppTodos from "./App/AppTodos";
 
-export interface CreatedTodo {
+export interface Todo {
   id: string;
   title: string;
   content: string;

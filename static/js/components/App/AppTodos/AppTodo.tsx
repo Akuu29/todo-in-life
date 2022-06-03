@@ -1,7 +1,7 @@
 import { FC, Dispatch, SetStateAction } from "react";
 import { useDrag } from "react-dnd";
 import { css } from "@emotion/react";
-import { Todos } from "../AppTodos";
+import { Todos, SetTodoForTodoDesc } from "../AppTodos";
 
 const todoWrapper = css({
   width: 290,
@@ -36,16 +36,22 @@ const AppTodo: FC<{
     content: string;
     category: string;
     date_limit: string;
+    done: boolean,
     date_created: string;
     setTodos: Dispatch<SetStateAction<Todos>>;
+    setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
+    setTodoForTodoDesc: SetTodoForTodoDesc;
   }> = ({
     id,
     title,
     content,
     category,
     date_limit,
+    done,
     date_created,
     setTodos,
+    setIsShowTodoDesc,
+    setTodoForTodoDesc,
   }) => {
 
   // 他カテゴリーへのdrag&dropがあった際のstate更新
@@ -96,10 +102,26 @@ const AppTodo: FC<{
     }),
   });
 
+  const handleDispTodoDesc = () => {
+    setIsShowTodoDesc(true);
+    setTodoForTodoDesc(
+      id,
+      title,
+      content,
+      category,
+      date_limit,
+      done,
+      date_created,
+    );
+  };
+
   const opacity = isDragging ? 0.4 : 1;
 
   return (
-    <div css={todoWrapper} ref={drag} style={{opacity}}>
+    <div css={todoWrapper}
+      ref={drag}
+      style={{opacity}}
+      onClick={handleDispTodoDesc}>
       <div css={todoContent}>
         <label>Title</label>
         <p>{title}</p>
