@@ -2,10 +2,11 @@ import { FC, useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import { DndProvider }  from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+
 import AppTodo from "./AppTodos/AppTodo";
 import AppTodosCategoryColumn from "./AppTodos/AppTodosCategoryColumn";
 import AppTodoDescription from "./AppTodos/AppTodoDescription";
-import { Todo, SetCreateForm } from "../App";
+import AppForm from "./AppForm";
 
 // 後削除
 import { SampleGetTodos } from "./SampleGetTodos";
@@ -17,21 +18,33 @@ const AppTodosWrapper = css({
   justifyContent: "space-around",
 });
 
+export interface Todo {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  date_limit: string;
+  done: boolean;
+  date_created: string;
+};
+
 export interface Todos {
   [key: string]: Array<Todo>;
 }
 
-export type SetTodoForTodoDesc = (
-  id: string,
-  title: string,
-  content: string,
-  category: string,
-  date_limit: string,
-  done: boolean,
-  date_created: string,
-  ) => void;
+export type FnToHandleTodosTable = () => void;
 
-const AppTodos: FC<{setCreateForm: SetCreateForm}> = ({setCreateForm}) => {
+const AppTodos: FC = () => {
+  const [todo, setTodo] = useState<Todo>({
+    id: "",
+    title: "",
+    content: "",
+    category: "",
+    date_limit: "",
+    done: false,
+    date_created: "",
+  });
+
   const [todos, setTodos] = useState<Todos>({
     short: [],
     medium: [],
@@ -47,16 +60,10 @@ const AppTodos: FC<{setCreateForm: SetCreateForm}> = ({setCreateForm}) => {
 
   // todo詳細ページの表示非表示制御
   const [isShowTodoDesc, setIsShowTodoDesc] = useState(false);
-  // todo詳細ページ用のtodo
-  const [todo, setTodo] = useState<Todo>({
-    id: "",
-    title: "",
-    content: "",
-    category: "",
-    date_limit: "",
-    done: false,
-    date_created: "",
-  });
+  // todoフォームの表示非表示制御用のstate
+  const [isShowForm, setIsShowForm] = useState(false);
+  // フォームタイプ new or edit
+  const [formType, setFormType] = useState("");
 
   useEffect(() => {
     // todoの取得
@@ -104,26 +111,6 @@ const AppTodos: FC<{setCreateForm: SetCreateForm}> = ({setCreateForm}) => {
     setMaxPage();
   }, [todos]);
 
-  // todo詳細ページ用にtodoStateを更新
-  const setTodoForTodoDesc: SetTodoForTodoDesc = (
-    id: string,
-    title: string,
-    content: string,
-    category: string,
-    date_limit: string,
-    done: boolean,
-    date_created: string) => {
-    setTodo({
-      id,
-      title,
-      content,
-      category,
-      date_limit,
-      done,
-      date_created
-    });
-  };
-
   const returnTodosForColumn = (columnName: string, page: number) => {
     if(todos[columnName].length) {
       // 1pageに6件表示
@@ -141,13 +128,40 @@ const AppTodos: FC<{setCreateForm: SetCreateForm}> = ({setCreateForm}) => {
             date_created={todo.date_created}
             setTodos={setTodos}
             setIsShowTodoDesc={setIsShowTodoDesc}
-            setTodoForTodoDesc={setTodoForTodoDesc} />
+            setTodo={setTodo} />
         ));
     }
+  };
+
+  const submitTodoForCreating: FnToHandleTodosTable = () => {
+    const todoForCreating = {
+      title: todo.title,
+      content: todo.content,
+      category: todo.category,
+      date_limit: todo.date_limit,
+    };
+
+  };
+
+  const submitTodoForEditing: FnToHandleTodosTable = () => {
+    const todoForEditing = {
+      ...todo
+    };
+
+  };
+
+  const deleteTodo: FnToHandleTodosTable = () => {
+
   };
  
   return (
     <div css={AppTodosWrapper}>
+      {isShowForm && <AppForm
+        todo={todo}
+        setTodo={setTodo}
+        setIsShowForm={setIsShowForm}
+        submitTodo={formType == "new" ?
+          submitTodoForCreating : submitTodoForEditing} />}
 {/* TODO! AppTodoDescriptionの引数が冗長、todoとして１つにまとめる */}
       {isShowTodoDesc && <AppTodoDescription 
         title={todo.title}
@@ -156,39 +170,50 @@ const AppTodos: FC<{setCreateForm: SetCreateForm}> = ({setCreateForm}) => {
         date_limit={todo.date_limit}
         done={todo.done}
         date_created={todo.date_created}
-        setIsShowTodoDesc={setIsShowTodoDesc} /> }
+        setIsShowTodoDesc={setIsShowTodoDesc}
+        setIsShowForm={setIsShowForm}
+        setFormType={setFormType}
+        deleteTodo={deleteTodo} /> }
       {/* DndProviderでラップされいるコンポーネント間でdrag&dropが可能 */}
       <DndProvider backend={HTML5Backend}>
         <AppTodosCategoryColumn
           title="short"
-          setCreateForm={setCreateForm}
+          setIsShowForm={setIsShowForm}
           currentPage={currentPageShort}
           maxPage={maxPageShort}
-          setPage={setPageShort} >
+          setPage={setPageShort} 
+          setTodo={setTodo}
+          setFormType={setFormType} >
           {returnTodosForColumn("short", currentPageShort)}
         </AppTodosCategoryColumn>
         <AppTodosCategoryColumn
           title="medium"
-          setCreateForm={setCreateForm}
+          setIsShowForm={setIsShowForm}
           currentPage={currentPageMedium}
           maxPage={maxPageMedium}
-          setPage={setPageMedium} >
+          setPage={setPageMedium} 
+          setTodo={setTodo}
+          setFormType={setFormType} >
           {returnTodosForColumn("medium", currentPageMedium)}
         </AppTodosCategoryColumn>
         <AppTodosCategoryColumn
           title="long"
-          setCreateForm={setCreateForm}
+          setIsShowForm={setIsShowForm}
           currentPage={currentPageLong}
           maxPage={maxPageLong}
-          setPage={setPageLong} >
+          setPage={setPageLong}
+          setTodo={setTodo}
+          setFormType={setFormType} >
           {returnTodosForColumn("long", currentPageLong)}
         </AppTodosCategoryColumn>
         <AppTodosCategoryColumn
           title="completed"
-          setCreateForm={setCreateForm}
+          setIsShowForm={setIsShowForm}
           currentPage={currentPageCompleted}
           maxPage={maxPageCompleted}
-          setPage={setPageCompleted}>
+          setPage={setPageCompleted}
+          setTodo={setTodo}
+          setFormType={setFormType} >
           {returnTodosForColumn("completed", currentPageCompleted)}
         </AppTodosCategoryColumn>
       </DndProvider>

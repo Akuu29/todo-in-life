@@ -1,7 +1,9 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import { css } from "@emotion/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRectangleXmark, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { faRectangleXmark, faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+
+import { FnToHandleTodosTable } from "../AppTodos";
 
 const todoDescWrapper = css({
   height: "100%",
@@ -39,10 +41,19 @@ const titleWrapper = css({
 
 const editIcon = css({
   position: "absolute",
-  right: 0,
+  right: 34,
   cursor: "pointer",
   "&:hover": {
     opacity: 0.6,
+  }
+});
+
+const trashIcon = css({
+  position: "absolute",
+  right: 0,
+  cursor: "pointer",
+  "&:hover": {
+    opacity: 0.6
   }
 });
 
@@ -74,6 +85,9 @@ const AppTodoDescription: FC<{
     done: boolean;
     date_created: string;
     setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
+    setIsShowForm: Dispatch<SetStateAction<boolean>>;
+    setFormType: Dispatch<SetStateAction<string>>;
+    deleteTodo: FnToHandleTodosTable
   }> = ({
     title,
     content,
@@ -82,7 +96,20 @@ const AppTodoDescription: FC<{
     done,
     date_created,
     setIsShowTodoDesc,
+    setIsShowForm,
+    setFormType,
+    deleteTodo
   }) => {
+
+  const handleEditIcon = () => {
+    // todo詳細ページを非表示
+    setIsShowTodoDesc(false);
+    // todoフォームの表示
+    setIsShowForm(true);
+    // フォームタイプをエディットに設定
+    setFormType("edit");
+  };
+
   return (
     <div css={todoDescWrapper} >
       <div css={todoDescContainer}>
@@ -91,7 +118,13 @@ const AppTodoDescription: FC<{
           {category != "completed" && <FontAwesomeIcon
             icon={faPenToSquare}
             size="2x"
-            css={editIcon} />}
+            css={editIcon}
+            onClick={handleEditIcon} />}
+          <FontAwesomeIcon
+            icon={faTrash}
+            size="2x"
+            css={trashIcon}
+            onClick={deleteTodo} />
         </div>
         <div css={todoDescContent}>
           <label>Title</label>

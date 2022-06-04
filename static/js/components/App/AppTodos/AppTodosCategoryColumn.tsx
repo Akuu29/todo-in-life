@@ -3,9 +3,10 @@ import { useDrop } from "react-dnd";
 import { css } from "@emotion/react";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { SetCreateForm } from "../../App";
+
 import Tooltip from "../../common/Tooltip";
 
+import { Todo } from "../AppTodos";
 
 const categoryTitle = css({
   fontsize: 20,
@@ -68,17 +69,21 @@ const nextBtn = css({
 const AppTodosCategoryColumn: FC<{
     children: ReactNode;
     title: string;
-    setCreateForm: SetCreateForm;
+    setIsShowForm: Dispatch<SetStateAction<boolean>>;
     currentPage: number,
     maxPage: number,
     setPage: Dispatch<SetStateAction<[number, number]>>;
+    setTodo: Dispatch<SetStateAction<Todo>>;
+    setFormType: Dispatch<SetStateAction<string>>;
   }> = ({
     children,
     title,
-    setCreateForm,
+    setIsShowForm,
     currentPage,
     maxPage,
-    setPage
+    setPage,
+    setTodo,
+    setFormType,
   }) => {
   
   const [, drop] = useDrop({
@@ -86,9 +91,24 @@ const AppTodosCategoryColumn: FC<{
     drop: () => ({name: title}),
   });
 
+  const handleDispFormBtn = () => {
+    // フォームの表示
+    setIsShowForm(true);
+    // todo stateのcategoryのみ更新
+    // フォームのcategoryプルダウンの初期値設定のため
+    setTodo((todo) => {
+      return {
+        ...todo,
+        category: title,
+      };
+    });
+    // フォームタイプをnewに設定
+    setFormType("new");
+  };
+
   const switchToPrev = () => {
     setPage([currentPage - 1, maxPage]);
-  }
+  };
 
   const switchToNext = () => {
     setPage([currentPage + 1, maxPage]);
@@ -102,7 +122,7 @@ const AppTodosCategoryColumn: FC<{
         {title !== "completed" &&
           <li>
             <Tooltip tooltipType="plusIcon">
-              <a css={displayFormBtn} onClick={() => {setCreateForm([true, title])}}>
+              <a css={displayFormBtn} onClick={handleDispFormBtn}>
                 <FontAwesomeIcon icon={faPlus} />
               </a>
             </Tooltip>

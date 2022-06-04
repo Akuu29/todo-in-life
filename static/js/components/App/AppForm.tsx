@@ -1,8 +1,9 @@
 import { css } from "@emotion/react";
-import { FC, useState, ChangeEventHandler } from "react";
+import { FC, ChangeEventHandler, Dispatch, SetStateAction, ChangeEvent } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
-import { SetCreateForm } from "../App";
+
+import { Todo, FnToHandleTodosTable } from "./AppTodos";
 
 const todoFormWrapper = css({
   display: "flex",
@@ -84,32 +85,36 @@ const closeBtn = css({
   }
 });
 
+type HandleChangeEvent = ChangeEvent<HTMLInputElement> |
+  ChangeEvent<HTMLTextAreaElement> |
+  ChangeEvent<HTMLSelectElement>;
+
 const AppForm: FC<{
-    isShow: boolean;
-    category: string;
-    setCreateForm: SetCreateForm;
+    todo: Todo;
+    setTodo: Dispatch<SetStateAction<Todo>>
+    setIsShowForm: Dispatch<SetStateAction<boolean>>;
+    submitTodo: FnToHandleTodosTable;
   }> = ({
-    isShow,
-    category,
-    setCreateForm
+    todo,
+    setTodo,
+    setIsShowForm,
+    submitTodo
   }) => {
 
-  const [todo, setTodo] = useState({
-    title: "",
-    content: "",
-    category: "",
-    date_limit: "",
-  });
-
-  const isRender = isShow ? css({display: ""}) : css({display: "none"});
-
-  const handleChange: ChangeEventHandler = () => {
-
+  const handleChange: ChangeEventHandler = (event: HandleChangeEvent) => {
+    const key = event.target.name;
+    const val = event.target.value;
+    setTodo((todo) => {
+      return {
+        ...todo,
+        [key]: val,
+      };
+    });
   };
 
   return (
-    <div css={[todoFormWrapper, isRender]}>
-      <form css={todoForm}>
+    <div css={todoFormWrapper}>
+      <form css={todoForm} onSubmit={submitTodo}>
         <div css={titleWrapper}>
           <h1>POST</h1>
         </div>
@@ -118,6 +123,7 @@ const AppForm: FC<{
           <input
             type="text"
             name="title"
+            value={todo.title}
             required
             onChange={handleChange} />
         </div>
@@ -125,6 +131,7 @@ const AppForm: FC<{
           <label>Content</label>
           <textarea
             name="content"
+            value={todo.content}
             onChange={handleChange} />
         </div>
         <div css={todoFormContent}>
@@ -132,9 +139,18 @@ const AppForm: FC<{
           <select
             name="category"
             onChange={handleChange} >
-            <option value="short" selected={category=="short"}>short</option>
-            <option value="medium" selected={category=="medium"}>medium</option>
-            <option value="long" selected={category=="long"}>long</option>
+            <option value="short"
+              selected={todo.category == "short"}>
+              short
+            </option>
+            <option value="medium"
+              selected={todo.category == "medium"}>
+              medium
+            </option>
+            <option value="long"
+              selected={todo.category == "long"}>
+              long
+            </option>
           </select>
         </div>
         <div css={todoFormContent}>
@@ -143,6 +159,7 @@ const AppForm: FC<{
             className="inputDate"
             type="date"
             name="date_limit"
+            value={todo.date_limit}
             onChange={handleChange} />
         </div>
         <div css={submitBtnWrapper}>
@@ -153,7 +170,7 @@ const AppForm: FC<{
             icon={faRectangleXmark}
             size="2x"
             css={closeBtn}
-            onClick={() => {setCreateForm([false, ""])}} />
+            onClick={() => {setIsShowForm(false)}} />
         </div>
       </form>
     </div>
