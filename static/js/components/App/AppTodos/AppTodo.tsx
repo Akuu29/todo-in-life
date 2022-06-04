@@ -6,7 +6,14 @@ import {
 import { useDrag } from "react-dnd";
 import { css } from "@emotion/react";
 
-import { Todos, Todo } from "../AppTodos";
+import {
+  Todos,
+  Todo,
+  SHORT,
+  MEDIUM,
+  LONG,
+  COMPLETE
+} from "../AppTodos";
 
 const todoWrapper = css({
   width: 290,
@@ -92,14 +99,14 @@ const AppTodo: FC<{
     },
     end: (item, monitor) => {
       const dropResult: DropResult = monitor.getDropResult();
-      if(dropResult && dropResult.name === "short") {
-        changeTodoColumn(item, "short");
-      }else if(dropResult && dropResult.name == "medium") {
-        changeTodoColumn(item, "medium");
-      }else if(dropResult && dropResult.name == "long") {
-        changeTodoColumn(item, "long");
+      if(dropResult && dropResult.name === SHORT) {
+        changeTodoColumn(item, SHORT);
+      }else if(dropResult && dropResult.name == MEDIUM) {
+        changeTodoColumn(item, MEDIUM);
+      }else if(dropResult && dropResult.name == LONG) {
+        changeTodoColumn(item, LONG);
       }else {
-        changeTodoColumn(item, "completed");
+        changeTodoColumn(item, COMPLETE);
       }
     },
     collect: (monitor) => ({

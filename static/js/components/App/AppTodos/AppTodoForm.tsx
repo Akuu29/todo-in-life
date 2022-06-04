@@ -9,7 +9,13 @@ import { css } from "@emotion/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 
-import { Todo, FnToHandleTodosTable } from "../AppTodos";
+import {
+  Todo,
+  FnToHandleTodosTable,
+  SHORT,
+  MEDIUM,
+  LONG
+} from "../AppTodos";
 
 const todoFormWrapper = css({
   display: "flex",
@@ -145,17 +151,17 @@ const AppForm: FC<{
           <select
             name="category"
             onChange={handleChange} >
-            <option value="short"
-              selected={todo.category == "short"}>
-              short
+            <option value={SHORT}
+              selected={todo.category == SHORT}>
+              {SHORT}
             </option>
-            <option value="medium"
-              selected={todo.category == "medium"}>
-              medium
+            <option value={MEDIUM}
+              selected={todo.category == MEDIUM}>
+              {MEDIUM}
             </option>
-            <option value="long"
-              selected={todo.category == "long"}>
-              long
+            <option value={LONG}
+              selected={todo.category == LONG}>
+              {LONG}
             </option>
           </select>
         </div>

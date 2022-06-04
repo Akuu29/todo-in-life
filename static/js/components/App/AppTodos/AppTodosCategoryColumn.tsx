@@ -11,7 +11,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Tooltip from "../../common/Tooltip";
 
-import { Todo } from "../AppTodos";
+import {
+  Todo,
+  COMPLETE
+} from "../AppTodos";
 
 const categoryTitle = css({
   fontsize: 20,
@@ -124,7 +127,7 @@ const AppTodosCategoryColumn: FC<{
       <h1 css={categoryTitle}>{title}</h1>
       <nav css={navigationArea}>
         <ul>
-        {title !== "completed" &&
+        {title !== COMPLETE &&
           <li>
             <Tooltip tooltipType="plusIcon">
               <a css={displayFormBtn} onClick={handleDispFormBtn}>

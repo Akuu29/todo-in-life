@@ -11,7 +11,7 @@ import {
   faTrash
 } from "@fortawesome/free-solid-svg-icons";
 
-import { FnToHandleTodosTable } from "../AppTodos";
+import { FnToHandleTodosTable, COMPLETE } from "../AppTodos";
 
 const todoDescWrapper = css({
   height: "100%",
@@ -123,7 +123,7 @@ const AppTodoDescription: FC<{
       <div css={todoDescContainer}>
         <div css={titleWrapper}>
           <h1>Description</h1>
-          {category != "completed" && <FontAwesomeIcon
+          {category != COMPLETE && <FontAwesomeIcon
             icon={faPenToSquare}
             size="2x"
             css={editIcon}
