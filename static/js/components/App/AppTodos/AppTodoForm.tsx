@@ -3,7 +3,7 @@ import { FC, ChangeEventHandler, Dispatch, SetStateAction, ChangeEvent } from "r
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 
-import { Todo, FnToHandleTodosTable } from "./AppTodos";
+import { Todo, FnToHandleTodosTable } from "../AppTodos";
 
 const todoFormWrapper = css({
   display: "flex",

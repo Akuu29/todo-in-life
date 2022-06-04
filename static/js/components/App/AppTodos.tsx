@@ -6,7 +6,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import AppTodo from "./AppTodos/AppTodo";
 import AppTodosCategoryColumn from "./AppTodos/AppTodosCategoryColumn";
 import AppTodoDescription from "./AppTodos/AppTodoDescription";
-import AppForm from "./AppForm";
+import AppForm from "./AppTodos/AppTodoForm";
 
 // 後削除
 import { SampleGetTodos } from "./SampleGetTodos";
