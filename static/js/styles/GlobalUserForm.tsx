@@ -71,7 +71,7 @@ const userForm = {
     },
   }),
   ".btnWrapper": css({
-    paddingTop: 10,
+    paddingTop: 20,
     paddingBottom: 20,
     width: 120,
     margin: "auto",
@@ -81,17 +81,18 @@ const userForm = {
       backgroundColor: "#000000",
       color: "#ffffff",
       borderRadius: 6,
-      "&:hover": css({
-        backgroundColor: "#2b2b2b",
-      })
+      cursor: "pointer",
+      "&:hover": {
+        opacity: 0.6,
+      }
     }
   }),
-}
+};
 
 const GlobalUserForm = () => {
   return (
     <Global styles={userForm} />
   );
-}
+};
 
 export default GlobalUserForm;

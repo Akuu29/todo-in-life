@@ -1,4 +1,8 @@
-import { FC, useEffect, useState } from "react";
+import {
+  FC,
+  useEffect,
+  useState
+} from "react";
 import { css } from "@emotion/react";
 import { DndProvider }  from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -30,7 +34,7 @@ export interface Todo {
 
 export interface Todos {
   [key: string]: Array<Todo>;
-}
+};
 
 export type FnToHandleTodosTable = () => void;
 

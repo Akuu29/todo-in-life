@@ -1,7 +1,15 @@
-import { Dispatch, FC, SetStateAction } from "react";
+import {
+  FC,
+  Dispatch,
+  SetStateAction
+} from "react";
 import { css } from "@emotion/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRectangleXmark, faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faRectangleXmark,
+  faPenToSquare,
+  faTrash
+} from "@fortawesome/free-solid-svg-icons";
 
 import { FnToHandleTodosTable } from "../AppTodos";
 
@@ -87,7 +95,7 @@ const AppTodoDescription: FC<{
     setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
     setIsShowForm: Dispatch<SetStateAction<boolean>>;
     setFormType: Dispatch<SetStateAction<string>>;
-    deleteTodo: FnToHandleTodosTable
+    deleteTodo: FnToHandleTodosTable;
   }> = ({
     title,
     content,

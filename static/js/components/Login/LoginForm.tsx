@@ -1,6 +1,13 @@
-import { FC, useState, ChangeEventHandler, ChangeEvent, MouseEventHandler } from "react";
+import {
+  FC,
+  useState,
+  ChangeEventHandler,
+  ChangeEvent,
+  MouseEventHandler
+} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+
 import GlobalUserForm from "../../styles/GlobalUserForm";
 
 type HundleSubmit = () => void;

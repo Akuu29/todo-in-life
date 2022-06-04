@@ -1,5 +1,11 @@
+import {
+  FC,
+  ChangeEventHandler,
+  Dispatch,
+  SetStateAction,
+  ChangeEvent
+} from "react";
 import { css } from "@emotion/react";
-import { FC, ChangeEventHandler, Dispatch, SetStateAction, ChangeEvent } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 
@@ -91,7 +97,7 @@ type HandleChangeEvent = ChangeEvent<HTMLInputElement> |
 
 const AppForm: FC<{
     todo: Todo;
-    setTodo: Dispatch<SetStateAction<Todo>>
+    setTodo: Dispatch<SetStateAction<Todo>>;
     setIsShowForm: Dispatch<SetStateAction<boolean>>;
     submitTodo: FnToHandleTodosTable;
   }> = ({

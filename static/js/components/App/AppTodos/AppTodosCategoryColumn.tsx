@@ -1,4 +1,9 @@
-import { FC, ReactNode, Dispatch, SetStateAction } from "react";
+import {
+  FC,
+  ReactNode,
+  Dispatch,
+  SetStateAction
+} from "react";
 import { useDrop } from "react-dnd";
 import { css } from "@emotion/react";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -70,8 +75,8 @@ const AppTodosCategoryColumn: FC<{
     children: ReactNode;
     title: string;
     setIsShowForm: Dispatch<SetStateAction<boolean>>;
-    currentPage: number,
-    maxPage: number,
+    currentPage: number;
+    maxPage: number;
     setPage: Dispatch<SetStateAction<[number, number]>>;
     setTodo: Dispatch<SetStateAction<Todo>>;
     setFormType: Dispatch<SetStateAction<string>>;
@@ -83,7 +88,7 @@ const AppTodosCategoryColumn: FC<{
     maxPage,
     setPage,
     setTodo,
-    setFormType,
+    setFormType
   }) => {
   
   const [, drop] = useDrop({

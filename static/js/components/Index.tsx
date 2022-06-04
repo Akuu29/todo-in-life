@@ -1,5 +1,6 @@
-import React from "react";
+import { FC } from "react";
 import { css } from "@emotion/react";
+
 import GlobalStyles from "../styles/Global";
 import Header from "./common/Header";
 import Footer from "./common/Footer";
@@ -18,7 +19,7 @@ const message = css({
   fontSize: 30,
 });
 
-const Index: React.FC = () => {
+const Index: FC = () => {
   return (
     <div>
       <GlobalStyles />
@@ -34,6 +35,6 @@ const Index: React.FC = () => {
       <Footer />
     </div>
   );
-}
+};
 
 export default Index;
