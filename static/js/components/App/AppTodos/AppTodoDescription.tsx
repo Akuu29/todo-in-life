@@ -11,6 +11,8 @@ import {
   faTrash
 } from "@fortawesome/free-solid-svg-icons";
 
+import Tooltip from "../../common/Tooltip";
+
 import { FnToHandleTodosTable, COMPLETE } from "../AppTodos";
 
 const todoDescWrapper = css({
@@ -49,6 +51,7 @@ const titleWrapper = css({
 
 const editIcon = css({
   position: "absolute",
+  bottom: 5,
   right: 34,
   cursor: "pointer",
   "&:hover": {
@@ -58,6 +61,7 @@ const editIcon = css({
 
 const trashIcon = css({
   position: "absolute",
+  bottom: 5,
   right: 0,
   cursor: "pointer",
   "&:hover": {
@@ -123,16 +127,21 @@ const AppTodoDescription: FC<{
       <div css={todoDescContainer}>
         <div css={titleWrapper}>
           <h1>Description</h1>
-          {category != COMPLETE && <FontAwesomeIcon
-            icon={faPenToSquare}
-            size="2x"
-            css={editIcon}
-            onClick={handleEditIcon} />}
-          <FontAwesomeIcon
-            icon={faTrash}
-            size="2x"
-            css={trashIcon}
-            onClick={deleteTodo} />
+          {category != COMPLETE &&
+            <Tooltip tooltipType="editIcon">
+              <FontAwesomeIcon
+                icon={faPenToSquare}
+                css={editIcon}
+                size="2x"
+                onClick={handleEditIcon} />
+            </Tooltip>}
+          <Tooltip tooltipType="trashIcon">
+            <FontAwesomeIcon
+              icon={faTrash}
+              size="2x"
+              css={trashIcon}
+              onClick={deleteTodo} />
+          </Tooltip>
         </div>
         <div css={todoDescContent}>
           <label>Title</label>
