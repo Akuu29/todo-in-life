@@ -21,13 +21,22 @@ const todoWrapper = css({
   border: "solid",
   borderRadius: 8,
   margin: 20,
+  cursor: "pointer",
   "& p": {
     marginTop: 3,
+    fontFamily: "none",
   }
 });
 
 const todoContent = css({
   margin: 5,
+});
+
+const sentence = css({
+  width: "100%",
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
 });
 
 interface CurrentTodo {
@@ -136,11 +145,11 @@ const AppTodo: FC<{
       onClick={handleDispTodoDesc}>
       <div css={todoContent}>
         <label>Title</label>
-        <p>{title}</p>
+        <p css={sentence}>{title}</p>
       </div>
       <div css={todoContent}>
         <label>Content</label>
-        <p>{content}</p>
+        <p css={sentence}>{content}</p>
       </div>
       <div css={todoContent}>
         <label>Deadline</label>
