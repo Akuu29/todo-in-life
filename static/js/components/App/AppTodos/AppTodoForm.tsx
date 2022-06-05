@@ -31,7 +31,7 @@ const todoFormWrapper = css({
 
 const todoForm = css({
   zIndex: 2,
-  height: "74%",
+  height: "67%",
   padding: "3em",
   background: "#ffffff",
   border: "solid",
