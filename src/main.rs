@@ -2,6 +2,7 @@ use std::env;
 use actix_web::{App, HttpServer};
 use actix_web::web::Data;
 use actix_web::middleware::Logger;
+use actix_files::Files;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
 use diesel::prelude::*;
 use diesel::r2d2::{self, ConnectionManager};
@@ -31,6 +32,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(Data::new(pool.clone()))
             .app_data(Data::new(Tera::new("templates/**/*").unwrap()))
+            .service(Files::new("/static", "./static"))
             .service(main_scope::get_scope())
             .service(todos_scope::get_scope())
             .wrap(IdentityService::new(policy))
