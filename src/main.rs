@@ -7,6 +7,7 @@ use actix_identity::{CookieIdentityPolicy, IdentityService};
 use diesel::prelude::*;
 use diesel::r2d2::{self, ConnectionManager};
 use tera::Tera;
+use rand::Rng;
 use dotenv::dotenv;
 use listenfd::ListenFd;
 use todo_in_life::scopes::{main_scope, todos_scope};
@@ -23,20 +24,23 @@ async fn main() -> std::io::Result<()> {
     let pool = r2d2::Pool::builder().build(manager).expect("Filed to create db pool");
 
     let mut listenfd = ListenFd::from_env();
+
+    let private_key = rand::thread_rng().gen::<[u8; 32]>();
+
     let mut server = HttpServer::new(move || {
         // cookieIDの生成
-        let policy = CookieIdentityPolicy::new(&[0; 32])
+        let policy = CookieIdentityPolicy::new(&private_key)
             .name("auth-cookie")
             .secure(false);
         
         App::new()
+            .wrap(IdentityService::new(policy))
+            .wrap(Logger::default())
             .app_data(Data::new(pool.clone()))
             .app_data(Data::new(Tera::new("templates/**/*").unwrap()))
             .service(Files::new("/static", "./static"))
             .service(main_scope::get_scope())
             .service(todos_scope::get_scope())
-            .wrap(IdentityService::new(policy))
-            .wrap(Logger::default())
     });
 
     // loggerを初期化
