@@ -9,8 +9,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import GlobalUserForm from "../../styles/GlobalUserForm";
 
-type HundleSubmit = () => void;
-
 const SinupForm: FC = () => {
   const [userInfo, setUserInfo] = useState({
     username: "",
@@ -20,18 +18,6 @@ const SinupForm: FC = () => {
 
   // パスワードの表示、非表示の切り替え用のstate
   const [isShowPassword, setIsShowPassword] = useState(false);
-
-  const handleSubmit: HundleSubmit = async () => {
-    const params = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(userInfo),
-    };
-
-    const createUserResult = await fetch("/signup", params);
-  };
 
   const handleChange: ChangeEventHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const key = event.target.name;
@@ -47,7 +33,7 @@ const SinupForm: FC = () => {
   return(
     <div className="userFormWrapper">
       <GlobalUserForm />
-      <form className="userForm" onSubmit={handleSubmit} >
+      <form action="/signup" method="POST" className="userForm">
         <div className="titleWrapper">
           <h1>Sign Up</h1>
         </div>

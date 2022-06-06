@@ -10,8 +10,6 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 import GlobalUserForm from "../../styles/GlobalUserForm";
 
-type HundleSubmit = () => void;
-
 const LoginForm: FC = () => {
   const [userInfo, setUserInfo] = useState({
     username: "",
@@ -20,18 +18,6 @@ const LoginForm: FC = () => {
 
   // パスワードの表示、非表示の切り替え用のstate
   const [isShowPassword, setIsShowPassword] = useState(false);
-
-  const handleSubmit: HundleSubmit = async () => {
-    const params = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(userInfo),
-    };
-
-    const loginResult = await fetch("/login", params);
-  };
 
   const handleChange: ChangeEventHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const key = event.target.name;
@@ -47,7 +33,7 @@ const LoginForm: FC = () => {
   return (
     <div className="userFormWrapper">
       <GlobalUserForm />
-      <form className="userForm" onSubmit={handleSubmit} >
+      <form action="/login" method="POST" className="userForm" >
         <div className="titleWrapper">
           <h1>Log in</h1>
         </div>
