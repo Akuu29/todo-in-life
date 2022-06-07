@@ -67,15 +67,15 @@ async fn render_login(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
 }
 
 #[post("/login")]
-async fn login(identity: Identity, pool: Pool, form_data: Form<LoginData>) -> impl Responder {
+async fn login(req: HttpRequest, identity: Identity, pool: Pool, user_data: Form<LoginData>) -> impl Responder {
     // サインアップ済みまたはログイン済みの場合、エラー
     if identity.identity().is_some() {
         return HttpResponse::Found().append_header(("location", "/")).finish(); // 302
     }
 
     // バリデーション
-    if let Err(validation_errors) = form_data.validate() {
 // TODO クライアント側でエラー内容をどのように受け取るか
+    if let Err(validation_errors) = user_data.validate() {
         return HttpResponse::Found()
             .append_header(("location", "/login"))
             .finish() // 302
@@ -84,14 +84,14 @@ async fn login(identity: Identity, pool: Pool, form_data: Form<LoginData>) -> im
     let db_connection = pool.get().expect("Failed getting db connection");
 
     let user = users::table
-        .filter(users::username.eq(&form_data.username))
+        .filter(users::username.eq(&user_data.username))
         .first::<User>(&db_connection);
 
     match user {
         Ok(user) => {
             // 入力されたパスワードのハッシュ値を保存されているハッシュ値と比較
             let parsed_hash = PasswordHash::new(&user.password).unwrap();
-            let is_match = Argon2::default().verify_password(form_data.password.as_bytes(), &parsed_hash);
+            let is_match = Argon2::default().verify_password(user_data.password.as_bytes(), &parsed_hash);
             match is_match {
                 Ok(_) => {
                     // cookieにID保存
