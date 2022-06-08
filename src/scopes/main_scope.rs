@@ -10,7 +10,7 @@ use crate::users::{NewUser, User};
 use crate::users::validate_users_form::{SignupData, LoginData};
 use crate::Pool;
 use crate::schema::users;
-// use crate::manage_cookie::{get_cookie, set_cookie};
+use crate::manage_cookie::{generate_cookie_messages, set_messages_in_cookie};
 
 pub fn get_scope() -> Scope {
     web::scope("")
@@ -73,12 +73,25 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, user_data: Form
         return HttpResponse::Found().append_header(("location", "/")).finish(); // 302
     }
 
+    // cookie_messagesの生成
+    let mut cookie_messages = generate_cookie_messages(&req);
+
     // バリデーション
-// TODO クライアント側でエラー内容をどのように受け取るか
     if let Err(validation_errors) = user_data.validate() {
+        // エラーメッセージをcookieに設定
+        validation_errors.field_errors().iter().for_each(|(_, fields)| {
+            fields.iter().for_each(|validation_error| {
+                set_messages_in_cookie(
+                    &mut cookie_messages,
+                    "error".to_string(),
+                    validation_error.message.as_ref().unwrap().to_string(),
+                );
+            })
+        });
         return HttpResponse::Found()
             .append_header(("location", "/login"))
-            .finish() // 302
+            .cookie(cookie_messages)
+            .finish()
     }
 
     let db_connection = pool.get().expect("Failed getting db connection");
