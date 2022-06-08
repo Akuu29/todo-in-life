@@ -126,16 +126,32 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, user_data: Form
                         .finish()
                 }
                 Err(_) => {
+                    // cookieにメッセージを保存
+                    set_messages_in_cookie(
+                        &mut cookie_messages,
+                        "error".to_string(),
+                        "Username or password of both are incorrect".to_string()
+                    );
+
                     HttpResponse::Found()
                         .append_header(("location", "/login"))
-                        .finish() // 302
+                        .cookie(cookie_messages)
+                        .finish()
                 }
             }
         }
         Err(_) => {
+            // cookieにメッセージを保存
+            set_messages_in_cookie(
+                &mut cookie_messages,
+                "error".to_string(),
+                "Username or password of both are incorrect".to_string()
+            );
+
             HttpResponse::Found()
                 .append_header(("location", "/login"))
-                .finish() // 302
+                .cookie(cookie_messages)
+                .finish()
         }
     }
 }
