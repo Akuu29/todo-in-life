@@ -1,17 +1,23 @@
 import { FC } from "react";
+import { CookiesProvider } from "react-cookie";
 
 import GlobalStyles from "../styles/Global";
 import Header from "./common/Header";
 import Footer from "./common/Footer";
 import SignupForm from "./Signup/SignupForm";
+import UserFormErrorMessages from "./common/UserFormErrorMessages";
 
 const Signup: FC = () => {
   return (
     <div>
-      <GlobalStyles />
-      <Header />
-      <SignupForm />
-      <Footer />
+      {/* CookiesProviderでラップしているコンポーネント内でcookieの管理が可能 */}
+      <CookiesProvider>
+        <GlobalStyles />
+        <Header />
+        <UserFormErrorMessages />
+        <SignupForm />
+        <Footer />
+      </CookiesProvider>
     </div>
   );
 }
