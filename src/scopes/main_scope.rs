@@ -226,9 +226,17 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, user_data: For
                     // cookieにID保存
                     identity.remember(new_user.username);
 
+                    // cookieにメッセージを保存
+                    set_messages_in_cookie(
+                        &mut cookie_messages,
+                        "success".to_string(),
+                        "Successfully sign up".to_string()
+                    );
+
                     HttpResponse::Found()
                         .append_header(("location", "/app"))
-                        .finish() // 302
+                        .cookie(cookie_messages)
+                        .finish()
                 }
                 Err(_) => {
                     // cookieにメッセージを保存
