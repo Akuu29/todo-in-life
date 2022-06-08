@@ -34,14 +34,14 @@ async fn index(tmpl: Data<Tera>) -> impl Responder {
     
     HttpResponse::Ok()
         .content_type("text/html")
-        .body(response_body) // 200
+        .body(response_body)
 }
 
 #[get("/app")]
 async fn app(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
     // 未ログインの場合、エラー
     if identity.identity().is_none() {
-        return HttpResponse::NotFound().finish(); // 404
+        return HttpResponse::NotFound().finish();
     }
 
     let response_body = tmpl
@@ -50,14 +50,16 @@ async fn app(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
 
     HttpResponse::Ok()
         .content_type("text/html")
-        .body(response_body) // 200
+        .body(response_body)
 }
 
 #[get("/login")]
 async fn render_login(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
     // サインアップ済みまたはログイン済みの場合、エラー
     if identity.identity().is_some() {
-        return HttpResponse::Found().append_header(("location", "/")).finish(); // 302
+        return HttpResponse::Found()
+            .append_header(("location", "/"))
+            .finish();
     }
 
     let response_body = tmpl
@@ -66,14 +68,16 @@ async fn render_login(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
 
     HttpResponse::Ok()
         .content_type("text/html")
-        .body(response_body) // 200
+        .body(response_body)
 }
 
 #[post("/login")]
 async fn login(req: HttpRequest, identity: Identity, pool: Pool, user_data: Form<LoginData>) -> impl Responder {
     // サインアップ済みまたはログイン済みの場合、エラー
     if identity.identity().is_some() {
-        return HttpResponse::Found().append_header(("location", "/")).finish(); // 302
+        return HttpResponse::Found()
+            .append_header(("location", "/"))
+            .finish();
     }
 
     // cookie_messagesの生成
@@ -160,7 +164,9 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, user_data: Form
 async fn render_signup(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
     // サインアップ済みまたはログイン済みの場合、エラー
     if identity.identity().is_some() {
-        return HttpResponse::Found().append_header(("location", "/")).finish(); // 302
+        return HttpResponse::Found()
+            .append_header(("location", "/"))
+            .finish();
     }
 
     let response_body = tmpl
@@ -169,14 +175,16 @@ async fn render_signup(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
     
     HttpResponse::Ok()
         .content_type("text/html")
-        .body(response_body) // 200
+        .body(response_body)
 }
 
 #[post("/signup")]
 async fn signup(req: HttpRequest, pool: Pool, identity: Identity, user_data: Form<SignupData>) -> impl Responder {
     // サインアップまたはログイン済みの場合、早期リターン
     if identity.identity().is_some() {
-        return HttpResponse::Found().append_header(("location", "/")).finish(); // 302
+        return HttpResponse::Found()
+            .append_header(("location", "/"))
+            .finish();
     }
 
     // cookie_messagesの生成
@@ -273,7 +281,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, user_data: For
 async fn logout(identity: Identity) -> impl Responder{
     // 未ログインの場合エラー
     if identity.identity().is_none() {
-        return HttpResponse::NotFound().finish(); // 404
+        return HttpResponse::NotFound().finish();
     }
 
     // ID破棄
@@ -281,5 +289,5 @@ async fn logout(identity: Identity) -> impl Responder{
 
     HttpResponse::Found()
         .append_header(("location", "/"))
-        .finish() // 302
+        .finish()
 }
