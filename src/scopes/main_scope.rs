@@ -173,26 +173,35 @@ async fn render_signup(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
 }
 
 #[post("/signup")]
-async fn signup(req: HttpRequest, pool: Pool, identity: Identity,form_data: Form<SignupData>) -> impl Responder {
+async fn signup(req: HttpRequest, pool: Pool, identity: Identity, user_data: Form<SignupData>) -> impl Responder {
     // サインアップまたはログイン済みの場合、早期リターン
     if identity.identity().is_some() {
         return HttpResponse::Found().append_header(("location", "/")).finish(); // 302
     }
 
+    // cookie_messagesの生成
+    let mut cookie_messages = generate_cookie_messages(&req);
+
     // バリデーション
-    if let Err(validation_errors) = form_data.validate() {
-// TODO クライアント側でエラー内容をどのように受け取るか
-        // validation_errors.field_errors().iter().for_each(|(_, errors)| {
-        //     errors.iter().for_each(|validation_error| {
-                
-        //     })
-        // });
+    if let Err(validation_errors) = user_data.validate() {
+        validation_errors.field_errors().iter().for_each(|(_, fields)| {
+            fields.iter().for_each(|validation_error| {
+                // エラーメッセージをcookieに保存
+                set_messages_in_cookie(
+                    &mut cookie_messages,
+                    "error".to_string(),
+                    validation_error.message.as_ref().unwrap().to_string(),
+                );
+            })
+        });
+
         return HttpResponse::Found()
             .append_header(("location", "/signup"))
-            .finish(); // 302
+            .cookie(cookie_messages)
+            .finish();
     }
-    
-    let signup_data = form_data.into_inner();
+
+    let signup_data = user_data.into_inner();
 // TODO: NewUserを作る一手間が発生している
     let new_user = NewUser {
         username: signup_data.username,
