@@ -10,7 +10,10 @@ use crate::users::{NewUser, User};
 use crate::users::validate_users_form::{SignupData, LoginData};
 use crate::Pool;
 use crate::schema::users;
-use crate::manage_cookie::{generate_cookie_messages, set_messages_in_cookie};
+use crate::manage_cookie::{
+    generate_cookie_messages,
+    set_messages_in_cookie
+};
 
 pub fn get_scope() -> Scope {
     web::scope("")
@@ -108,11 +111,19 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, user_data: Form
             match is_match {
                 Ok(_) => {
                     // cookieにID保存
-                    identity.remember(user.username.clone());
-// TODO クライアント側でcookie管理
+                    identity.remember(user.username);
+
+                    // cookieにメッセージを保存
+                    set_messages_in_cookie(
+                        &mut cookie_messages,
+                        "success".to_string(),
+                        "Successfully logged in".to_string()
+                    );
+
                     HttpResponse::Found()
                         .append_header(("location", "/app"))
-                        .finish() // 302
+                        .cookie(cookie_messages)
+                        .finish()
                 }
                 Err(_) => {
                     HttpResponse::Found()
