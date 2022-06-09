@@ -32,7 +32,7 @@ export interface Todo {
   title: string;
   content: string;
   category: string;
-  date_limit: string;
+  date_limit: string | null;
   done: boolean;
   date_created: string;
 };
@@ -49,7 +49,7 @@ const AppTodos: FC = () => {
     title: "",
     content: "",
     category: "",
-    date_limit: "",
+    date_limit: null,
     done: false,
     date_created: "",
   });

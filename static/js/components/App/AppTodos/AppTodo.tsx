@@ -56,7 +56,7 @@ const AppTodo: FC<{
     title: string;
     content: string;
     category: string;
-    date_limit: string;
+    date_limit: string | null;
     done: boolean;
     date_created: string;
     setTodos: Dispatch<SetStateAction<Todos>>;
