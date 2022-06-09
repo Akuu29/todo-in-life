@@ -133,10 +133,18 @@ const AppForm: FC<{
     setTodo((todo) => {
       return {
         ...todo,
-        date_limit: date ? date.toString() : null
+        date_limit: date ? convertDateToString(date) : null
       };
     });
   };
+
+  const convertDateToString = (date: Date): string => {
+    const y = date.getFullYear().toString();
+    const m = ("0" + (date.getMonth() + 1).toString()).slice(-2);
+    const d = ("0" + date.getDate().toString()).slice(-2);
+
+    return y + "/" + m + "/" + d;
+  }
 
   return (
     <div css={todoFormWrapper}>
