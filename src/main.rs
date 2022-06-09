@@ -25,12 +25,16 @@ async fn main() -> std::io::Result<()> {
 
     let mut listenfd = ListenFd::from_env();
 
+    // CookieIdentityPolicyに使う秘密鍵の指定
+    // private_keyが変更された場合全てのCookieに保存されたIDは無効になる
     let private_key = rand::thread_rng().gen::<[u8; 32]>();
 
     let mut server = HttpServer::new(move || {
-        // cookieIDの生成
+        // CookiIdentityPolicyの生成
+        // CookieをIDの保存場所として使う
         let policy = CookieIdentityPolicy::new(&private_key)
             .name("auth-cookie")
+            .http_only(true)
             .secure(false);
         
         App::new()
