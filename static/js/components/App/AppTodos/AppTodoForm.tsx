@@ -8,6 +8,8 @@ import {
 import { css } from "@emotion/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 import {
   Todo,
@@ -113,6 +115,9 @@ const AppForm: FC<{
     submitTodo
   }) => {
 
+  // DatePicker, selected用に型をstringからDateに変換しておく
+  const date = todo.date_limit ? new Date(todo.date_limit) : null;
+
   const handleChange: ChangeEventHandler = (event: HandleChangeEvent) => {
     const key = event.target.name;
     const val = event.target.value;
@@ -120,6 +125,15 @@ const AppForm: FC<{
       return {
         ...todo,
         [key]: val,
+      };
+    });
+  };
+
+  const handleChangeLimitDate  = (date: Date | null) => {
+    setTodo((todo) => {
+      return {
+        ...todo,
+        date_limit: date ? date.toString() : null
       };
     });
   };
@@ -167,12 +181,10 @@ const AppForm: FC<{
         </div>
         <div css={todoFormContent}>
           <label>Limit Date</label>
-          <input
-            className="inputDate"
-            type="date"
-            name="date_limit"
-            value={todo.date_limit}
-            onChange={handleChange} />
+          <DatePicker
+            dateFormat="yyyy/MM/dd"
+            selected={date}
+            onChange={handleChangeLimitDate} />
         </div>
         <div css={submitBtnWrapper}>
           <input type="submit" value="POST" />
