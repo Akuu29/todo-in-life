@@ -148,7 +148,7 @@ const AppForm: FC<{
 
   return (
     <div css={todoFormWrapper}>
-      <form css={todoForm} onSubmit={submitTodo}>
+      <div css={todoForm}>
         <div css={titleWrapper}>
           <h1>POST</h1>
         </div>
@@ -195,7 +195,7 @@ const AppForm: FC<{
             onChange={handleChangeLimitDate} />
         </div>
         <div css={submitBtnWrapper}>
-          <input type="submit" value="POST" />
+          <input type="button" value="POST" onClick={submitTodo} />
         </div>
         <div css={closeBtnkWrapper}>
           <FontAwesomeIcon
@@ -204,7 +204,7 @@ const AppForm: FC<{
             css={closeBtn}
             onClick={() => {setIsShowForm(false)}} />
         </div>
-      </form>
+      </div>
     </div>
   );
 };
