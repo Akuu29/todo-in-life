@@ -12,8 +12,7 @@ import AppTodosCategoryColumn from "./AppTodos/AppTodosCategoryColumn";
 import AppTodoDescription from "./AppTodos/AppTodoDescription";
 import AppForm from "./AppTodos/AppTodoForm";
 
-// 後削除
-import { SampleGetTodos } from "./SampleGetTodos";
+import TodoApi from "../../api/todoApi";
 
 export const SHORT = "short";
 export const MEDIUM = "medium";
@@ -76,26 +75,24 @@ const AppTodos: FC = () => {
 
   useEffect(() => {
     // todoの取得
-    const getTodos = () => {
-      let todosData: Todos = {
+    const setInitialTodos = async () => {
+      let initialTodosData: Todos = {
         [SHORT]: [],
         [MEDIUM]: [],
         [LONG]: [],
         [COMPLETE]: [],
       };
 
-      // TODO! 後にsampleGetTodos()を削除
-      const todosGetted: Array<Todo> = SampleGetTodos();
-
-      todosGetted.forEach((todo: Todo) => {
+      const getTodosResult = await TodoApi.getTodos();
+      getTodosResult.todos.forEach((todo: Todo) => {
         const key: keyof Todos = todo.category;
-        todosData[key].push(todo);
+        initialTodosData[key].push(todo);
       });
 
-      setTodos(todosData);
+      setTodos(initialTodosData);
     };
 
-    getTodos();
+    setInitialTodos();
   }, []);
 
   // todosの更新時に実行される
