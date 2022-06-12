@@ -8,7 +8,7 @@ class TodoApi {
 
     const response = await fetch("/api/todos", params);
 
-    return response;
+    return await response.json();
   }
   static async postTodo(todo: Todo) {
     const body = {
