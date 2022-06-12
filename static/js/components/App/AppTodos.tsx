@@ -34,7 +34,7 @@ export interface Todo {
   category: string;
   date_limit: string | null;
   done: boolean;
-  date_created: string;
+  date_created: string | null;
 };
 
 export interface Todos {
@@ -51,7 +51,7 @@ const AppTodos: FC = () => {
     category: "",
     date_limit: null,
     done: false,
-    date_created: "",
+    date_created: null,
   });
 
   const [todos, setTodos] = useState<Todos>({

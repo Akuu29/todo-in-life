@@ -18,6 +18,10 @@ import {
   MEDIUM,
   LONG
 } from "../AppTodos";
+import {
+  convertDateToString,
+  convertStrDateToDate
+} from "../../../common/common";
 
 const todoFormWrapper = css({
   display: "flex",
@@ -115,9 +119,6 @@ const AppForm: FC<{
     submitTodo
   }) => {
 
-  // DatePicker, selected用に型をstringからDateに変換しておく
-  const date = todo.date_limit ? new Date(todo.date_limit) : null;
-
   const handleChange: ChangeEventHandler = (event: HandleChangeEvent) => {
     const key = event.target.name;
     const val = event.target.value;
@@ -133,18 +134,10 @@ const AppForm: FC<{
     setTodo((todo) => {
       return {
         ...todo,
-        date_limit: date ? convertDateToString(date) : null
+        date_limit: convertDateToString(date)
       };
     });
   };
-
-  const convertDateToString = (date: Date): string => {
-    const y = date.getFullYear().toString();
-    const m = ("0" + (date.getMonth() + 1).toString()).slice(-2);
-    const d = ("0" + date.getDate().toString()).slice(-2);
-
-    return y + "/" + m + "/" + d;
-  }
 
   return (
     <div css={todoFormWrapper}>
@@ -191,7 +184,7 @@ const AppForm: FC<{
           <label>Limit Date</label>
           <DatePicker
             dateFormat="yyyy/MM/dd"
-            selected={date}
+            selected={convertStrDateToDate(todo.date_limit)}
             onChange={handleChangeLimitDate} />
         </div>
         <div css={submitBtnWrapper}>

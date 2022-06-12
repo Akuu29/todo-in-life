@@ -14,6 +14,7 @@ import {
 import Tooltip from "../../common/Tooltip";
 
 import { FnToHandleTodosTable, COMPLETE } from "../AppTodos";
+import { convertStrDateToDispDate } from "../../../common/common";
 
 const todoDescWrapper = css({
   height: "100%",
@@ -95,7 +96,7 @@ const AppTodoDescription: FC<{
     category: string;
     date_limit: string | null;
     done: boolean;
-    date_created: string;
+    date_created: string | null;
     setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
     setIsShowForm: Dispatch<SetStateAction<boolean>>;
     setFormType: Dispatch<SetStateAction<string>>;
@@ -157,11 +158,11 @@ const AppTodoDescription: FC<{
         </div>
         <div css={todoDescContent}>
           <label>Deadline</label>
-          <p>{date_limit}</p>
+          <p>{convertStrDateToDispDate(date_limit)}</p>
         </div>
         <div css={todoDescContent}>
           <label>Date Created</label>
-          <p>{date_created}</p>
+          <p>{convertStrDateToDispDate(date_created)}</p>
         </div>
         <div css={closeBtnkWrapper}>
           <FontAwesomeIcon

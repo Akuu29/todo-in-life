@@ -14,6 +14,7 @@ import {
   LONG,
   COMPLETE
 } from "../AppTodos";
+import { convertStrDateToDispDate } from "../../../common/common";
 
 const todoWrapper = css({
   width: 290,
@@ -52,13 +53,13 @@ interface DropResultMember {
 type DropResult = DropResultMember | null;
 
 const AppTodo: FC<{
-    id: string; 
+    id: string;
     title: string;
     content: string;
     category: string;
     date_limit: string | null;
     done: boolean;
-    date_created: string;
+    date_created: string | null;
     setTodos: Dispatch<SetStateAction<Todos>>;
     setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
     setTodo: Dispatch<SetStateAction<Todo>>;
@@ -153,11 +154,11 @@ const AppTodo: FC<{
       </div>
       <div css={todoContent}>
         <label>Deadline</label>
-        <p>{date_limit}</p>
+        <p>{convertStrDateToDispDate(date_limit)}</p>
       </div>
       <div css={todoContent}>
         <label>Date Created</label>
-        <p>{date_created}</p>
+        <p>{convertStrDateToDispDate(date_created)}</p>
       </div>
     </div>
   );
