@@ -29,7 +29,7 @@ pub fn get_scope() -> Scope {
 pub async fn get(identity: Identity, pool: Pool) -> impl Responder {
     // 未ログインの場合、エラー
     if identity.identity().is_none() {
-        return HttpResponse::Unauthorized().finish(); // 401
+        return HttpResponse::Unauthorized().finish();
     }
 
     let db_connection = pool.get().expect("Failed getting db connection");
@@ -47,7 +47,7 @@ pub async fn get(identity: Identity, pool: Pool) -> impl Responder {
 
     match get_result {
         Ok(todos) => HttpResponse::Ok().json(json!({"status": "success", "todos": todos})),
-        Err(_) => HttpResponse::InternalServerError().finish(), // 500
+        Err(_) => HttpResponse::InternalServerError().finish(),
     }
 }
 
@@ -56,7 +56,7 @@ pub async fn get(identity: Identity, pool: Pool) -> impl Responder {
 pub async fn create(identity: Identity, pool: Pool, todo_data: Json<TodoData>) -> impl Responder {
     // 未ログインの場合、エラー
     if identity.identity().is_none() {
-        return HttpResponse::Unauthorized().finish(); // 401
+        return HttpResponse::Unauthorized().finish();
     }
 
     // バリデーション
@@ -101,12 +101,12 @@ pub async fn create(identity: Identity, pool: Pool, todo_data: Json<TodoData>) -
 pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData>) -> impl Responder {
     // 未ログインの場合、エラー
     if identity.identity().is_none() {
-        return HttpResponse::Unauthorized().finish(); // 401
+        return HttpResponse::Unauthorized().finish();
     }
 
     // バリデーション
     if let Err(_validation_errors) = todo_data.validate() {
-        return HttpResponse::UnprocessableEntity().finish(); // 422
+        return HttpResponse::UnprocessableEntity().finish();
     }
 
     let db_connection = pool.get().expect("Failed getting db connection");
@@ -123,12 +123,12 @@ pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData
         .first::<Todo>(&db_connection);
     let todo_user_id = match get_todo_result {
         Ok(todo) => todo.user_id,
-        Err(_) => return HttpResponse::Forbidden().finish(), // 403
+        Err(_) => return HttpResponse::Forbidden().finish(),
     };
 
     // user_id と todo_user_idが一致しない場合エラー
     if user_id != todo_user_id {
-        return HttpResponse::Forbidden().finish(); // 403
+        return HttpResponse::Forbidden().finish();
     }
 
     // todo_data.date_limitをStringからDate型に変換
@@ -147,8 +147,8 @@ pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData
 
     match update_result {
         // ブロック、アップデートのResultで二重にラップされている
-        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "success"})), // 200
-        _ => HttpResponse::InternalServerError().finish() // 500
+        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "success"})),
+        _ => HttpResponse::InternalServerError().finish()
     }
 }
 
@@ -156,7 +156,7 @@ pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData
 pub async fn update_status(identity: Identity, pool: Pool, todo_data: Json<UpdateTodoDataStatus>) -> impl Responder {
     // 未ログインの場合、エラー
     if identity.identity().is_none() {
-        return HttpResponse::Unauthorized().finish(); // 401
+        return HttpResponse::Unauthorized().finish();
     }
 
     let db_connection = pool.get().expect("Failed getting db connection");
@@ -173,12 +173,12 @@ pub async fn update_status(identity: Identity, pool: Pool, todo_data: Json<Updat
         .first::<Todo>(&db_connection);
     let todo_user_id = match get_todo_result  {
         Ok(todo) => todo.user_id,
-        Err(_) => return HttpResponse::Forbidden().finish(), // 403
+        Err(_) => return HttpResponse::Forbidden().finish(),
     };
 
     // user_id と todo_user_idが一致しない場合エラー
     if user_id != todo_user_id {
-        return HttpResponse::Forbidden().finish(); // 403
+        return HttpResponse::Forbidden().finish();
     }
 
     let update_status_result = web::block(move || {
@@ -191,8 +191,8 @@ pub async fn update_status(identity: Identity, pool: Pool, todo_data: Json<Updat
 
     match update_status_result {
         // ブロック、アップデートのResultで二重にラップされている
-        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "success"})), //200
-        _ => HttpResponse::InternalServerError().finish(), // 500
+        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "success"})),
+        _ => HttpResponse::InternalServerError().finish(),
     }
 }
 
@@ -200,7 +200,7 @@ pub async fn update_status(identity: Identity, pool: Pool, todo_data: Json<Updat
 pub async fn delete(identity: Identity, pool: Pool, todo_data: Json<DeleteTodoData>) -> impl Responder {
     // 未ログインの場合、エラー
     if identity.identity().is_none() {
-        return HttpResponse::Unauthorized().finish(); // 401
+        return HttpResponse::Unauthorized().finish();
     }
 
     let db_connection = pool.get().expect("Failed getting db connection");
@@ -217,12 +217,12 @@ pub async fn delete(identity: Identity, pool: Pool, todo_data: Json<DeleteTodoDa
         .first::<Todo>(&db_connection);
     let todo_user_id = match get_todo_result {
         Ok(todo) => todo.user_id,
-        Err(_) => return HttpResponse::Forbidden().finish(), // 403
+        Err(_) => return HttpResponse::Forbidden().finish(),
     };
 
     // user_id と todo_user_idが一致しない場合エラー
     if user_id != todo_user_id {
-        return HttpResponse::Forbidden().finish(); // 403
+        return HttpResponse::Forbidden().finish();
     }
 
     let delete_result = web::block(move || {
@@ -232,7 +232,7 @@ pub async fn delete(identity: Identity, pool: Pool, todo_data: Json<DeleteTodoDa
 
     match delete_result {
         // ブロック、デリートのResultで二重にラップされている
-        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "success"})), // 201
-        _ => HttpResponse::InternalServerError().finish(), // 500
+        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "success"})),
+        _ => HttpResponse::InternalServerError().finish(),
     }
 }
