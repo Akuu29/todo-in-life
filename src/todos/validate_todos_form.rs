@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use serde::Deserialize;
 use validator::{Validate, ValidationError};
 use chrono::{Utc};
@@ -21,7 +22,7 @@ pub struct TodoData {
         length(
             min = 10,
             max = 10,
-            message = "Limit Date must be entered in the format 'yyyy/MM//dd'"
+            message = "Deadline must be entered in the format 'yyyy/MM//dd'"
         ),
         custom = "validate_past_date"
     )]
@@ -56,7 +57,12 @@ fn validate_past_date(date_limit: &str) -> Result<(), ValidationError>{
     let today = Utc::today().naive_utc();
     let duration = date - today;
     if duration.num_days() < 0 {
-        return Err(ValidationError::new("past_date"));
+        let validation_error = ValidationError {
+            code: Cow::from("pastDate"),
+            message: Some(Cow::from("Deadline mut be entered for a date after today")),
+            params: Default::default()
+        };
+        return Err(validation_error);
     }
 
     Ok(())
