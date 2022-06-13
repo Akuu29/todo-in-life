@@ -40,6 +40,18 @@ export interface Todos {
   [key: string]: Array<Todo>;
 };
 
+export interface ErrorMessages {
+  [key: string]: Array<string>
+};
+
+interface validationError {
+  code: string,
+  message: string,
+  params: {
+    value: string,
+  }
+};
+
 export type FnToHandleTodosTable = () => void;
 
 const AppTodos: FC = () => {
@@ -72,6 +84,13 @@ const AppTodos: FC = () => {
   const [isShowForm, setIsShowForm] = useState(false);
   // フォームタイプ new or edit
   const [formType, setFormType] = useState("");
+
+  // フォームエラーメッセージ
+  const [errorMessages, setErrorMessages] = useState<ErrorMessages>({
+    title: [],
+    content: [],
+    date_limit: [],
+  });
 
   useEffect(() => {
     // todoの取得
@@ -156,7 +175,20 @@ const AppTodos: FC = () => {
       setIsShowForm(false);
     }else {
       // エラー
-      console.log(response.message);
+      let validationErrorMessages: ErrorMessages = {
+        title: [],
+        content: [],
+        date_limit: [],
+      };
+      // レスポンスからvalidationErrorsのメッセージをvalidationErrorMessagesに追加していく
+      Object.keys(response.validationErrors).forEach((key) => {
+        const validationErrors = response.validationErrors[key];
+        validationErrors.forEach((validationError: validationError) => {
+          validationErrorMessages[key].push(validationError.message);
+        })
+      })
+      // validationErrorMessagesをerrorMessagesにセットする
+      setErrorMessages(validationErrorMessages);
     }
   };
 
@@ -178,7 +210,8 @@ const AppTodos: FC = () => {
         setTodo={setTodo}
         setIsShowForm={setIsShowForm}
         submitTodo={formType == "new" ?
-          submitTodoForCreating : submitTodoForEditing} />}
+          submitTodoForCreating : submitTodoForEditing}
+        errorMessages={errorMessages}/>}
 {/* TODO! AppTodoDescriptionの引数が冗長、todoとして１つにまとめる */}
       {isShowTodoDesc && <AppTodoDescription 
         title={todo.title}

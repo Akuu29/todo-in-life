@@ -60,8 +60,9 @@ pub async fn create(identity: Identity, pool: Pool, todo_data: Json<TodoData>) -
     }
 
     // バリデーション
-    if let Err(_validation_errors) = todo_data.validate() {
-        return HttpResponse::UnprocessableEntity().finish(); // 422
+    if let Err(validation_errors) = todo_data.validate() {
+        return HttpResponse::UnprocessableEntity()
+            .json(json!({"status": "error", "validationErrors": validation_errors.field_errors()}));
     }
 
     let db_connection = pool.get().expect("Failed getting db connection");

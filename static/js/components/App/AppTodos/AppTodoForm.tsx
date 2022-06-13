@@ -16,12 +16,14 @@ import {
   FnToHandleTodosTable,
   SHORT,
   MEDIUM,
-  LONG
+  LONG,
+  ErrorMessages
 } from "../AppTodos";
 import {
   convertDateToString,
   convertStrDateToDate
 } from "../../../common/common";
+import FormErrorMessage from "../../common/FormErrorMessage";
 
 const todoFormWrapper = css({
   display: "flex",
@@ -112,11 +114,13 @@ const AppForm: FC<{
     setTodo: Dispatch<SetStateAction<Todo>>;
     setIsShowForm: Dispatch<SetStateAction<boolean>>;
     submitTodo: FnToHandleTodosTable;
+    errorMessages: ErrorMessages;
   }> = ({
     todo,
     setTodo,
     setIsShowForm,
-    submitTodo
+    submitTodo,
+    errorMessages
   }) => {
 
   const handleChange: ChangeEventHandler = (event: HandleChangeEvent) => {
@@ -153,6 +157,7 @@ const AppForm: FC<{
             value={todo.title}
             required
             onChange={handleChange} />
+          <FormErrorMessage errorMessages={errorMessages.title}/>
         </div>
         <div css={todoFormContent}>
           <label>Content</label>
@@ -160,6 +165,7 @@ const AppForm: FC<{
             name="content"
             value={todo.content}
             onChange={handleChange} />
+          <FormErrorMessage errorMessages={errorMessages.content}/>
         </div>
         <div css={todoFormContent}>
           <label>Category</label>
@@ -186,6 +192,7 @@ const AppForm: FC<{
             dateFormat="yyyy/MM/dd"
             selected={convertStrDateToDate(todo.date_limit)}
             onChange={handleChangeLimitDate} />
+          <FormErrorMessage errorMessages={errorMessages.date_limit}/>
         </div>
         <div css={submitBtnWrapper}>
           <input type="button" value="POST" onClick={submitTodo} />
