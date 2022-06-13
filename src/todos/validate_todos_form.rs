@@ -18,7 +18,11 @@ pub struct TodoData {
     pub content: Option<String>,
     pub category: Option<String>,
     #[validate(
-        length(min = 8, max = 8, message = ""),
+        length(
+            min = 10,
+            max = 10,
+            message = "Limit Date must be entered in the format 'yyyy/MM//dd'"
+        ),
         custom = "validate_past_date"
     )]
     pub date_limit: Option<String>,
