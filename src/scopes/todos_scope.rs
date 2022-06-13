@@ -80,17 +80,19 @@ pub async fn create(identity: Identity, pool: Pool, todo_data: Json<TodoData>) -
     };
 
     let todo = NewTodo::create_todo(&new_todo, user_id);
+    // レスポンスのjson用にtodoのコピーを作成しておく
+    let response_todo = todo.clone();
 
     let result = web::block(move || {
         diesel::insert_into(todos::table)
-            .values(&todo)
+            .values(todo)
             .execute(&db_connection)
     }).await;
 
     match result {
         // ブロック、インサートのResultで二重にラップされている
-        Ok(Ok(_)) => HttpResponse::Created().json(json!({"status": "success"})), // 201
-        _ => HttpResponse::InternalServerError().finish(), // 500
+        Ok(Ok(_)) => HttpResponse::Created().json(json!({"status": "success", "todo": response_todo})),
+        _ => HttpResponse::InternalServerError().finish()
     }
 }
 

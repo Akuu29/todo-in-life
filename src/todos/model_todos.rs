@@ -11,7 +11,7 @@ pub struct NewTodo {
     pub date_limit: Option<String>,
 }
 
-#[derive(Debug, Queryable, Insertable, Serialize)]
+#[derive(Debug, Clone, Queryable, Insertable, Serialize)]
 #[table_name="todos"]
 pub struct Todo {
     pub id: String,
