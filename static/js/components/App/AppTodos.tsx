@@ -139,14 +139,25 @@ const AppTodos: FC = () => {
     }
   };
 
-  const submitTodoForCreating: FnToHandleTodosTable = () => {
-    const todoForCreating = {
-      title: todo.title,
-      content: todo.content,
-      category: todo.category,
-      date_limit: todo.date_limit,
-    };
+  const submitTodoForCreating: FnToHandleTodosTable = async () => {
+    const response = await TodoApi.postTodo(todo);
 
+    if(response.status == "success") {
+      // state'todos'に作成されたtodoを反映
+      const todoCreated = response.todo;
+      setTodos({
+        ...todos,
+        [todoCreated.category]: [
+          ...todos[todoCreated.category],
+          todoCreated
+        ]
+      });
+      // フォーム画面を閉じる
+      setIsShowForm(false);
+    }else {
+      // エラー
+      console.log(response.message);
+    }
   };
 
   const submitTodoForEditing: FnToHandleTodosTable = () => {

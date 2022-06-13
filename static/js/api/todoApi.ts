@@ -28,7 +28,7 @@ class TodoApi {
 
     const response = await fetch("/api/todos", params);
 
-    return response;
+    return await response.json();
   }
 }
 
