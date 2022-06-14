@@ -17,7 +17,7 @@ pub struct TodoData {
         message = "Category must be 300 characters or less"
     ))]
     pub content: Option<String>,
-    pub category: Option<String>,
+    pub category: String,
     #[validate(
         length(
             min = 10,
@@ -43,7 +43,7 @@ pub struct EditTodoData {
         message = "Category must be 300 characters or less"
     ))]
     pub content: Option<String>,
-    pub category: Option<String>,
+    pub category: String,
     #[validate(
         length(min = 8, max = 8, message = ""),
         custom = "validate_past_date"
