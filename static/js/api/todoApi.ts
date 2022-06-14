@@ -30,6 +30,27 @@ class TodoApi {
 
     return await response.json();
   }
+  static async putTodo(todo: Todo) {
+    const body = {
+      id: todo.id,
+      title: todo.title,
+      content: todo.content,
+      category: todo.category,
+      date_limit: todo.date_limit
+    };
+
+    const params = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    };
+
+    const response = await fetch("api/todos", params);
+
+    return await response.json();
+  }
 }
 
 export default TodoApi;

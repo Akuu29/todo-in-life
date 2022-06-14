@@ -92,6 +92,9 @@ const AppTodos: FC = () => {
     date_limit: [],
   });
 
+  // editとしてフォームが開かれた場合に、edit前のtodoのcategoryを保持しておく
+  const [prevTodoCategory, setPrevTodoCategory] = useState<string>("");
+
   useEffect(() => {
     // todoの取得
     const setInitialTodos = async () => {
@@ -192,11 +195,56 @@ const AppTodos: FC = () => {
     }
   };
 
-  const submitTodoForEditing: FnToHandleTodosTable = () => {
-    const todoForEditing = {
-      ...todo
-    };
+  const submitTodoForEditing: FnToHandleTodosTable = async () => {
+    const response = await TodoApi.putTodo(todo);
 
+    if(response.status = "success") {
+      const todoEdited = response.todoEdited;
+      setTodos((prevTodos) => {
+        // edit対象となるcategoryのtodo配列の取得
+        let targetTodoArray = prevTodos[prevTodoCategory];
+
+        if(todoEdited.category == prevTodoCategory) {
+          // edit前と後でcategoryが同じ場合
+          // 対象のtodoにedit後のtodoを反映
+          targetTodoArray.filter(todo => todo.id == todoEdited.id)
+          .forEach(todo => {
+            todo.title = todoEdited.title;
+            todo.content =  todoEdited.content;
+            todo.category = todoEdited.category;
+            todo.date_limit = todoEdited.date_limit;
+          });
+
+          return {
+            ...prevTodos,
+            [todoEdited.category]: targetTodoArray
+          };
+        }else {
+          // edit前と後でcategoryが違う場合
+          // 'targetTodoArray'より対象のtodoのインデックスの取得
+          const targetTodoIndex = prevTodos[prevTodoCategory]
+            .findIndex(prevTodo => prevTodo.id == todoEdited.id);
+          // 対象のtodoの取得
+          let targetTodo = prevTodos[prevTodoCategory].splice(targetTodoIndex, 1);
+          targetTodo.forEach(todo => {
+            todo.title = todoEdited.title;
+            todo.content = todoEdited.content;
+            todo.category = todoEdited.category;
+            todo.date_limit = todoEdited.date_limit;
+          });
+
+          return {
+            ...prevTodos,
+            [todoEdited.category]: prevTodos[todoEdited.category].concat(targetTodo),
+          };
+        }
+      })
+
+      // フォーム画面を閉じる
+      setIsShowForm(false);
+    }else {
+      // エラー
+    }
   };
 
   const deleteTodo: FnToHandleTodosTable = () => {
@@ -223,7 +271,8 @@ const AppTodos: FC = () => {
         setIsShowTodoDesc={setIsShowTodoDesc}
         setIsShowForm={setIsShowForm}
         setFormType={setFormType}
-        deleteTodo={deleteTodo} /> }
+        deleteTodo={deleteTodo}
+        setPrevTodoCategory={setPrevTodoCategory} /> }
       {/* DndProviderでラップされいるコンポーネント間でdrag&dropが可能 */}
       <DndProvider backend={HTML5Backend}>
         <AppTodosCategoryColumn
