@@ -45,7 +45,11 @@ pub struct EditTodoData {
     pub content: Option<String>,
     pub category: String,
     #[validate(
-        length(min = 8, max = 8, message = ""),
+        length(
+            min = 10,
+            max = 10,
+            message = "Deadline must be entered in the format 'yyyy/MM//dd'"
+        ),
         custom = "validate_past_date"
     )]
     pub date_limit: Option<String>,
