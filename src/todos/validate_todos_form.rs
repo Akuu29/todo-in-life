@@ -1,5 +1,5 @@
 use std::borrow::Cow;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationError};
 use chrono::{Utc};
 use crate::{convert_to_date};
@@ -29,7 +29,7 @@ pub struct TodoData {
     pub date_limit: Option<String>,
 }
 
-#[derive(Debug, Validate, Deserialize)]
+#[derive(Debug, Clone, Validate, Deserialize, Serialize)]
 pub struct EditTodoData {
     pub id: String,
     #[validate(length(

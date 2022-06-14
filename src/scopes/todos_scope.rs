@@ -135,11 +135,15 @@ pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData
     let convert_date_limit = todo_data.date_limit.clone()
         .map(|date| convert_to_date(&date));
 
+    // レスポンス用に、todoのコピーを作成
+    let response_todo = todo_data.clone();
+
     let update_result = web::block(move || {
         diesel::update(todos::table.filter(todos::id.eq(&todo_data.id).and(todos::user_id.eq(user_id))))
             .set((
                 todos::title.eq(todo_data.title.clone()),
                 todos::content.eq(todo_data.content.clone()),
+                todos::category.eq(todo_data.category.clone()),
                 todos::date_limit.eq(convert_date_limit),
             ))
             .execute(&db_connection)
@@ -147,7 +151,7 @@ pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData
 
     match update_result {
         // ブロック、アップデートのResultで二重にラップされている
-        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "success"})),
+        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "success", "todoEdited": response_todo})),
         _ => HttpResponse::InternalServerError().finish()
     }
 }
