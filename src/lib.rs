@@ -16,7 +16,7 @@ pub type Pool = Data<r2d2::Pool<ConnectionManager<MysqlConnection>>>;
 
 // Option<String>の日付をOption<NaiveDate>に変換して返却
 pub fn convert_to_date(date_str: &str) -> NaiveDate {
-    let date_splited: Vec<&str> = date_str.split('/').collect(); 
+    let date_splited: Vec<&str> = date_str.split('-').collect();
     let [y, m, d] = [date_splited[0], date_splited[1], date_splited[2]];
     NaiveDate::from_ymd(
         y.parse::<i32>().unwrap(),
