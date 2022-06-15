@@ -5,7 +5,7 @@
   "main": "webpack.config.js",
   "scripts": {
     "start": "webpack serve --mode development",
-    "dev": "webpack --mode development --devtool=source-map",
+    "dev": "webpack --mode development",
     "prod": "webpack --mode production"
   },
   "repository": {
