@@ -105,8 +105,9 @@ pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData
     }
 
     // バリデーション
-    if let Err(_validation_errors) = todo_data.validate() {
-        return HttpResponse::UnprocessableEntity().finish();
+    if let Err(validation_errors) = todo_data.validate() {
+        return HttpResponse::UnprocessableEntity()
+            .json(json!({"status": "error", "validationErrors": validation_errors.field_errors()}));
     }
 
     let db_connection = pool.get().expect("Failed getting db connection");

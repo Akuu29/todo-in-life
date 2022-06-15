@@ -235,6 +235,7 @@ const AppTodos: FC = () => {
       setIsShowForm(false);
     }else {
       // エラー
+      handleValidationErrors(response.validationErrors);
     }
   };
 
