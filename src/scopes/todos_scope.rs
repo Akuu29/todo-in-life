@@ -230,6 +230,9 @@ pub async fn delete(identity: Identity, pool: Pool, todo_data: Json<DeleteTodoDa
         return HttpResponse::Forbidden().finish();
     }
 
+    // レスポンス用に、todoのコピーを作成
+    let response_todo = todo_data.clone();
+
     let delete_result = web::block(move || {
         diesel::delete(todos::table.filter(todos::id.eq(&todo_data.id).and(todos::user_id.eq(user_id))))
             .execute(&db_connection)
@@ -237,7 +240,7 @@ pub async fn delete(identity: Identity, pool: Pool, todo_data: Json<DeleteTodoDa
 
     match delete_result {
         // ブロック、デリートのResultで二重にラップされている
-        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "success"})),
+        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "success", "todoDeleted": response_todo})),
         _ => HttpResponse::InternalServerError().finish(),
     }
 }

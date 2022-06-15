@@ -78,7 +78,7 @@ pub struct UpdateTodoDataStatus {
     pub done: bool,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone, Serialize)]
 pub struct DeleteTodoData {
     pub id: String,
 }
