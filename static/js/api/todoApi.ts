@@ -51,6 +51,24 @@ class TodoApi {
 
     return await response.json();
   }
+  static async patchTodo(todo: Todo) {
+    const body = {
+      id: todo.id,
+      category: todo.category,
+    };
+
+    const params = {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    };
+
+    const response = await fetch("api/todos", params);
+
+    return await response.json();
+  }
   static async deleteTodo(todo: Todo) {
     const body = {
       id: todo.id,

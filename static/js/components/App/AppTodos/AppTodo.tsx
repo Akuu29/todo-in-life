@@ -15,6 +15,7 @@ import {
   COMPLETE
 } from "../AppTodos";
 import { convertStrDateToDispDate } from "../../../common/common";
+import TodoApi from "../../../api/todoApi";
 
 const todoWrapper = css({
   width: 290,
@@ -84,13 +85,14 @@ const AppTodo: FC<{
       const targetTodoIndex = prevTodos[currentTodo.category]
         .findIndex((prevTodo) => prevTodo.id == currentTodo.id);
       // 移動するtodoの取得
-      const targetTodo = prevTodos[currentTodo.category].splice(targetTodoIndex, 1);
+      let targetTodo = prevTodos[currentTodo.category].splice(targetTodoIndex, 1);
       // categoryの書き換え
       targetTodo.forEach((todo) => {
         todo.category = columnName;
       });
   
       // DB更新
+      TodoApi.patchTodo(targetTodo[0]);
 
       // 移動元のtodosと移動先のtodoの更新
       return {
