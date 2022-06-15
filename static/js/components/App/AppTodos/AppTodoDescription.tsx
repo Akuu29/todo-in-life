@@ -101,7 +101,6 @@ const AppTodoDescription: FC<{
     setIsShowForm: Dispatch<SetStateAction<boolean>>;
     setFormType: Dispatch<SetStateAction<string>>;
     deleteTodo: FnToHandleTodosTable;
-    setPrevTodoCategory: Dispatch<SetStateAction<string>>;
   }> = ({
     title,
     content,
@@ -113,7 +112,6 @@ const AppTodoDescription: FC<{
     setIsShowForm,
     setFormType,
     deleteTodo,
-    setPrevTodoCategory
   }) => {
 
   const handleEditIcon = () => {
@@ -123,8 +121,6 @@ const AppTodoDescription: FC<{
     setIsShowForm(true);
     // フォームタイプをエディットに設定
     setFormType("edit");
-    // edit前のtodoのcategoryを保持しておく
-    setPrevTodoCategory(category);
   };
 
   return (

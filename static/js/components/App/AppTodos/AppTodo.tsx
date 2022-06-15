@@ -63,6 +63,7 @@ const AppTodo: FC<{
     setTodos: Dispatch<SetStateAction<Todos>>;
     setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
     setTodo: Dispatch<SetStateAction<Todo>>;
+    setPrevTodoCategory: Dispatch<SetStateAction<string>>;
   }> = ({
     id,
     title,
@@ -73,7 +74,8 @@ const AppTodo: FC<{
     date_created,
     setTodos,
     setIsShowTodoDesc,
-    setTodo
+    setTodo,
+    setPrevTodoCategory
   }) => {
 
   // 他カテゴリーへのdrag&dropがあった際のstate更新
@@ -135,6 +137,7 @@ const AppTodo: FC<{
       done,
       date_created,
     });
+    setPrevTodoCategory(category);
   };
 
   const opacity = isDragging ? 0.4 : 1;

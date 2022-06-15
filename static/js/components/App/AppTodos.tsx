@@ -160,7 +160,8 @@ const AppTodos: FC = () => {
             date_created={todo.date_created}
             setTodos={setTodos}
             setIsShowTodoDesc={setIsShowTodoDesc}
-            setTodo={setTodo} />
+            setTodo={setTodo}
+            setPrevTodoCategory={setPrevTodoCategory} />
         ));
     }
   };
