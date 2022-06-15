@@ -21,7 +21,7 @@ pub fn get_scope() -> Scope {
         .service(get)
         .service(create)
         .service(update)
-        .service(update_status)
+        .service(update_category)
         .service(delete)
 }
 
@@ -158,7 +158,7 @@ pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData
 }
 
 #[patch("/todos")]
-pub async fn update_status(identity: Identity, pool: Pool, todo_data: Json<UpdateTodoDataStatus>) -> impl Responder {
+pub async fn update_category(identity: Identity, pool: Pool, todo_data: Json<UpdateTodoDataStatus>) -> impl Responder {
     // 未ログインの場合、エラー
     if identity.identity().is_none() {
         return HttpResponse::Unauthorized().finish();
@@ -189,7 +189,7 @@ pub async fn update_status(identity: Identity, pool: Pool, todo_data: Json<Updat
     let update_status_result = web::block(move || {
         diesel::update(todos::table.filter(todos::id.eq(&todo_data.id).and(todos::user_id.eq(user_id))))
             .set(
-                todos::done.eq(true)
+                todos::category.eq(&todo_data.category)
             )
             .execute(&db_connection)
     }).await;
