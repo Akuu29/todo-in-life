@@ -258,8 +258,25 @@ const AppTodos: FC = () => {
     setErrorMessages(validationErrorMessages);
   };
 
-  const deleteTodo: FnToHandleTodosTable = () => {
+  const deleteTodo: FnToHandleTodosTable = async () => {
+    const response = await TodoApi.deleteTodo(todo);
+    const todoDeleted = response.todoDeleted;
 
+    if(response.status == "success") {
+      setTodos(prevTodos => {
+        // 削除されたtodoが格納されている配列
+        let targetTodoArray = prevTodos[prevTodoCategory];
+        // 削除されたtodoのインデックスの取得
+        const targetTodoIndex = targetTodoArray.findIndex(todo => todo.id == todoDeleted.id);
+        // 削除
+        prevTodos[prevTodoCategory].splice(targetTodoIndex, 1);
+
+        return {
+          ...prevTodos,
+          [prevTodoCategory]: prevTodos[prevTodoCategory],
+        };
+      });
+    }
   };
  
   return (
@@ -282,8 +299,7 @@ const AppTodos: FC = () => {
         setIsShowTodoDesc={setIsShowTodoDesc}
         setIsShowForm={setIsShowForm}
         setFormType={setFormType}
-        deleteTodo={deleteTodo}
-        setPrevTodoCategory={setPrevTodoCategory} /> }
+        deleteTodo={deleteTodo} /> }
       {/* DndProviderでラップされいるコンポーネント間でdrag&dropが可能 */}
       <DndProvider backend={HTML5Backend}>
         <AppTodosCategoryColumn

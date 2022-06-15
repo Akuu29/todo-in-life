@@ -51,6 +51,23 @@ class TodoApi {
 
     return await response.json();
   }
+  static async deleteTodo(todo: Todo) {
+    const body = {
+      id: todo.id,
+    };
+
+    const params = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    };
+
+    const response = await fetch("api/todos", params);
+
+    return await response.json();
+  }
 }
 
 export default TodoApi;

@@ -123,6 +123,13 @@ const AppTodoDescription: FC<{
     setFormType("edit");
   };
 
+  const handleDeleteIcon = () => {
+    // todoを削除
+    deleteTodo();
+    // todo詳細ページを非表示
+    setIsShowTodoDesc(false);
+  }
+
   return (
     <div css={todoDescWrapper} >
       <div css={todoDescContainer}>
@@ -141,7 +148,7 @@ const AppTodoDescription: FC<{
               icon={faTrash}
               size="2x"
               css={trashIcon}
-              onClick={deleteTodo} />
+              onClick={handleDeleteIcon} />
           </Tooltip>
         </div>
         <div css={todoDescContent}>
