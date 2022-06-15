@@ -44,6 +44,10 @@ export interface ErrorMessages {
   [key: string]: Array<string>
 };
 
+interface validationErrros {
+  [key: string]: Array<validationError>;
+};
+
 interface validationError {
   code: string,
   message: string,
@@ -178,27 +182,14 @@ const AppTodos: FC = () => {
       setIsShowForm(false);
     }else {
       // エラー
-      let validationErrorMessages: ErrorMessages = {
-        title: [],
-        content: [],
-        date_limit: [],
-      };
-      // レスポンスからvalidationErrorsのメッセージをvalidationErrorMessagesに追加していく
-      Object.keys(response.validationErrors).forEach((key) => {
-        const validationErrors = response.validationErrors[key];
-        validationErrors.forEach((validationError: validationError) => {
-          validationErrorMessages[key].push(validationError.message);
-        })
-      })
-      // validationErrorMessagesをerrorMessagesにセットする
-      setErrorMessages(validationErrorMessages);
+      handleValidationErrors(response.validationErrors);
     }
   };
 
   const submitTodoForEditing: FnToHandleTodosTable = async () => {
     const response = await TodoApi.putTodo(todo);
 
-    if(response.status = "success") {
+    if(response.status == "success") {
       const todoEdited = response.todoEdited;
       setTodos((prevTodos) => {
         // edit対象となるcategoryのtodo配列の取得
@@ -245,6 +236,24 @@ const AppTodos: FC = () => {
     }else {
       // エラー
     }
+  };
+
+  const handleValidationErrors = (responseValidationErrors: validationErrros) => {
+    // エラー
+    let validationErrorMessages: ErrorMessages = {
+      title: [],
+      content: [],
+      date_limit: [],
+    };
+    // validationErrorsのメッセージをvalidationErrorMessagesに追加していく
+    Object.keys(responseValidationErrors).forEach((key) => {
+      const validationErrors = responseValidationErrors[key];
+      validationErrors.forEach((validationError: validationError) => {
+        validationErrorMessages[key].push(validationError.message);
+      })
+    })
+    // validationErrorMessagesをerrorMessagesにセットする
+    setErrorMessages(validationErrorMessages);
   };
 
   const deleteTodo: FnToHandleTodosTable = () => {
