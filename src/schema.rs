@@ -5,7 +5,6 @@ table! {
         content -> Nullable<Varchar>,
         category -> Varchar,
         date_limit -> Nullable<Date>,
-        done -> Bool,
         date_created -> Timestamp,
         user_id -> Char,
     }

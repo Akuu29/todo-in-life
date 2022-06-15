@@ -32,7 +32,6 @@ export interface Todo {
   content: string;
   category: string;
   date_limit: string | null;
-  done: boolean;
   date_created: string | null;
 };
 
@@ -65,7 +64,6 @@ const AppTodos: FC = () => {
     content: "",
     category: "",
     date_limit: null,
-    done: false,
     date_created: null,
   });
 
@@ -156,7 +154,6 @@ const AppTodos: FC = () => {
             content={todo.content}
             category={todo.category}
             date_limit={todo.date_limit}
-            done={todo.done}
             date_created={todo.date_created}
             setTodos={setTodos}
             setIsShowTodoDesc={setIsShowTodoDesc}
@@ -294,7 +291,6 @@ const AppTodos: FC = () => {
         content={todo.content}
         category={todo.category}
         date_limit={todo.date_limit}
-        done={todo.done}
         date_created={todo.date_created}
         setIsShowTodoDesc={setIsShowTodoDesc}
         setIsShowForm={setIsShowForm}

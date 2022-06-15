@@ -58,7 +58,6 @@ const AppTodo: FC<{
     content: string;
     category: string;
     date_limit: string | null;
-    done: boolean;
     date_created: string | null;
     setTodos: Dispatch<SetStateAction<Todos>>;
     setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
@@ -70,7 +69,6 @@ const AppTodo: FC<{
     content,
     category,
     date_limit,
-    done,
     date_created,
     setTodos,
     setIsShowTodoDesc,
@@ -134,7 +132,6 @@ const AppTodo: FC<{
       content,
       category,
       date_limit,
-      done,
       date_created,
     });
     setPrevTodoCategory(category);
