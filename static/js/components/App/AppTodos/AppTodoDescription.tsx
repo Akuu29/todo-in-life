@@ -14,7 +14,7 @@ import {
 import Tooltip from "../../common/Tooltip";
 
 import { FnToHandleTodosTable } from "../AppTodos";
-import { convertStrDateToDispDate, CATEGORY } from "../../../common/common";
+import { DateFunctions, CATEGORY } from "../../../common/common";
 
 const todoDescWrapper = css({
   height: "100%",
@@ -163,11 +163,11 @@ const AppTodoDescription: FC<{
         </div>
         <div css={todoDescContent}>
           <label>Deadline</label>
-          <p>{convertStrDateToDispDate(date_limit)}</p>
+          <p>{DateFunctions.convertStrDateToDispDate(date_limit)}</p>
         </div>
         <div css={todoDescContent}>
           <label>Date Created</label>
-          <p>{convertStrDateToDispDate(date_created)}</p>
+          <p>{DateFunctions.convertStrDateToDispDate(date_created)}</p>
         </div>
         <div css={closeBtnkWrapper}>
           <FontAwesomeIcon

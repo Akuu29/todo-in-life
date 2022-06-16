@@ -7,7 +7,7 @@ import { useDrag } from "react-dnd";
 import { css } from "@emotion/react";
 
 import { Todos, Todo } from "../AppTodos";
-import { convertStrDateToDispDate, CATEGORY } from "../../../common/common";
+import { DateFunctions, CATEGORY } from "../../../common/common";
 import TodoApi from "../../../api/todoApi";
 
 const todoWrapper = css({
@@ -149,11 +149,11 @@ const AppTodo: FC<{
       </div>
       <div css={todoContent}>
         <label>Deadline</label>
-        <p>{convertStrDateToDispDate(date_limit)}</p>
+        <p>{DateFunctions.convertStrDateToDispDate(date_limit)}</p>
       </div>
       <div css={todoContent}>
         <label>Date Created</label>
-        <p>{convertStrDateToDispDate(date_created)}</p>
+        <p>{DateFunctions.convertStrDateToDispDate(date_created)}</p>
       </div>
     </div>
   );

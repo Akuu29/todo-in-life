@@ -16,11 +16,7 @@ import {
   FnToHandleTodosTable,
   ErrorMessages
 } from "../AppTodos";
-import {
-  convertDateToString,
-  convertStrDateToDate,
-  CATEGORY
-} from "../../../common/common";
+import { DateFunctions, CATEGORY } from "../../../common/common";
 import FormErrorMessage from "../../common/FormErrorMessage";
 
 const todoFormWrapper = css({
@@ -137,7 +133,7 @@ const AppForm: FC<{
     setTodo((todo) => {
       return {
         ...todo,
-        date_limit: convertDateToString(date)
+        date_limit: DateFunctions.convertDateToString(date)
       };
     });
   };
@@ -200,7 +196,7 @@ const AppForm: FC<{
           <label>Limit Date</label>
           <DatePicker
             dateFormat="yyyy/MM/dd"
-            selected={convertStrDateToDate(todo.date_limit)}
+            selected={DateFunctions.convertStrDateToDate(todo.date_limit)}
             onChange={handleChangeLimitDate} />
           <FormErrorMessage errorMessages={errorMessages.date_limit}/>
         </div>
