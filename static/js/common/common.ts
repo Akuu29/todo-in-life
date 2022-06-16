@@ -21,7 +21,7 @@ export const convertStrDateToDate = (date: string | null): Date | null => {
 // 文字列型の日付を'yyyy/MM/dd'形式に変換して返却
 export const convertStrDateToDispDate = (date: string | null): string => {
   if(!date) {
-    return "";
+    return "None";
   }
   const toDate = convertStrDateToDate(date);
   const y = toDate!.getFullYear().toString();
