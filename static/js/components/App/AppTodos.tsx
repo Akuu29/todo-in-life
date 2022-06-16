@@ -13,11 +13,7 @@ import AppTodoDescription from "./AppTodos/AppTodoDescription";
 import AppForm from "./AppTodos/AppTodoForm";
 
 import TodoApi from "../../api/todoApi";
-
-export const SHORT = "short";
-export const MEDIUM = "medium";
-export const LONG = "long";
-export const COMPLETE = "complete";
+import { CATEGORY  } from "../../common/common";
 
 const AppTodosWrapper = css({
   marginTop: 40,
@@ -68,10 +64,10 @@ const AppTodos: FC = () => {
   });
 
   const [todos, setTodos] = useState<Todos>({
-    [SHORT]: [],
-    [MEDIUM]: [],
-    [LONG]: [],
-    [COMPLETE]: [],
+    [CATEGORY.SHORT]: [],
+    [CATEGORY.MEDIUM]: [],
+    [CATEGORY.LONG]: [],
+    [CATEGORY.COMPLETE]: [],
   });
 
   // それぞれのカテゴリ内における現在のページと最大のページ数
@@ -101,10 +97,10 @@ const AppTodos: FC = () => {
     // todoの取得
     const setInitialTodos = async () => {
       let initialTodosData: Todos = {
-        [SHORT]: [],
-        [MEDIUM]: [],
-        [LONG]: [],
-        [COMPLETE]: [],
+        [CATEGORY.SHORT]: [],
+        [CATEGORY.MEDIUM]: [],
+        [CATEGORY.LONG]: [],
+        [CATEGORY.COMPLETE]: [],
       };
 
       const getTodosResult = await TodoApi.getTodos();
@@ -126,11 +122,11 @@ const AppTodos: FC = () => {
       Object.keys(todos).forEach((key) => {
         let todosLen = todos[key].length;
         let todosMaxPage = Math.ceil(todosLen / 6) - 1;
-        if(key == SHORT) {
+        if(key == CATEGORY.SHORT) {
           setPageShort([currentPageShort, todosMaxPage]);
-        }else if(key == MEDIUM) {
+        }else if(key == CATEGORY.MEDIUM) {
           setPageMedium([currentPageMedium, todosMaxPage]);
-        }else if(key == LONG) {
+        }else if(key == CATEGORY.LONG) {
           setPageLong([currentPageLong, todosMaxPage]);
         }else {
           setPageCompleted([currentPageCompleted, todosMaxPage]);
@@ -300,44 +296,44 @@ const AppTodos: FC = () => {
       {/* DndProviderでラップされいるコンポーネント間でdrag&dropが可能 */}
       <DndProvider backend={HTML5Backend}>
         <AppTodosCategoryColumn
-          title={SHORT}
+          title={CATEGORY.SHORT}
           setIsShowForm={setIsShowForm}
           currentPage={currentPageShort}
           maxPage={maxPageShort}
-          setPage={setPageShort} 
+          setPage={setPageShort}
           setTodo={setTodo}
           setFormType={setFormType} >
-          {returnTodosForColumn(SHORT, currentPageShort)}
+          {returnTodosForColumn(CATEGORY.SHORT, currentPageShort)}
         </AppTodosCategoryColumn>
         <AppTodosCategoryColumn
-          title={MEDIUM}
+          title={CATEGORY.MEDIUM}
           setIsShowForm={setIsShowForm}
           currentPage={currentPageMedium}
           maxPage={maxPageMedium}
-          setPage={setPageMedium} 
+          setPage={setPageMedium}
           setTodo={setTodo}
           setFormType={setFormType} >
-          {returnTodosForColumn(MEDIUM, currentPageMedium)}
+          {returnTodosForColumn(CATEGORY.MEDIUM, currentPageMedium)}
         </AppTodosCategoryColumn>
         <AppTodosCategoryColumn
-          title={LONG}
+          title={CATEGORY.LONG}
           setIsShowForm={setIsShowForm}
           currentPage={currentPageLong}
           maxPage={maxPageLong}
           setPage={setPageLong}
           setTodo={setTodo}
           setFormType={setFormType} >
-          {returnTodosForColumn(LONG, currentPageLong)}
+          {returnTodosForColumn(CATEGORY.LONG, currentPageLong)}
         </AppTodosCategoryColumn>
         <AppTodosCategoryColumn
-          title={COMPLETE}
+          title={CATEGORY.COMPLETE}
           setIsShowForm={setIsShowForm}
           currentPage={currentPageCompleted}
           maxPage={maxPageCompleted}
           setPage={setPageCompleted}
           setTodo={setTodo}
           setFormType={setFormType} >
-          {returnTodosForColumn(COMPLETE, currentPageCompleted)}
+          {returnTodosForColumn(CATEGORY.COMPLETE, currentPageCompleted)}
         </AppTodosCategoryColumn>
       </DndProvider>
     </div>

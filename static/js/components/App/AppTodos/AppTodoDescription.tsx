@@ -13,8 +13,8 @@ import {
 
 import Tooltip from "../../common/Tooltip";
 
-import { FnToHandleTodosTable, COMPLETE } from "../AppTodos";
-import { convertStrDateToDispDate } from "../../../common/common";
+import { FnToHandleTodosTable } from "../AppTodos";
+import { convertStrDateToDispDate, CATEGORY } from "../../../common/common";
 
 const todoDescWrapper = css({
   height: "100%",
@@ -133,7 +133,7 @@ const AppTodoDescription: FC<{
       <div css={todoDescContainer}>
         <div css={titleWrapper}>
           <h1>Description</h1>
-          {category != COMPLETE &&
+          {category != CATEGORY.COMPLETE &&
             <Tooltip tooltipType="editIcon" tooltipStyle={null}>
               <FontAwesomeIcon
                 icon={faPenToSquare}

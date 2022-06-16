@@ -6,15 +6,8 @@ import {
 import { useDrag } from "react-dnd";
 import { css } from "@emotion/react";
 
-import {
-  Todos,
-  Todo,
-  SHORT,
-  MEDIUM,
-  LONG,
-  COMPLETE
-} from "../AppTodos";
-import { convertStrDateToDispDate } from "../../../common/common";
+import { Todos, Todo } from "../AppTodos";
+import { convertStrDateToDispDate, CATEGORY } from "../../../common/common";
 import TodoApi from "../../../api/todoApi";
 
 const todoWrapper = css({
@@ -111,14 +104,14 @@ const AppTodo: FC<{
     },
     end: (item, monitor) => {
       const dropResult: DropResult = monitor.getDropResult();
-      if(dropResult && dropResult.name === SHORT) {
-        changeTodoColumn(item, SHORT);
-      }else if(dropResult && dropResult.name == MEDIUM) {
-        changeTodoColumn(item, MEDIUM);
-      }else if(dropResult && dropResult.name == LONG) {
-        changeTodoColumn(item, LONG);
+      if(dropResult && dropResult.name === CATEGORY.SHORT) {
+        changeTodoColumn(item, CATEGORY.SHORT);
+      }else if(dropResult && dropResult.name == CATEGORY.MEDIUM) {
+        changeTodoColumn(item, CATEGORY.MEDIUM);
+      }else if(dropResult && dropResult.name == CATEGORY.LONG) {
+        changeTodoColumn(item, CATEGORY.LONG);
       }else {
-        changeTodoColumn(item, COMPLETE);
+        changeTodoColumn(item, CATEGORY.COMPLETE);
       }
     },
     collect: (monitor) => ({

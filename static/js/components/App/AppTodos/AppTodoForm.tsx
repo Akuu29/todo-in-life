@@ -14,14 +14,12 @@ import "react-datepicker/dist/react-datepicker.css";
 import {
   Todo,
   FnToHandleTodosTable,
-  SHORT,
-  MEDIUM,
-  LONG,
   ErrorMessages
 } from "../AppTodos";
 import {
   convertDateToString,
-  convertStrDateToDate
+  convertStrDateToDate,
+  CATEGORY
 } from "../../../common/common";
 import FormErrorMessage from "../../common/FormErrorMessage";
 
@@ -184,17 +182,17 @@ const AppForm: FC<{
           <select
             name="category"
             onChange={handleChange} >
-            <option value={SHORT}
-              selected={todo.category == SHORT}>
-              {SHORT}
+            <option value={CATEGORY.SHORT}
+              selected={todo.category == CATEGORY.SHORT}>
+              {CATEGORY.SHORT}
             </option>
-            <option value={MEDIUM}
-              selected={todo.category == MEDIUM}>
-              {MEDIUM}
+            <option value={CATEGORY.MEDIUM}
+              selected={todo.category == CATEGORY.MEDIUM}>
+              {CATEGORY.MEDIUM}
             </option>
-            <option value={LONG}
-              selected={todo.category == LONG}>
-              {LONG}
+            <option value={CATEGORY.LONG}
+              selected={todo.category == CATEGORY.LONG}>
+              {CATEGORY.LONG}
             </option>
           </select>
         </div>

@@ -1,3 +1,12 @@
+/*
+ * カテゴリー
+ */
+export const CATEGORY = Object.freeze({
+  SHORT: "short",
+  MEDIUM: "medium",
+  LONG: "long",
+  COMPLETE: "complete",
+});
 // 日付型の日付を文字列型'yyyy-MM-dd'形式に変換して返却
 export const convertDateToString = (date: Date | null): string | null => {
   if(!date) {
