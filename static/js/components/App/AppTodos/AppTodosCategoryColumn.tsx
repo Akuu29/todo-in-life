@@ -130,21 +130,24 @@ const AppTodosCategoryColumn: FC<{
         <ul>
         {title !== COMPLETE &&
           <li>
-            <Tooltip tooltipType="plusIcon">
+            <Tooltip tooltipType="plusIcon"
+              tooltipStyle={css({position: "relative"})}>
               <a css={displayFormBtn} onClick={handleDispFormBtn}>
                 <FontAwesomeIcon icon={faPlus} />
               </a>
             </Tooltip>
           </li>}
           <li>
-            <Tooltip tooltipType="DL">
+            <Tooltip tooltipType="DL"
+              tooltipStyle={css({position: "relative"})}>
               <a css={todoOrderBtn}>
                 DL
               </a>
             </Tooltip>
           </li>
           <li>
-            <Tooltip tooltipType="DC">
+            <Tooltip tooltipType="DC"
+              tooltipStyle={css({position: "relative"})}>
               <a css={todoOrderBtn}>
                 DC
               </a>

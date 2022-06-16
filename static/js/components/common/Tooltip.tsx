@@ -1,11 +1,11 @@
 import { FC, ReactNode, useState } from "react";
-import { css } from "@emotion/react";
+import { css, SerializedStyles } from "@emotion/react";
 
 const TOOLTIP_STYLES = {
   "plusIcon": css({
     position: "absolute",
     textAlign: "center",
-    bottom: 510,
+    bottom: 20,
     backgroundColor: "#000000",
     color: "#ffffff",
     borderRadius: 5,
@@ -19,7 +19,7 @@ const TOOLTIP_STYLES = {
   "DL": css({
     position: "absolute",
     textAlign: "center",
-    bottom: 510,
+    bottom: 20,
     backgroundColor: "#000000",
     color: "#ffffff",
     borderRadius: 5,
@@ -29,12 +29,12 @@ const TOOLTIP_STYLES = {
     paddingTop: 5,
     width: 84,
     height: 35,
-    transform: "translateX(-30%)",
+    transform: "translateX(-35%)",
   }),
   "DC": css({
     position: "absolute",
     textAlign: "center",
-    bottom: 510,
+    bottom: 20,
     backgroundColor: "#000000",
     color: "#ffffff",
     borderRadius: 5,
@@ -91,15 +91,17 @@ interface TooltipType {
 const Tooltip: FC<{
     children: ReactNode;
     tooltipType: keyof TooltipType;
+    tooltipStyle: SerializedStyles | null;
   }> = ({
     children,
-    tooltipType
+    tooltipType,
+    tooltipStyle
   }) => {
 
   const [isShowTooltip, setIsTooltip] = useState(false);
 
   return (
-    <div>
+    <div css={tooltipStyle && tooltipStyle}>
       <div 
         onMouseEnter={() => {setIsTooltip(true)}}
         onMouseLeave={() => {setIsTooltip(false)}}>

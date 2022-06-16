@@ -134,14 +134,14 @@ const AppTodoDescription: FC<{
         <div css={titleWrapper}>
           <h1>Description</h1>
           {category != COMPLETE &&
-            <Tooltip tooltipType="editIcon">
+            <Tooltip tooltipType="editIcon" tooltipStyle={null}>
               <FontAwesomeIcon
                 icon={faPenToSquare}
                 css={editIcon}
                 size="2x"
                 onClick={handleEditIcon} />
             </Tooltip>}
-          <Tooltip tooltipType="trashIcon">
+          <Tooltip tooltipType="trashIcon" tooltipStyle={null}>
             <FontAwesomeIcon
               icon={faTrash}
               size="2x"
