@@ -102,13 +102,14 @@ const AppTodosCategoryColumn: FC<{
   const handleDispFormBtn = () => {
     // フォームの表示
     setIsShowForm(true);
-    // todo stateのcategoryのみ更新
-    // フォームのcategoryプルダウンの初期値設定のため
-    setTodo((todo) => {
-      return {
-        ...todo,
-        category: title,
-      };
+    // todoを初期化,'category'のみ初期値として'title'をセットしておく
+    setTodo({
+      id: "",
+      title: "",
+      content: "",
+      category: title,
+      date_limit: null,
+      date_created: null
     });
     // フォームタイプをnewに設定
     setFormType("new");
