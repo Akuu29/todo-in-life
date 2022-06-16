@@ -80,7 +80,8 @@ const AppTodos: FC = () => {
   const [isShowTodoDesc, setIsShowTodoDesc] = useState(false);
   // todoフォームの表示非表示制御用のstate
   const [isShowForm, setIsShowForm] = useState(false);
-  // フォームタイプ new or edit
+  // フォームタイプ(new or edit), フォームにて'post'ボタンが押下された際の
+  // ファンクションの判別に使用される
   const [formType, setFormType] = useState("");
 
   // フォームエラーメッセージ
