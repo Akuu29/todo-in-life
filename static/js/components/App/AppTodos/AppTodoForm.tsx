@@ -35,11 +35,10 @@ const todoFormWrapper = css({
   width: "100%",
   height: "100%",
   backgroundColor: "rgba(0,0,0,0.5)",
+  zIndex: 7,
 });
 
 const todoForm = css({
-  zIndex: 2,
-  height: "67%",
   padding: "3em",
   background: "#ffffff",
   border: "solid",

@@ -17,7 +17,7 @@ import {
 } from "../AppTodos";
 
 const categoryTitle = css({
-  fontsize: 20,
+  fontSize: 20,
   marginBottom: 5,
 });
 

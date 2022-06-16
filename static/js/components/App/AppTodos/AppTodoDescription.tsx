@@ -26,11 +26,11 @@ const todoDescWrapper = css({
   alignItems: "center",
   position: "fixed",
   backgroundColor: "rgba(0,0,0,0.5)",
+  zIndex: 7,
 });
 
 const todoDescContainer = css({
   zIndex: 2,
-  height: "54%",
   padding: "3em",
   backgroundColor: "#ffffff",
   border: "solid",
