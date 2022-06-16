@@ -284,7 +284,8 @@ const AppTodos: FC = () => {
         setIsShowForm={setIsShowForm}
         submitTodo={formType == "new" ?
           submitTodoForCreating : submitTodoForEditing}
-        errorMessages={errorMessages}/>}
+        errorMessages={errorMessages}
+        setErrorMessages={setErrorMessages} />}
 {/* TODO! AppTodoDescriptionの引数が冗長、todoとして１つにまとめる */}
       {isShowTodoDesc && <AppTodoDescription 
         title={todo.title}

@@ -115,12 +115,14 @@ const AppForm: FC<{
     setIsShowForm: Dispatch<SetStateAction<boolean>>;
     submitTodo: FnToHandleTodosTable;
     errorMessages: ErrorMessages;
+    setErrorMessages: Dispatch<SetStateAction<ErrorMessages>>
   }> = ({
     todo,
     setTodo,
     setIsShowForm,
     submitTodo,
-    errorMessages
+    errorMessages,
+    setErrorMessages
   }) => {
 
   const handleChange: ChangeEventHandler = (event: HandleChangeEvent) => {
@@ -141,6 +143,17 @@ const AppForm: FC<{
         date_limit: convertDateToString(date)
       };
     });
+  };
+
+  const handleCloseBtn = () => {
+    // エラーメッセージを初期化
+    setErrorMessages({
+      title: [],
+      content: [],
+      date_limit: [],
+    });
+    // フォームを閉じる
+    setIsShowForm(false)
   };
 
   return (
@@ -202,7 +215,7 @@ const AppForm: FC<{
             icon={faRectangleXmark}
             size="2x"
             css={closeBtn}
-            onClick={() => {setIsShowForm(false)}} />
+            onClick={handleCloseBtn} />
         </div>
       </div>
     </div>
