@@ -14,7 +14,7 @@ const Login: FC = () => {
       <CookiesProvider>
         <GlobalStyles />
         <Header />
-        <UserFormErrorMessages />
+        <UserFormErrorMessages formType="login" />
         <LoginForm />
         <Footer />
       </CookiesProvider>

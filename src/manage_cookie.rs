@@ -4,6 +4,7 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Deserialize, Serialize)]
 struct Message {
+    form_type: String,
     title: String,
     content: String,
 }
@@ -24,12 +25,14 @@ pub fn generate_cookie_messages(req: &HttpRequest) -> Cookie {
 
 pub fn set_messages_in_cookie(
     cookie_messages: &mut Cookie,
+    form_type: String,
     message_title: String,
     message_content: String
 ) {
     let mut messages = 
         serde_json::from_str::<Vec<Message>>(cookie_messages.value()).unwrap();
     let message = Message {
+        form_type,
         title: message_title,
         content: message_content
     };

@@ -22,11 +22,12 @@ const errorMessageContent = css({
 });
 
 interface Message {
+  form_type: string;
   title: string;
   content: string;
 };
 
-const UserFormErrorMessages: FC = () => {
+const UserFormErrorMessages: FC<{formType: string}> = ({formType}) => {
   const [cookies, setCookie] = useCookies(["messages"]);
   
   const [isError, setIsError] = useState(false);
@@ -40,7 +41,9 @@ const UserFormErrorMessages: FC = () => {
       const messages: Array<Message> = [];
 
       if(messagesFromCookie) {
-        messagesFromCookie.forEach((message: Message) => {
+        messagesFromCookie
+          .filter((message: Message) => formType == message.form_type)
+          .forEach((message: Message) => {
           if(message.title == "error") {
             messages.push(message);
           }

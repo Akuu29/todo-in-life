@@ -14,7 +14,7 @@ const Signup: FC = () => {
       <CookiesProvider>
         <GlobalStyles />
         <Header />
-        <UserFormErrorMessages />
+        <UserFormErrorMessages formType="signup"/>
         <SignupForm />
         <Footer />
       </CookiesProvider>

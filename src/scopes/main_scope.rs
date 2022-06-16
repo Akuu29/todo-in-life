@@ -90,6 +90,7 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, user_data: Form
             fields.iter().for_each(|validation_error| {
                 set_messages_in_cookie(
                     &mut cookie_messages,
+                    "login".to_string(),
                     "error".to_string(),
                     validation_error.message.as_ref().unwrap().to_string(),
                 );
@@ -120,6 +121,7 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, user_data: Form
                     // cookieにメッセージを保存
                     set_messages_in_cookie(
                         &mut cookie_messages,
+                        "login".to_string(),
                         "success".to_string(),
                         "Successfully logged in".to_string()
                     );
@@ -133,6 +135,7 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, user_data: Form
                     // cookieにメッセージを保存
                     set_messages_in_cookie(
                         &mut cookie_messages,
+                        "login".to_string(),
                         "error".to_string(),
                         "Username or password of both are incorrect".to_string()
                     );
@@ -148,6 +151,7 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, user_data: Form
             // cookieにメッセージを保存
             set_messages_in_cookie(
                 &mut cookie_messages,
+                "login".to_string(),
                 "error".to_string(),
                 "Username or password of both are incorrect".to_string()
             );
@@ -197,6 +201,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, user_data: For
                 // エラーメッセージをcookieに保存
                 set_messages_in_cookie(
                     &mut cookie_messages,
+                    "signup".to_string(),
                     "error".to_string(),
                     validation_error.message.as_ref().unwrap().to_string(),
                 );
@@ -237,6 +242,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, user_data: For
                     // cookieにメッセージを保存
                     set_messages_in_cookie(
                         &mut cookie_messages,
+                        "signup".to_string(),
                         "success".to_string(),
                         "Successfully sign up".to_string()
                     );
@@ -250,6 +256,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, user_data: For
                     // cookieにメッセージを保存
                     set_messages_in_cookie(
                         &mut cookie_messages,
+                        "signup".to_string(),
                         "error".to_string(),
                         "Username or email or both are already registered".to_string()
                     );
@@ -265,6 +272,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, user_data: For
             // cookieにメッセージを保存
             set_messages_in_cookie(
                 &mut cookie_messages,
+                "signup".to_string(),
                 "error".to_string(),
                 "Username or email or both are already registered".to_string()
             );
