@@ -27,7 +27,7 @@ const AppTodosWrapper = css({
 });
 
 export interface CustomObject<T> {
-  [key: string]: T
+  [key: string]: T;
 }
 
 export interface Todo {
@@ -37,29 +37,13 @@ export interface Todo {
   category: string;
   date_limit: string | null;
   date_created: string | null;
-};
+}
 
-export interface Todos {
-  [key: string]: Array<Todo>;
-};
+export type Todos = CustomObject<Array<Todo>>;
 
-export interface ErrorMessages {
-  [key: string]: Array<string>
-};
+export type ErrorMessages = CustomObject<Array<string>>;
 
-interface validationErrros {
-  [key: string]: Array<validationError>;
-};
-
-interface validationError {
-  code: string,
-  message: string,
-  params: {
-    value: string,
-  }
-};
-
-export type FnToHandleTodosTable = () => void;
+export type FnToHandleTodosTable = () => Promise<void>;
 
 const AppTodos: FC = () => {
   const [todo, setTodo] = useState<Todo>({
@@ -79,18 +63,18 @@ const AppTodos: FC = () => {
   });
 
   // それぞれのカテゴリ内における現在のページと最大のページ数
-  const [[currentPageShort, maxPageShort], setPageShort] = useState([0, 0]);
-  const [[currentPageMedium, maxPageMedium], setPageMedium] = useState([0, 0]);
-  const [[currentPageLong, maxPageLong], setPageLong] = useState([0, 0]);
-  const [[currentPageCompleted, maxPageCompleted], setPageCompleted] = useState([0, 0]);
+  const [[currentPageShort, maxPageShort], setPageShort] = useState<[number, number]>([0, 0]);
+  const [[currentPageMedium, maxPageMedium], setPageMedium] = useState<[number, number]>([0, 0]);
+  const [[currentPageLong, maxPageLong], setPageLong] = useState<[number, number]>([0, 0]);
+  const [[currentPageCompleted, maxPageCompleted], setPageCompleted] = useState<[number, number]>([0, 0]);
 
   // todo詳細ページの表示非表示制御
-  const [isShowTodoDesc, setIsShowTodoDesc] = useState(false);
+  const [isShowTodoDesc, setIsShowTodoDesc] = useState<boolean>(false);
   // todoフォームの表示非表示制御用のstate
-  const [isShowForm, setIsShowForm] = useState(false);
+  const [isShowForm, setIsShowForm] = useState<boolean>(false);
   // フォームタイプ(new or edit), フォームにて'post'ボタンが押下された際の
   // ファンクションの判別に使用される
-  const [formType, setFormType] = useState("");
+  const [formType, setFormType] = useState<string>("");
 
   // フォームエラーメッセージ
   const [errorMessages, setErrorMessages] = useState<ErrorMessages>({

@@ -86,7 +86,7 @@ interface TooltipType {
   DC: string;
   editIcon: string;
   trashIcon: string;
-};
+}
 
 const Tooltip: FC<{
     children: ReactNode;
@@ -98,7 +98,7 @@ const Tooltip: FC<{
     tooltipStyle
   }) => {
 
-  const [isShowTooltip, setIsTooltip] = useState(false);
+  const [isShowTooltip, setIsTooltip] = useState<boolean>(false);
 
   return (
     <div css={tooltipStyle && tooltipStyle}>

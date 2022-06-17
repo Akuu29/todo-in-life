@@ -1,9 +1,9 @@
 import { Todo, CustomObject } from "../components/App/AppTodos";
 
 export interface ValidationError {
-  code: string,
-  message: string,
-  params: Object,
+  code: string;
+  message: string;
+  params: Object;
 }
 
 export type ValidationErrors = CustomObject<Array<ValidationError>>;
@@ -11,37 +11,37 @@ export type ValidationErrors = CustomObject<Array<ValidationError>>;
 type Status = "success" | "error";
 
 interface ReturnValueOfGetTodos {
-  status: Status,
-  todos: Array<Todo>
+  status: Status;
+  todos: Array<Todo>;
 }
 
 interface ReturnValueOfPostTodo {
-  status: Status,
-  todo?: Todo,
-  validationErrors?: ValidationErrors
+  status: Status;
+  todo?: Todo;
+  validationErrors?: ValidationErrors;
 }
 
 interface ReturnValueOfPutTodo {
-  status: Status,
+  status: Status;
   todoEdited?: {
-    id: string,
-    title: string,
-    content: string,
-    category: string,
-    date_limit: string,
-  },
-  validationErrors?: ValidationErrors
+    id: string;
+    title: string;
+    content: string;
+    category: string;
+    date_limit: string;
+  };
+  validationErrors?: ValidationErrors;
 }
 
 interface ReturnValueOfPatchTodo {
-  status: Status,
+  status: Status;
 }
 
 interface ReturnValueOfDeleteTodo {
-  status: Status,
+  status: Status;
   todoDeleted: {
-    id: string,
-  },
+    id: string;
+  };
 }
 
 export class TodoApi {

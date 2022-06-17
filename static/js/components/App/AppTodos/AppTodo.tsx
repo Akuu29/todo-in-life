@@ -8,7 +8,7 @@ import { css } from "@emotion/react";
 
 import { Todos, Todo } from "../AppTodos";
 import { DateFunctions, CATEGORY } from "../../../common/common";
-import TodoApi from "../../../api/todoApi";
+import { TodoApi } from "../../../api/todoApi";
 
 const todoWrapper = css({
   width: 290,
@@ -37,12 +37,12 @@ const sentence = css({
 interface CurrentTodo {
   id: string;
   category: string;
-};
+}
 
 interface DropResultMember {
   dropEffect: string;
   name: string;
-};
+}
 
 type DropResult = DropResultMember | null;
 

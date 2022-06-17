@@ -25,7 +25,7 @@ interface Message {
   form_type: string;
   title: string;
   content: string;
-};
+}
 
 const UserFormErrorMessages: FC<{formType: string}> = ({formType}) => {
   const [cookies, setCookie] = useCookies(["messages"]);

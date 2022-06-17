@@ -1,6 +1,5 @@
 import {
   FC,
-  ChangeEventHandler,
   Dispatch,
   SetStateAction,
   ChangeEvent
@@ -118,7 +117,7 @@ const AppForm: FC<{
     setErrorMessages
   }) => {
 
-  const handleChange: ChangeEventHandler = (event: HandleChangeEvent) => {
+  const handleChange = (event: HandleChangeEvent) => {
     const key = event.target.name;
     const val = event.target.value;
     setTodo((todo) => {
