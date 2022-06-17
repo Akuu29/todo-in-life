@@ -1,7 +1,51 @@
-import { Todo } from "../components/App/AppTodos";
+import { Todo, CustomObject } from "../components/App/AppTodos";
 
-class TodoApi {
-  static async getTodos() {
+export interface ValidationError {
+  code: string,
+  message: string,
+  params: Object,
+}
+
+export type ValidationErrors = CustomObject<Array<ValidationError>>;
+
+type Status = "success" | "error";
+
+interface ReturnValueOfGetTodos {
+  status: Status,
+  todos: Array<Todo>
+}
+
+interface ReturnValueOfPostTodo {
+  status: Status,
+  todo?: Todo,
+  validationErrors?: ValidationErrors
+}
+
+interface ReturnValueOfPutTodo {
+  status: Status,
+  todoEdited?: {
+    id: string,
+    title: string,
+    content: string,
+    category: string,
+    date_limit: string,
+  },
+  validationErrors?: ValidationErrors
+}
+
+interface ReturnValueOfPatchTodo {
+  status: Status,
+}
+
+interface ReturnValueOfDeleteTodo {
+  status: Status,
+  todoDeleted: {
+    id: string,
+  },
+}
+
+export class TodoApi {
+  static async getTodos(): Promise<ReturnValueOfGetTodos> {
     const params = {
       method: "GET",
     };
@@ -10,7 +54,7 @@ class TodoApi {
 
     return await response.json();
   }
-  static async postTodo(todo: Todo) {
+  static async postTodo(todo: Todo): Promise<ReturnValueOfPostTodo> {
     const body = {
       title: todo.title,
       content: todo.content,
@@ -30,7 +74,7 @@ class TodoApi {
 
     return await response.json();
   }
-  static async putTodo(todo: Todo) {
+  static async putTodo(todo: Todo): Promise<ReturnValueOfPutTodo> {
     const body = {
       id: todo.id,
       title: todo.title,
@@ -51,7 +95,7 @@ class TodoApi {
 
     return await response.json();
   }
-  static async patchTodo(todo: Todo) {
+  static async patchTodo(todo: Todo): Promise<ReturnValueOfPatchTodo> {
     const body = {
       id: todo.id,
       category: todo.category,
@@ -69,7 +113,7 @@ class TodoApi {
 
     return await response.json();
   }
-  static async deleteTodo(todo: Todo) {
+  static async deleteTodo(todo: Todo): Promise<ReturnValueOfDeleteTodo> {
     const body = {
       id: todo.id,
     };
@@ -87,5 +131,3 @@ class TodoApi {
     return await response.json();
   }
 }
-
-export default TodoApi;

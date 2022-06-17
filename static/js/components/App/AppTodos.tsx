@@ -12,7 +12,11 @@ import AppTodosCategoryColumn from "./AppTodos/AppTodosCategoryColumn";
 import AppTodoDescription from "./AppTodos/AppTodoDescription";
 import AppForm from "./AppTodos/AppTodoForm";
 
-import TodoApi from "../../api/todoApi";
+import {
+  TodoApi,
+  ValidationErrors,
+  ValidationError
+} from "../../api/todoApi";
 import { CATEGORY  } from "../../common/common";
 
 const AppTodosWrapper = css({
@@ -21,6 +25,10 @@ const AppTodosWrapper = css({
   flexDirection: "row",
   justifyContent: "space-around",
 });
+
+export interface CustomObject<T> {
+  [key: string]: T
+}
 
 export interface Todo {
   id: string;
@@ -165,7 +173,7 @@ const AppTodos: FC = () => {
 
     if(response.status == "success") {
       // state'todos'に作成されたtodoを反映
-      const todoCreated = response.todo;
+      const todoCreated = response.todo!;
       setTodos({
         ...todos,
         [todoCreated.category]: [
@@ -177,7 +185,7 @@ const AppTodos: FC = () => {
       setIsShowForm(false);
     }else {
       // エラー
-      handleValidationErrors(response.validationErrors);
+      handleValidationErrors(response.validationErrors!);
     }
   };
 
@@ -185,7 +193,7 @@ const AppTodos: FC = () => {
     const response = await TodoApi.putTodo(todo);
 
     if(response.status == "success") {
-      const todoEdited = response.todoEdited;
+      const todoEdited = response.todoEdited!;
       setTodos((prevTodos) => {
         // edit対象となるcategoryのtodo配列の取得
         let targetTodoArray = prevTodos[prevTodoCategory];
@@ -230,11 +238,11 @@ const AppTodos: FC = () => {
       setIsShowForm(false);
     }else {
       // エラー
-      handleValidationErrors(response.validationErrors);
+      handleValidationErrors(response.validationErrors!);
     }
   };
 
-  const handleValidationErrors = (responseValidationErrors: validationErrros) => {
+  const handleValidationErrors = (responseValidationErrors: ValidationErrors) => {
     // エラー
     let validationErrorMessages: ErrorMessages = {
       title: [],
@@ -244,7 +252,7 @@ const AppTodos: FC = () => {
     // validationErrorsのメッセージをvalidationErrorMessagesに追加していく
     Object.keys(responseValidationErrors).forEach((key) => {
       const validationErrors = responseValidationErrors[key];
-      validationErrors.forEach((validationError: validationError) => {
+      validationErrors.forEach((validationError: ValidationError) => {
         validationErrorMessages[key].push(validationError.message);
       })
     })
