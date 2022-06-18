@@ -11,7 +11,7 @@ use crate::todos::validate_todos_form::{
     UpdateTodoDataStatus,
     DeleteTodoData
 };
-use crate::todos::{NewTodo, Todo};
+use crate::todos::{Todo};
 use crate::schema::{users, todos};
 use crate::users::User;
 use crate::convert_to_date;
@@ -73,14 +73,13 @@ pub async fn create(identity: Identity, pool: Pool, todo_data: Json<TodoData>) -
         .unwrap()
         .id;
 
-    let new_todo = NewTodo {
-        title: todo_data.title.clone(),
-        content: todo_data.content.clone(),
-        category: todo_data.category.clone(),
-        date_limit: todo_data.date_limit.clone(),
-    };
-
-    let todo = NewTodo::create_todo(&new_todo, user_id);
+    let todo = Todo::new(
+        todo_data.title.clone(),
+        todo_data.content.clone(),
+        todo_data.category.clone(),
+        todo_data.date_limit.clone(),
+        user_id
+    );
     // レスポンスのjson用にtodoのコピーを作成しておく
     let response_todo = todo.clone();
 
