@@ -1,3 +1,6 @@
+/*
+ * リセットcss, 全フォント共通のスタイル
+ */
 import { css, Global } from "@emotion/react";
 import emotionReset from "emotion-reset";
 

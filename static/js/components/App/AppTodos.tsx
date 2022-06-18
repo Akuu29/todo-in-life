@@ -123,6 +123,7 @@ const AppTodos: FC = () => {
   // editとしてフォームが開かれた場合に、edit前のtodoのcategoryを保持しておく
   const [prevTodoCategory, setPrevTodoCategory] = useState<string>("");
 
+  // 各'AppTodosCategoryColumn'にtodoを描画する
   const returnTodosForColumn = (columnName: string, page: number) => {
     if(todos[columnName].length) {
       // 1pageに6件表示
@@ -152,6 +153,7 @@ const AppTodos: FC = () => {
     date_limit: [],
   });
 
+  // todoの作成。作成後、画面に反映
   const submitTodoForCreating: FnToHandleTodosTable = async () => {
     const response = await TodoApi.postTodo(todo);
 
@@ -173,6 +175,7 @@ const AppTodos: FC = () => {
     }
   };
 
+  // todoの編集。編集内容を画面に反映
   const submitTodoForEditing: FnToHandleTodosTable = async () => {
     const response = await TodoApi.putTodo(todo);
 
@@ -226,8 +229,8 @@ const AppTodos: FC = () => {
     }
   };
 
+  // バリデーションエラーの内容をstate'errorMessages'に反映する
   const handleValidationErrors = (responseValidationErrors: ValidationErrors) => {
-    // エラー
     let validationErrorMessages: ErrorMessages = {
       title: [],
       content: [],
@@ -244,6 +247,7 @@ const AppTodos: FC = () => {
     setErrorMessages(validationErrorMessages);
   };
 
+  // todoの削除。削除後、画面に反映
   const deleteTodo: FnToHandleTodosTable = async () => {
     const response = await TodoApi.deleteTodo(todo);
     const todoDeleted = response.todoDeleted;
