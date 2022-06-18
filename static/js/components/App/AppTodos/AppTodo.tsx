@@ -5,7 +5,6 @@ import {
 } from "react";
 import { useDrag } from "react-dnd";
 import { css } from "@emotion/react";
-
 import { Todos, Todo } from "../AppTodos";
 import { DateFunctions, CATEGORY } from "../../../common/common";
 import { TodoApi } from "../../../api/todoApi";

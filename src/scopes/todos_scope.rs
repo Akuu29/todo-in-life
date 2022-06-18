@@ -131,8 +131,8 @@ pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData
         return HttpResponse::Forbidden().finish();
     }
 
-    // todo_data.date_limitをStringからDate型に変換
-    let convert_date_limit = todo_data.date_limit.clone()
+    // date_limitをOption<NaiveDate>に変換
+    let convert_date_limit_to_naivedate = todo_data.date_limit.clone()
         .map(|date| convert_to_date(&date));
 
     // レスポンス用に、todoのコピーを作成
@@ -144,7 +144,7 @@ pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData
                 todos::title.eq(todo_data.title.clone()),
                 todos::content.eq(todo_data.content.clone()),
                 todos::category.eq(todo_data.category.clone()),
-                todos::date_limit.eq(convert_date_limit),
+                todos::date_limit.eq(convert_date_limit_to_naivedate),
             ))
             .execute(&db_connection)
     }).await;

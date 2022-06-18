@@ -10,9 +10,7 @@ import {
   faPenToSquare,
   faTrash
 } from "@fortawesome/free-solid-svg-icons";
-
 import Tooltip from "../../common/Tooltip";
-
 import { FnToHandleTodosTable } from "../AppTodos";
 import { DateFunctions, CATEGORY } from "../../../common/common";
 
@@ -109,7 +107,7 @@ const AppTodoDescription: FC<{
     setIsShowTodoDesc,
     setIsShowForm,
     setFormType,
-    deleteTodo,
+    deleteTodo
   }) => {
 
   const handleEditIcon = () => {

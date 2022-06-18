@@ -1,6 +1,5 @@
 import { FC } from "react";
 import { CookiesProvider } from "react-cookie";
-
 import GlobalStyles from "../styles/Global";
 import Header from "./common/Header";
 import Footer from "./common/Footer";

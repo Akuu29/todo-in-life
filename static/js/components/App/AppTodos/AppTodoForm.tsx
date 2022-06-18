@@ -9,7 +9,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
 import {
   Todo,
   FnToHandleTodosTable,
@@ -107,7 +106,7 @@ const AppForm: FC<{
     setIsShowForm: Dispatch<SetStateAction<boolean>>;
     submitTodo: FnToHandleTodosTable;
     errorMessages: ErrorMessages;
-    setErrorMessages: Dispatch<SetStateAction<ErrorMessages>>
+    setErrorMessages: Dispatch<SetStateAction<ErrorMessages>>;
   }> = ({
     todo,
     setTodo,
@@ -145,7 +144,7 @@ const AppForm: FC<{
       date_limit: [],
     });
     // フォームを閉じる
-    setIsShowForm(false)
+    setIsShowForm(false);
   };
 
   return (

@@ -13,6 +13,6 @@ const FormErrorMessage: FC<{errorMessages: Array<string>}> = ({errorMessages}) =
       ))}
     </div>
   );
-}
+};
 
 export default FormErrorMessage;

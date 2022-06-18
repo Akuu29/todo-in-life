@@ -8,9 +8,7 @@ import { useDrop } from "react-dnd";
 import { css } from "@emotion/react";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import Tooltip from "../../common/Tooltip";
-
 import { Todo } from "../AppTodos";
 import { CATEGORY } from "../../../common/common";
 

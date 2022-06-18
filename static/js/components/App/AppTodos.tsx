@@ -6,18 +6,16 @@ import {
 import { css } from "@emotion/react";
 import { DndProvider }  from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-
 import AppTodo from "./AppTodos/AppTodo";
 import AppTodosCategoryColumn from "./AppTodos/AppTodosCategoryColumn";
 import AppTodoDescription from "./AppTodos/AppTodoDescription";
 import AppForm from "./AppTodos/AppTodoForm";
-
 import {
   TodoApi,
   ValidationErrors,
   ValidationError
 } from "../../api/todoApi";
-import { CATEGORY  } from "../../common/common";
+import { CATEGORY } from "../../common/common";
 
 const AppTodosWrapper = css({
   marginTop: 40,
@@ -62,32 +60,8 @@ const AppTodos: FC = () => {
     [CATEGORY.COMPLETE]: [],
   });
 
-  // それぞれのカテゴリ内における現在のページと最大のページ数
-  const [[currentPageShort, maxPageShort], setPageShort] = useState<[number, number]>([0, 0]);
-  const [[currentPageMedium, maxPageMedium], setPageMedium] = useState<[number, number]>([0, 0]);
-  const [[currentPageLong, maxPageLong], setPageLong] = useState<[number, number]>([0, 0]);
-  const [[currentPageCompleted, maxPageCompleted], setPageCompleted] = useState<[number, number]>([0, 0]);
-
-  // todo詳細ページの表示非表示制御
-  const [isShowTodoDesc, setIsShowTodoDesc] = useState<boolean>(false);
-  // todoフォームの表示非表示制御用のstate
-  const [isShowForm, setIsShowForm] = useState<boolean>(false);
-  // フォームタイプ(new or edit), フォームにて'post'ボタンが押下された際の
-  // ファンクションの判別に使用される
-  const [formType, setFormType] = useState<string>("");
-
-  // フォームエラーメッセージ
-  const [errorMessages, setErrorMessages] = useState<ErrorMessages>({
-    title: [],
-    content: [],
-    date_limit: [],
-  });
-
-  // editとしてフォームが開かれた場合に、edit前のtodoのcategoryを保持しておく
-  const [prevTodoCategory, setPrevTodoCategory] = useState<string>("");
-
   useEffect(() => {
-    // todoの取得
+    // todoの一覧の設定
     const setInitialTodos = async () => {
       let initialTodosData: Todos = {
         [CATEGORY.SHORT]: [],
@@ -107,6 +81,12 @@ const AppTodos: FC = () => {
 
     setInitialTodos();
   }, []);
+
+  // それぞれのカテゴリ内における現在のページと最大のページ数
+  const [[currentPageShort, maxPageShort], setPageShort] = useState<[number, number]>([0, 0]);
+  const [[currentPageMedium, maxPageMedium], setPageMedium] = useState<[number, number]>([0, 0]);
+  const [[currentPageLong, maxPageLong], setPageLong] = useState<[number, number]>([0, 0]);
+  const [[currentPageCompleted, maxPageCompleted], setPageCompleted] = useState<[number, number]>([0, 0]);
 
   // todosの更新時に実行される
   useEffect(() => {
@@ -130,6 +110,19 @@ const AppTodos: FC = () => {
     setMaxPage();
   }, [todos]);
 
+  // todo詳細ページの表示非表示制御
+  const [isShowTodoDesc, setIsShowTodoDesc] = useState<boolean>(false);
+
+  // todoフォームの表示非表示制御用のstate
+  const [isShowForm, setIsShowForm] = useState<boolean>(false);
+
+  // フォームタイプ(new or edit), フォームにて'post'ボタンが押下された際の
+  // ファンクションの判別に使用される
+  const [formType, setFormType] = useState<string>("");
+
+  // editとしてフォームが開かれた場合に、edit前のtodoのcategoryを保持しておく
+  const [prevTodoCategory, setPrevTodoCategory] = useState<string>("");
+
   const returnTodosForColumn = (columnName: string, page: number) => {
     if(todos[columnName].length) {
       // 1pageに6件表示
@@ -151,6 +144,13 @@ const AppTodos: FC = () => {
         ));
     }
   };
+
+  // フォームエラーメッセージ
+  const [errorMessages, setErrorMessages] = useState<ErrorMessages>({
+    title: [],
+    content: [],
+    date_limit: [],
+  });
 
   const submitTodoForCreating: FnToHandleTodosTable = async () => {
     const response = await TodoApi.postTodo(todo);
