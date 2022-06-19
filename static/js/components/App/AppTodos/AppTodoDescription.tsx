@@ -76,6 +76,10 @@ const todoDescContent = css({
   }
 });
 
+const sentence = css({
+  whiteSpace: "pre-wrap"
+});
+
 const closeBtnkWrapper = css({
   textAlign: "center",
   marginTop: 20,
@@ -153,7 +157,7 @@ const AppTodoDescription: FC<{
         </div>
         <div css={todoDescContent}>
           <label>Content</label>
-          <p>{content}</p>
+          <p css={sentence}>{content}</p>
         </div>
         <div css={todoDescContent}>
           <label>Category</label>
