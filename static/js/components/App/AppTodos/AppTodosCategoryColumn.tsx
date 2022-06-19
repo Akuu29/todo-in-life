@@ -122,77 +122,51 @@ const AppTodosCategoryColumn: FC<{
     if(todosOrder == "dlDescending") {
       // 'todosOrder'がdeadlineで降順の場合は、昇順にする
       // ソート
-      setTodos(prevTodos => {
-        const todosSorted = prevTodos[title]
-          .sort((a, b) => {
-            if(!a.date_limit) return 1;
-            if(!b.date_limit) return -1;
-            return a.date_limit > b.date_limit ? 1 : -1;
-          });
-
-        return {
-          ...prevTodos,
-          [title]: todosSorted
-        };
-      });
-      // 'todosOrder'にソート結果の並び順をセット
+      sortByDate("date_limit", true);
+      // 'todosOrder'にソートの名称をセット
       setTodosOrder("dlAscending");
     }else {
       // 'todosOrder'がdeadlineで降順以外の場合は、降順にする
       // ソート
-      setTodos(prevTodos => {
-        const todosSorted = prevTodos[title]
-          .sort((a, b) => {
-            if(!a.date_limit) return 1;
-            if(!b.date_limit) return -1;
-            return a.date_limit < b.date_limit ? 1 : -1;
-          });
-
-        return {
-          ...prevTodos,
-          [title]: todosSorted
-        }
-      });
-      // 'todosOrder'にソート結果の並び順をセット
+      sortByDate("date_limit", false);
+      // 'todosOrder'にソートの名称をセット
       setTodosOrder("dlDescending");
     }
-  }
+  };
 
   // 'Date Created'のソート
   const sortByDateCreated = () => {
     if(todosOrder == "dcDescending") {
       // 'todosOrder'がDate Created で降順の場合は、昇順にする
       // ソート
-      setTodos(prevTodos => {
-        const todosSorted = prevTodos[title]
-          .sort((a, b) => {
-            return a.date_created! > b.date_created! ? 1 : -1;
-          });
-
-        return {
-          ...prevTodos,
-          [title]: todosSorted
-        };
-      });
+      sortByDate("date_created", true);
       // 'todosOrder'にソートの名称をセット
       setTodosOrder("dcAscending");
     }else  {
       // 'todosOrder'がDate Createdで降順以外の場合は、降順にする
       // ソート
-      setTodos(prevTodos => {
-        const todosSorted = prevTodos[title]
-          .sort((a, b) => {
-            return a.date_created! < b.date_created! ? 1 : -1;
-          });
-
-        return {
-          ...prevTodos,
-          [title]: todosSorted
-        };
-      });
+      sortByDate("date_created", false);
       // 'todosOrder'にソートの名称をセット
       setTodosOrder("dcDescending");
     }
+  };
+
+  const sortByDate = (dateType: "date_limit" | "date_created", isAscending: boolean) => {
+    setTodos(prevTodos => {
+      const todosSorted = prevTodos[title]
+        .sort((a, b) => {
+          if(!a[dateType]) return 1;
+          if(!b[dateType]) return -1;
+          return isAscending ?
+            (a[dateType]! > b[dateType]! ? 1 : -1) :
+            (a[dateType]! < b[dateType]! ? 1 : -1);
+        })
+
+      return {
+        ...prevTodos,
+        [title]: todosSorted
+      };
+    });
   };
 
   const switchToPrev = () => {
