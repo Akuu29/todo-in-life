@@ -17,7 +17,7 @@ import {
 } from "../../api/todoApi";
 import { CATEGORY } from "../../common/common";
 
-const AppTodosWrapper = css({
+const todosContainer = css({
   marginTop: 40,
   display: "flex",
   flexDirection: "row",
@@ -270,7 +270,7 @@ const AppTodos: FC = () => {
   };
  
   return (
-    <div css={AppTodosWrapper}>
+    <div css={todosContainer}>
       {isShowForm && <AppForm
         todo={todo}
         setTodo={setTodo}

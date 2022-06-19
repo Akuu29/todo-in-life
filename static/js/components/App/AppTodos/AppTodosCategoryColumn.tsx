@@ -17,7 +17,7 @@ const categoryTitle = css({
   marginBottom: 5,
 });
 
-const todosWrapper = css({
+const todosContainer = css({
   width: 330,
   height: 1160,
   border: "solid",
@@ -151,7 +151,7 @@ const AppTodosCategoryColumn: FC<{
           </li>
         </ul>
       </nav>
-      <div css={todosWrapper} ref={drop}>
+      <div css={todosContainer} ref={drop}>
         {children}
       </div>
       <div css={pagenation}>

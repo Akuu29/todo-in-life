@@ -31,7 +31,7 @@ const LoginForm: FC = () => {
   };
 
   return (
-    <div className="userFormWrapper">
+    <div className="userFormContainer">
       <GlobalUserForm />
       <form action="/login" method="POST" className="userForm" >
         <div className="titleWrapper">

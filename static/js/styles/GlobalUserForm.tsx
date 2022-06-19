@@ -6,7 +6,7 @@
 import { css, Global } from "@emotion/react";
 
 const userForm = {
-  ".userFormWrapper": css({
+  ".userFormContainer": css({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",

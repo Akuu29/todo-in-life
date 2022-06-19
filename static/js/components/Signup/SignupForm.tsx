@@ -31,7 +31,7 @@ const SinupForm: FC = () => {
   };
 
   return(
-    <div className="userFormWrapper">
+    <div className="userFormContainer">
       <GlobalUserForm />
       <form action="/signup" method="POST" className="userForm">
         <div className="titleWrapper">

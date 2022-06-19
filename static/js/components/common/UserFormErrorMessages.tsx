@@ -2,12 +2,12 @@ import { FC, useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import { useCookies } from "react-cookie";
 
-const errorMessageArea = css({
+const errorMessageContainer = css({
   height: 120,
   width: "100%",
 });
 
-const errorMessageConteiner = css({
+const errorMessageWrapper = css({
   margin: "auto",
   height: 120,
   width: 400,
@@ -67,9 +67,9 @@ const UserFormErrorMessages: FC<{formType: string}> = ({formType}) => {
   }, [errorMessages]);
 
   return (
-    <div css={errorMessageArea}>
+    <div css={errorMessageContainer}>
       {isError && 
-        <div css={errorMessageConteiner}>
+        <div css={errorMessageWrapper}>
           {errorMessages.map((errorMessage, i) => {
             return (
               <div css={errorMessageContent} key={i}>

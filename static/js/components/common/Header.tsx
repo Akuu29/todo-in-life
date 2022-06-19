@@ -20,7 +20,7 @@ const title = css({
   color: "#000000",
 });
 
-const ul = css({
+const btnList = css({
   display: "flex",
   justifyContent: "flex-end"
 });
@@ -67,7 +67,7 @@ const Header: FC = () => {
           <a css={title} href="/">TODO IN LIFE</a>
         </h1>
         <nav>
-          <ul css={ul}>
+          <ul css={btnList}>
             {isLoggedIn && 
               <li css={navgationBtn}>
                 <a css={btn} href="/app">HOME</a>

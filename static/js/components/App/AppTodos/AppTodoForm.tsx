@@ -17,7 +17,7 @@ import {
 import { DateFunctions, CATEGORY } from "../../../common/common";
 import FormErrorMessage from "../../common/FormErrorMessage";
 
-const todoFormWrapper = css({
+const todosFormContainer = css({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
@@ -30,7 +30,7 @@ const todoFormWrapper = css({
   zIndex: 7,
 });
 
-const todoForm = css({
+const todosForm = css({
   padding: "3em",
   background: "#ffffff",
   border: "solid",
@@ -148,8 +148,8 @@ const AppForm: FC<{
   };
 
   return (
-    <div css={todoFormWrapper}>
-      <div css={todoForm}>
+    <div css={todosFormContainer}>
+      <div css={todosForm}>
         <div css={titleWrapper}>
           <h1>POST</h1>
         </div>

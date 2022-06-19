@@ -14,7 +14,7 @@ import Tooltip from "../../common/Tooltip";
 import { FnToHandleTodosTable } from "../AppTodos";
 import { DateFunctions, CATEGORY } from "../../../common/common";
 
-const todoDescWrapper = css({
+const todoDescContainer = css({
   height: "100%",
   width: "100%",
   top: 0,
@@ -27,7 +27,7 @@ const todoDescWrapper = css({
   zIndex: 7,
 });
 
-const todoDescContainer = css({
+const todoDescription = css({
   zIndex: 2,
   padding: "3em",
   backgroundColor: "#ffffff",
@@ -35,7 +35,7 @@ const todoDescContainer = css({
   borderRadius: 10,
 });
 
-const titleWrapper = css({
+const titleAndBtnWrapper = css({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
@@ -127,9 +127,9 @@ const AppTodoDescription: FC<{
   }
 
   return (
-    <div css={todoDescWrapper} >
-      <div css={todoDescContainer}>
-        <div css={titleWrapper}>
+    <div css={todoDescContainer} >
+      <div css={todoDescription}>
+        <div css={titleAndBtnWrapper}>
           <h1>Description</h1>
           {category != CATEGORY.COMPLETE &&
             <Tooltip tooltipType="editIcon" tooltipStyle={null}>

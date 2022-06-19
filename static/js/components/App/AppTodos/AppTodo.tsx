@@ -9,7 +9,7 @@ import { Todos, Todo } from "../AppTodos";
 import { DateFunctions, CATEGORY } from "../../../common/common";
 import { TodoApi } from "../../../api/todoApi";
 
-const todoWrapper = css({
+const todoContainer = css({
   width: 290,
   backgroundColor: "#ffffff",
   border: "solid",
@@ -134,7 +134,7 @@ const AppTodo: FC<{
   const opacity = isDragging ? 0.4 : 1;
 
   return (
-    <div css={todoWrapper}
+    <div css={todoContainer}
       ref={drag}
       style={{opacity}}
       onClick={handleDispTodoDesc}>
