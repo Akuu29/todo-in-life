@@ -191,7 +191,7 @@ const AppForm: FC<{
           </select>
         </div>
         <div css={todoFormContent}>
-          <label>Limit Date</label>
+          <label>Deadline</label>
           <DatePicker
             dateFormat="yyyy/MM/dd"
             selected={DateFunctions.convertStrDateToDate(todo.date_limit)}
