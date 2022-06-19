@@ -2,14 +2,15 @@ import {
   FC,
   ReactNode,
   Dispatch,
-  SetStateAction
+  SetStateAction,
+  useState
 } from "react";
 import { useDrop } from "react-dnd";
 import { css } from "@emotion/react";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Tooltip from "../../common/Tooltip";
-import { Todo } from "../AppTodos";
+import { Todo, Todos } from "../AppTodos";
 import { CATEGORY } from "../../../common/common";
 
 const categoryTitle = css({
@@ -79,6 +80,7 @@ const AppTodosCategoryColumn: FC<{
     setPage: Dispatch<SetStateAction<[number, number]>>;
     setTodo: Dispatch<SetStateAction<Todo>>;
     setFormType: Dispatch<SetStateAction<string>>;
+    setTodos: Dispatch<SetStateAction<Todos>>;
   }> = ({
     children,
     title,
@@ -87,7 +89,8 @@ const AppTodosCategoryColumn: FC<{
     maxPage,
     setPage,
     setTodo,
-    setFormType
+    setFormType,
+    setTodos
   }) => {
   
   const [, drop] = useDrop({
@@ -110,6 +113,50 @@ const AppTodosCategoryColumn: FC<{
     // フォームタイプをnewに設定
     setFormType("new");
   };
+
+  // オーダー名称'dlDescending', 'dlAscending', 'dcDescending', 'dcAscending'
+  const [todosOrder, setTodosOrder] = useState<string>("");
+
+  // 'Deadline'のソート
+  const sortByDeadline = () => {
+    if(todosOrder == "dlDescending") {
+      // 'todosOrder'がdeadlineで降順の場合は、昇順にする
+      // ソート
+      setTodos(prevTodos => {
+        const todosSorted = prevTodos[title]
+          .sort((a, b) => {
+            if(!a.date_limit) return 1;
+            if(!b.date_limit) return -1;
+            return a.date_limit > b.date_limit ? 1 : -1;
+          });
+
+        return {
+          ...prevTodos,
+          [title]: todosSorted
+        };
+      });
+      // 'todosOrder'にソート結果の並び順をセット
+      setTodosOrder("dlAscending");
+    }else {
+      // 'todosOrder'がdeadlineで降順以外の場合は、降順にする
+      // ソート
+      setTodos(prevTodos => {
+        const todosSorted = prevTodos[title]
+          .sort((a, b) => {
+            if(!a.date_limit) return 1;
+            if(!b.date_limit) return -1;
+            return a.date_limit < b.date_limit ? 1 : -1;
+          });
+
+        return {
+          ...prevTodos,
+          [title]: todosSorted
+        }
+      });
+      // 'todosOrder'にソート結果の並び順をセット
+      setTodosOrder("dlDescending");
+    }
+  }
 
   const switchToPrev = () => {
     setPage([currentPage - 1, maxPage]);
@@ -136,7 +183,7 @@ const AppTodosCategoryColumn: FC<{
           <li>
             <Tooltip tooltipType="DL"
               tooltipStyle={css({position: "relative"})}>
-              <a css={todoOrderBtn}>
+              <a css={todoOrderBtn} onClick={sortByDeadline}>
                 DL
               </a>
             </Tooltip>

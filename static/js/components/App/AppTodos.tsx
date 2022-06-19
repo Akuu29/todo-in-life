@@ -299,7 +299,8 @@ const AppTodos: FC = () => {
           maxPage={maxPageShort}
           setPage={setPageShort}
           setTodo={setTodo}
-          setFormType={setFormType} >
+          setFormType={setFormType}
+          setTodos={setTodos} >
           {returnTodosForColumn(CATEGORY.SHORT, currentPageShort)}
         </AppTodosCategoryColumn>
         <AppTodosCategoryColumn
@@ -309,7 +310,8 @@ const AppTodos: FC = () => {
           maxPage={maxPageMedium}
           setPage={setPageMedium}
           setTodo={setTodo}
-          setFormType={setFormType} >
+          setFormType={setFormType}
+          setTodos={setTodos} >
           {returnTodosForColumn(CATEGORY.MEDIUM, currentPageMedium)}
         </AppTodosCategoryColumn>
         <AppTodosCategoryColumn
@@ -319,7 +321,8 @@ const AppTodos: FC = () => {
           maxPage={maxPageLong}
           setPage={setPageLong}
           setTodo={setTodo}
-          setFormType={setFormType} >
+          setFormType={setFormType}
+          setTodos={setTodos} >
           {returnTodosForColumn(CATEGORY.LONG, currentPageLong)}
         </AppTodosCategoryColumn>
         <AppTodosCategoryColumn
@@ -329,7 +332,8 @@ const AppTodos: FC = () => {
           maxPage={maxPageCompleted}
           setPage={setPageCompleted}
           setTodo={setTodo}
-          setFormType={setFormType} >
+          setFormType={setFormType}
+          setTodos={setTodos} >
           {returnTodosForColumn(CATEGORY.COMPLETE, currentPageCompleted)}
         </AppTodosCategoryColumn>
       </DndProvider>
