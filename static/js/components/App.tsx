@@ -1,5 +1,5 @@
 import { FC } from "react";
-import GlobalStyles from "../styles/Global";
+import GlobalStyles from "./common/styles/Global";
 import Header from "./common/Header";
 import Footer from "./common/Footer";
 import AppTodos from "./App/AppTodos";

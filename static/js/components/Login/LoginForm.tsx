@@ -8,7 +8,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
-import GlobalUserForm from "../../styles/GlobalUserForm";
+import GlobalUserForm from "../common/styles/GlobalUserForm";
 
 const LoginForm: FC = () => {
   const [userInfo, setUserInfo] = useState({
