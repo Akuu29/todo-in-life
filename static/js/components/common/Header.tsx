@@ -1,5 +1,6 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { css } from "@emotion/react";
+import { CookiesProvider, useCookies } from "react-cookie";
 
 const header = css({
   width: "100%",
@@ -40,27 +41,56 @@ const btn = css({
 });
 
 const Header: FC = () => {
+  const [cookies, setCookie] = useCookies(["messages"]);
+
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    const manageLoginStatus = () => {
+      const cookieMessages = cookies.messages;
+      if(cookieMessages.length && cookieMessages[0].title) {
+        const resultLoginOrSignup = cookieMessages[0].title;
+        if(resultLoginOrSignup == "success") {
+          setIsLoggedIn(true);
+        }
+      }
+    };
+
+    manageLoginStatus();
+  }, [cookies]);
+
   return (
     <div css={header}>
-      <h1 css={titleWrapper}>
-        <a css={title} href="/">TODO IN LIFE</a>
-      </h1>
-      <nav>
-        <ul css={ul}>
-          <li css={navgationBtn}>
-            <a css={btn} href="/app">HOME</a>
-          </li>
-          <li css={navgationBtn}>
-            <a css={btn} href="/signup">Sign up</a>
-          </li>
-          <li css={navgationBtn}>
-            <a css={btn} href="/login">Log in</a>
-          </li>
-          <li css={navgationBtn}>
-            <a css={btn} href="/logout">Log out</a>
-          </li>
-        </ul>
-      </nav>
+      {/* CookiesProviderでラップしているコンポーネント内でcookieの管理が可能*/}
+      <CookiesProvider>
+        <h1 css={titleWrapper}>
+          <a css={title} href="/">TODO IN LIFE</a>
+        </h1>
+        <nav>
+          <ul css={ul}>
+            {isLoggedIn && 
+              <li css={navgationBtn}>
+                <a css={btn} href="/app">HOME</a>
+              </li>
+            }
+            {!isLoggedIn &&
+              <li css={navgationBtn}>
+                <a css={btn} href="/signup">Sign up</a>
+              </li>
+            }
+            {!isLoggedIn && 
+              <li css={navgationBtn}>
+                <a css={btn} href="/login">Log in</a>
+              </li>
+            }
+            {isLoggedIn && 
+              <li css={navgationBtn}>
+                <a css={btn} href="/logout">Log out</a>
+              </li>
+            }
+          </ul>
+        </nav>
+      </CookiesProvider>
     </div>
   );
 };
