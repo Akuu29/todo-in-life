@@ -144,7 +144,7 @@ const AppTodo: FC<{
       </div>
       <div css={todoContent}>
         <label>Content</label>
-        <p css={sentence}>{content}</p>
+        <p css={sentence}>{!content.length ? "None" : content}</p>
       </div>
       <div css={todoContent}>
         <label>Deadline</label>
