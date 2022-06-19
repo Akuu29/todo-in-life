@@ -27,11 +27,20 @@ pub fn get_scope() -> Scope {
 }
 
 #[get("/")]
-async fn index(tmpl: Data<Tera>) -> impl Responder {
+async fn index(req: HttpRequest, identity: Identity, tmpl: Data<Tera>) -> impl Responder {
     let response_body = tmpl
         .render("index.html", &Context::new())
         .unwrap();
-    
+
+    // 未ログインの場合、cookie_messagesの初期化
+    if identity.identity().is_none() {
+        let cookie_messages = generate_cookie_messages(&req);
+        return HttpResponse::Ok()
+                .cookie(cookie_messages)
+                .content_type("text/html")
+                .body(response_body);
+    }
+
     HttpResponse::Ok()
         .content_type("text/html")
         .body(response_body)
