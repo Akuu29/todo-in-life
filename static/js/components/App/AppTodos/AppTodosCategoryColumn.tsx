@@ -158,6 +158,43 @@ const AppTodosCategoryColumn: FC<{
     }
   }
 
+  // 'Date Created'のソート
+  const sortByDateCreated = () => {
+    if(todosOrder == "dcDescending") {
+      // 'todosOrder'がDate Created で降順の場合は、昇順にする
+      // ソート
+      setTodos(prevTodos => {
+        const todosSorted = prevTodos[title]
+          .sort((a, b) => {
+            return a.date_created! > b.date_created! ? 1 : -1;
+          });
+
+        return {
+          ...prevTodos,
+          [title]: todosSorted
+        };
+      });
+      // 'todosOrder'にソートの名称をセット
+      setTodosOrder("dcAscending");
+    }else  {
+      // 'todosOrder'がDate Createdで降順以外の場合は、降順にする
+      // ソート
+      setTodos(prevTodos => {
+        const todosSorted = prevTodos[title]
+          .sort((a, b) => {
+            return a.date_created! < b.date_created! ? 1 : -1;
+          });
+
+        return {
+          ...prevTodos,
+          [title]: todosSorted
+        };
+      });
+      // 'todosOrder'にソートの名称をセット
+      setTodosOrder("dcDescending");
+    }
+  };
+
   const switchToPrev = () => {
     setPage([currentPage - 1, maxPage]);
   };
@@ -191,7 +228,7 @@ const AppTodosCategoryColumn: FC<{
           <li>
             <Tooltip tooltipType="DC"
               tooltipStyle={css({position: "relative"})}>
-              <a css={todoOrderBtn}>
+              <a css={todoOrderBtn} onClick={sortByDateCreated}>
                 DC
               </a>
             </Tooltip>
