@@ -11,7 +11,7 @@ import {
   faTrash
 } from "@fortawesome/free-solid-svg-icons";
 import Tooltip from "../../common/Tooltip";
-import { FnToHandleTodosTable } from "../AppTodos";
+import { Todo, FnToHandleTodosTable } from "../AppTodos";
 import { DateFunctions, CATEGORY } from "../../../common/common";
 
 const todoDescContainer = css({
@@ -93,21 +93,13 @@ const closeBtn = css({
 });
 
 const AppTodoDescription: FC<{
-    title: string;
-    content: string;
-    category: string;
-    date_limit: string | null;
-    date_created: string | null;
+    todo: Todo,
     setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
     setIsShowForm: Dispatch<SetStateAction<boolean>>;
     setFormType: Dispatch<SetStateAction<string>>;
     deleteTodo: FnToHandleTodosTable;
   }> = ({
-    title,
-    content,
-    category,
-    date_limit,
-    date_created,
+    todo,
     setIsShowTodoDesc,
     setIsShowForm,
     setFormType,
@@ -135,7 +127,7 @@ const AppTodoDescription: FC<{
       <div css={todoDescription}>
         <div css={titleAndBtnWrapper}>
           <h1>Description</h1>
-          {category != CATEGORY.COMPLETE &&
+          {todo.category != CATEGORY.COMPLETE &&
             <Tooltip tooltipType="editIcon" tooltipStyle={null}>
               <FontAwesomeIcon
                 icon={faPenToSquare}
@@ -153,23 +145,23 @@ const AppTodoDescription: FC<{
         </div>
         <div css={todoDescContent}>
           <label>Title</label>
-          <p>{title}</p>
+          <p>{todo.title}</p>
         </div>
         <div css={todoDescContent}>
           <label>Content</label>
-          <p css={sentence}>{content}</p>
+          <p css={sentence}>{todo.content}</p>
         </div>
         <div css={todoDescContent}>
           <label>Category</label>
-          <p>{category}</p>
+          <p>{todo.category}</p>
         </div>
         <div css={todoDescContent}>
           <label>Deadline</label>
-          <p>{DateFunctions.convertStrDateToDispDate(date_limit)}</p>
+          <p>{DateFunctions.convertStrDateToDispDate(todo.date_limit)}</p>
         </div>
         <div css={todoDescContent}>
           <label>Date Created</label>
-          <p>{DateFunctions.convertStrDateToDispDate(date_created)}</p>
+          <p>{DateFunctions.convertStrDateToDispDate(todo.date_created)}</p>
         </div>
         <div css={closeBtnkWrapper}>
           <FontAwesomeIcon

@@ -279,13 +279,8 @@ const AppTodos: FC = () => {
           submitTodoForCreating : submitTodoForEditing}
         errorMessages={errorMessages}
         setErrorMessages={setErrorMessages} />}
-{/* TODO! AppTodoDescriptionの引数が冗長、todoとして１つにまとめる */}
       {isShowTodoDesc && <AppTodoDescription 
-        title={todo.title}
-        content={todo.content}
-        category={todo.category}
-        date_limit={todo.date_limit}
-        date_created={todo.date_created}
+        todo={todo}
         setIsShowTodoDesc={setIsShowTodoDesc}
         setIsShowForm={setIsShowForm}
         setFormType={setFormType}
