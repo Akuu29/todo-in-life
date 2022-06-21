@@ -20,14 +20,21 @@
   },
   "homepage": "https://github.com/Akuu29/todo-in-life#readme",
   "devDependencies": {
-    "@emotion/react": "^11.9.0",
-    "@fortawesome/fontawesome-svg-core": "^6.1.1",
-    "@fortawesome/free-solid-svg-icons": "^6.1.1",
-    "@fortawesome/react-fontawesome": "^0.1.18",
     "@types/react": "^18.0.9",
     "@types/react-datepicker": "^4.4.2",
     "@types/react-dom": "^18.0.5",
     "css-loader": "^6.7.1",
+    "style-loader": "^3.3.1",
+    "ts-loader": "^9.3.0",
+    "typescript": "^4.6.4",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.9.0"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.9.0",
+    "@fortawesome/fontawesome-svg-core": "^6.1.1",
+    "@fortawesome/free-solid-svg-icons": "^6.1.1",
+    "@fortawesome/react-fontawesome": "^0.1.18",
     "emotion-reset": "^3.0.1",
     "react": "^18.1.0",
     "react-cookie": "^4.1.1",
@@ -35,11 +42,6 @@
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.1.0",
-    "style-loader": "^3.3.1",
-    "ts-loader": "^9.3.0",
-    "typescript": "^4.6.4",
-    "webpack": "^5.72.1",
-    "webpack-cli": "^4.9.2",
-    "webpack-dev-server": "^4.9.0"
+    "webpack": "^5.72.1"
   }
 }
