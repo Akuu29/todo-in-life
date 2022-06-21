@@ -6,7 +6,7 @@ use diesel::prelude::*;
 use validator::Validate;
 use argon2::Argon2;
 use argon2::password_hash::{PasswordHash, PasswordVerifier};
-use crate::users::{NewUser, User};
+use crate::users::User;
 use crate::users::validate_users_form::{SignupData, LoginData};
 use crate::Pool;
 use crate::schema::users;
@@ -223,21 +223,17 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, user_data: For
             .finish();
     }
 
-    let signup_data = user_data.into_inner();
-// TODO: NewUserを作る一手間が発生している
-    let new_user = NewUser {
-        username: signup_data.username,
-        email: signup_data.email,
-        password: signup_data.password,
-    };
-    
-    let user = NewUser::create_user(&new_user);
+    let user = User::new(
+        user_data.username.clone(),
+        user_data.email.clone(),
+        user_data.password.clone()
+    );
 
     let db_connection = pool.get().expect("Failed getting db connection");
 
     // インサート結果が返ってくるまでブロック
     let result = web::block(move || {
-        diesel::insert_into(users::table).values(&user).execute(&db_connection)
+        diesel::insert_into(users::table).values(user).execute(&db_connection)
     }).await;
 
     // ブロック、インサートのResultで二重にラップされている
@@ -246,7 +242,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, user_data: For
             match insert_result {
                 Ok(_) => {
                     // cookieにID保存
-                    identity.remember(new_user.username);
+                    identity.remember(user_data.username.clone());
 
                     // cookieにメッセージを保存
                     set_messages_in_cookie(
