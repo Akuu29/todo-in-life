@@ -5,11 +5,9 @@ import {
 } from "react";
 import { css } from "@emotion/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faRectangleXmark,
-  faPenToSquare,
-  faTrash
-} from "@fortawesome/free-solid-svg-icons";
+import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons/faRectangleXmark";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons/faPenToSquare";
+import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import Tooltip from "../../common/Tooltip";
 import { Todo, FnToHandleTodosTable } from "../AppTodos";
 import { DateFunctions, CATEGORY } from "../../../common/common";

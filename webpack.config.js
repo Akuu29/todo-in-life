@@ -31,5 +31,9 @@ module.exports = {
   output: {
     filename: "[name].bundle.js",
     path: path.join(__dirname, "static/bundle"),
-  }
+  },
+  performance: {
+    maxEntrypointSize: 600000,
+    maxAssetSize: 600000,
+  },
 };
