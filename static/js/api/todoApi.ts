@@ -1,4 +1,12 @@
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { Todo, CustomObject } from "../components/App/AppTodos";
+import { handleErrorResponse } from "../common/common";
+
+type Response<T> = AxiosResponse<T | ValueOfError> | undefined;
+
+interface ValueOfBasic {
+  status: "success" | "error";
+}
 
 export interface ValidationError {
   code: string;
@@ -8,126 +16,88 @@ export interface ValidationError {
 
 export type ValidationErrors = CustomObject<Array<ValidationError>>;
 
-type Status = "success" | "error";
-
-interface ReturnValueOfGetTodos {
-  status: Status;
-  todos: Array<Todo>;
-}
-
-interface ReturnValueOfPostTodo {
-  status: Status;
-  todo?: Todo;
+export interface ValueOfError extends ValueOfBasic {
+  status: "error";
   validationErrors?: ValidationErrors;
 }
 
-interface ReturnValueOfPutTodo {
-  status: Status;
-  todoEdited?: {
+interface ValueOfSuccessfulGetTodos extends ValueOfBasic {
+  status: "success";
+  todos: Array<Todo>;
+}
+
+interface ValueOfSuccessfulPostTodo extends ValueOfBasic {
+  status: "success";
+  todo: Todo;
+}
+
+interface ValueOfSuccessfulPutTodo extends ValueOfBasic {
+  status: "success";
+  todoEdited: {
     id: string;
     title: string;
     content: string;
     category: string;
     date_limit: string;
   };
-  validationErrors?: ValidationErrors;
 }
 
-interface ReturnValueOfPatchTodo {
-  status: Status;
+interface ValueOfSuccessfulPatchTodo extends ValueOfBasic {
+  status: "success";
 }
 
-interface ReturnValueOfDeleteTodo {
-  status: Status;
+interface ValueOfSuccessfulDeleteTodo extends ValueOfBasic {
+  status: "success";
   todoDeleted: {
     id: string;
   };
 }
 
 export class TodoApi {
-  static async getTodos(): Promise<ReturnValueOfGetTodos> {
-    const params = {
-      method: "GET",
-    };
+  static async getTodos(): Promise<Response<ValueOfSuccessfulGetTodos>> {
+    const response: Response<ValueOfSuccessfulGetTodos> = await axios.get("/api/todos")
+      .catch((error: AxiosError | Error) => {
+        return handleErrorResponse(error);
+      });
 
-    const response = await fetch("/api/todos", params);
-
-    return await response.json();
+    return response;
   }
-  static async postTodo(todo: Todo): Promise<ReturnValueOfPostTodo> {
-    const body = {
-      title: todo.title,
-      content: todo.content,
-      category: todo.category,
-      date_limit: todo.date_limit,
-    };
+  static async postTodo(todo: Todo): Promise<Response<ValueOfSuccessfulPostTodo>> {
+    const response: Response<ValueOfSuccessfulPostTodo> = await axios.post("/api/todos", todo)
+      .catch((error: AxiosError | Error) => {
+        return handleErrorResponse(error);
+      });
 
-    const params = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body),
-    };
-
-    const response = await fetch("/api/todos", params);
-
-    return await response.json();
+    return response;
   }
-  static async putTodo(todo: Todo): Promise<ReturnValueOfPutTodo> {
-    const body = {
-      id: todo.id,
-      title: todo.title,
-      content: todo.content,
-      category: todo.category,
-      date_limit: todo.date_limit
-    };
+  static async putTodo(todo: Todo): Promise<Response<ValueOfSuccessfulPutTodo>> {
+    const response: Response<ValueOfSuccessfulPutTodo> = await axios.put("api/todos", todo)
+      .catch((error: AxiosError | Error) => {
+        return handleErrorResponse(error);
+      });
 
-    const params = {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body)
-    };
-
-    const response = await fetch("api/todos", params);
-
-    return await response.json();
+    return response;
   }
-  static async patchTodo(todo: Todo): Promise<ReturnValueOfPatchTodo> {
-    const body = {
-      id: todo.id,
-      category: todo.category,
-    };
+  static async patchTodo(todo: Todo): Promise<Response<ValueOfSuccessfulPatchTodo>> {
+    const response: Response<ValueOfSuccessfulPatchTodo> = await axios.patch("api/todos", todo)
+      .catch((error: AxiosError | Error) => {
+        return handleErrorResponse(error);
+      });
 
-    const params = {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body)
-    };
-
-    const response = await fetch("api/todos", params);
-
-    return await response.json();
+    return response;
   }
-  static async deleteTodo(todo: Todo): Promise<ReturnValueOfDeleteTodo> {
-    const body = {
-      id: todo.id,
+  static async deleteTodo(todo: Todo): Promise<Response<ValueOfSuccessfulDeleteTodo>> {
+    const config = {
+      params: {
+        id: todo.id,
+      }
     };
 
-    const params = {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body)
-    };
+    const response: Response<ValueOfSuccessfulDeleteTodo> = await axios.delete("api/todos", config)
+      .catch((error: AxiosError | Error) => {
+        return handleErrorResponse(error);
+      });
 
-    const response = await fetch("api/todos", params);
-
-    return await response.json();
+    return response;
   }
 }

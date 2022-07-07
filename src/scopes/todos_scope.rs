@@ -1,5 +1,5 @@
 use actix_web::{get, post, put, patch, delete, Scope, Responder, HttpResponse};
-use actix_web::web::{self, Json};
+use actix_web::web::{self, Json, Query};
 use actix_identity::Identity;
 use diesel::prelude::*;
 use validator::Validate;
@@ -201,7 +201,7 @@ pub async fn update_category(identity: Identity, pool: Pool, todo_data: Json<Upd
 }
 
 #[delete("/todos")]
-pub async fn delete(identity: Identity, pool: Pool, todo_data: Json<DeleteTodoData>) -> impl Responder {
+pub async fn delete(identity: Identity, pool: Pool, todo_data: Query<DeleteTodoData>) -> impl Responder {
     // 未ログインの場合、エラー
     if identity.identity().is_none() {
         return HttpResponse::Unauthorized().finish();
@@ -229,8 +229,8 @@ pub async fn delete(identity: Identity, pool: Pool, todo_data: Json<DeleteTodoDa
         return HttpResponse::Forbidden().finish();
     }
 
-    // レスポンス用に、todoのコピーを作成
-    let response_todo = todo_data.clone();
+    // レスポンス用に、todoのコピーを作成, QueryにラップされたDeleteTodoDataの取り出し
+    let response_todo = todo_data.clone().into_inner();
 
     let delete_result = web::block(move || {
         diesel::delete(todos::table.filter(todos::id.eq(&todo_data.id).and(todos::user_id.eq(user_id))))
