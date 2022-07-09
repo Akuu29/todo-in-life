@@ -52,6 +52,7 @@ const AppTodo: FC<{
     category: string;
     date_limit: string | null;
     date_created: string | null;
+    todos: Todos;
     setTodos: Dispatch<SetStateAction<Todos>>;
     setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
     setTodo: Dispatch<SetStateAction<Todo>>;
@@ -63,6 +64,7 @@ const AppTodo: FC<{
     category,
     date_limit,
     date_created,
+    todos,
     setTodos,
     setIsShowTodoDesc,
     setTodo,
@@ -70,29 +72,37 @@ const AppTodo: FC<{
   }) => {
 
   // 他カテゴリーへのdrag&dropがあった際のstate更新
-  const changeTodoColumn = (currentTodo: CurrentTodo, columnName: string) => {
-  // TODO! もっとスッキリした書き方はないのか
-    setTodos((prevTodos) => {
-      // 移動するtodoインデックスの取得
-      const targetTodoIndex = prevTodos[currentTodo.category]
-        .findIndex((prevTodo) => prevTodo.id == currentTodo.id);
-      // 移動するtodoの取得
-      let targetTodo = prevTodos[currentTodo.category].splice(targetTodoIndex, 1);
-      // categoryの書き換え
-      targetTodo.forEach((todo) => {
-        todo.category = columnName;
-      });
-  
-      // DB更新
-      TodoApi.patchTodo(targetTodo[0]);
+  const changeTodoColumn = async (currentTodo: CurrentTodo, columnName: string, todos: Todos) => {
+    let todosCopy = {...todos};
+    // 移動するtodoインデックスの取得
+    const targetTodoIndex = todosCopy[currentTodo.category]
+      .findIndex(todo => todo.id == currentTodo.id);
+    // 移動するtodoの取得
+    let targetTodo = todosCopy[currentTodo.category].splice(targetTodoIndex, 1)[0];
+    // categoryの書き換え
+    targetTodo.category = columnName;
 
-      // 移動元のtodosと移動先のtodoの更新
-      return {
-        ...prevTodos,
-        [currentTodo.category]: prevTodos[currentTodo.category],
-        [columnName]: prevTodos[columnName].concat(targetTodo),
-      };
-    });
+    // DB更新
+    const patchTodoResult = await TodoApi.patchTodo(targetTodo);
+
+    if(patchTodoResult) {
+      const data = patchTodoResult.data;
+      if(data.status == "success") {
+        setTodos(() => {
+          return {
+            ...todosCopy,
+            [currentTodo.category]: todosCopy[currentTodo.category],
+            [columnName]: todosCopy[columnName].concat(targetTodo),
+          };
+        });
+      }else {
+        // AxiosError
+        alert(`ERROR: ${patchTodoResult.status}`);
+      }
+    }else {
+      // Error
+      alert("ERROR");
+    }
   };
 
   const [{isDragging}, drag] = useDrag({
@@ -104,13 +114,13 @@ const AppTodo: FC<{
     end: (item, monitor) => {
       const dropResult: DropResult = monitor.getDropResult();
       if(dropResult && dropResult.name === CATEGORY.SHORT) {
-        changeTodoColumn(item, CATEGORY.SHORT);
+        changeTodoColumn(item, CATEGORY.SHORT, todos);
       }else if(dropResult && dropResult.name == CATEGORY.MEDIUM) {
-        changeTodoColumn(item, CATEGORY.MEDIUM);
+        changeTodoColumn(item, CATEGORY.MEDIUM, todos);
       }else if(dropResult && dropResult.name == CATEGORY.LONG) {
-        changeTodoColumn(item, CATEGORY.LONG);
+        changeTodoColumn(item, CATEGORY.LONG, todos);
       }else {
-        changeTodoColumn(item, CATEGORY.COMPLETE);
+        changeTodoColumn(item, CATEGORY.COMPLETE, todos);
       }
     },
     collect: (monitor) => ({

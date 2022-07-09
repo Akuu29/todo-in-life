@@ -71,10 +71,21 @@ const AppTodos: FC = () => {
       };
 
       const getTodosResult = await TodoApi.getTodos();
-      getTodosResult.todos.forEach((todo: Todo) => {
-        const key: keyof Todos = todo.category;
-        initialTodosData[key].push(todo);
-      });
+      if(getTodosResult) {
+        const data = getTodosResult.data;
+        if(data.status == "success") {
+          data.todos.forEach((todo: Todo) => {
+            const key: keyof Todos = todo.category;
+            initialTodosData[key].push(todo);
+          });
+        }else {
+          // AxiosError
+          alert(`ERROR: ${getTodosResult.status}`);
+        }
+      }else {
+        // Error
+        alert("ERROR");
+      }
 
       setTodos(initialTodosData);
     };
@@ -138,6 +149,7 @@ const AppTodos: FC = () => {
             category={todo.category}
             date_limit={todo.date_limit}
             date_created={todo.date_created}
+            todos={todos}
             setTodos={setTodos}
             setIsShowTodoDesc={setIsShowTodoDesc}
             setTodo={setTodo}
@@ -155,79 +167,103 @@ const AppTodos: FC = () => {
 
   // todoの作成。作成後、画面に反映
   const submitTodoForCreating: FnToHandleTodosTable = async () => {
-    const response = await TodoApi.postTodo(todo);
+    const postTodoResult = await TodoApi.postTodo(todo);
 
-    if(response.status == "success") {
-      // state'todos'に作成されたtodoを反映
-      const todoCreated = response.todo!;
-      setTodos({
-        ...todos,
-        [todoCreated.category]: [
-          ...todos[todoCreated.category],
-          todoCreated
-        ]
-      });
-      // フォーム画面を閉じる
-      setIsShowForm(false);
+    if(postTodoResult) {
+      const data = postTodoResult.data;
+      if(data.status == "success") {
+        const todoCreated = data.todo;
+        setTodos({
+          ...todos,
+          [todoCreated.category]: [
+            ...todos[todoCreated.category],
+            todoCreated
+          ]
+        });
+
+        // フォーム画面を閉じる
+        setIsShowForm(false);
+      }else {
+        // AxiosError
+        if(data.validationErrors) {
+          // バリデーションエラー
+          const validationErrors = data.validationErrors;
+          handleValidationErrors(validationErrors);
+        }else {
+          alert(`ERROR: ${postTodoResult.status}`);
+        }
+      }
     }else {
-      // エラー
-      handleValidationErrors(response.validationErrors!);
+      // Error
+      alert("ERROR");
     }
   };
 
   // todoの編集。編集内容を画面に反映
   const submitTodoForEditing: FnToHandleTodosTable = async () => {
-    const response = await TodoApi.putTodo(todo);
+    const putTodoResult = await TodoApi.putTodo(todo);
 
-    if(response.status == "success") {
-      const todoEdited = response.todoEdited!;
-      setTodos((prevTodos) => {
-        // edit対象となるcategoryのtodo配列の取得
-        let targetTodoArray = prevTodos[prevTodoCategory];
-
-        if(todoEdited.category == prevTodoCategory) {
-          // edit前と後でcategoryが同じ場合
-          // 対象のtodoにedit後のtodoを反映
-          targetTodoArray.filter(todo => todo.id == todoEdited.id)
-          .forEach(todo => {
-            todo.title = todoEdited.title;
-            todo.content =  todoEdited.content;
-            todo.category = todoEdited.category;
-            todo.date_limit = todoEdited.date_limit;
-          });
-
-          return {
-            ...prevTodos,
-            [todoEdited.category]: targetTodoArray
-          };
+    if(putTodoResult) {
+      const data = putTodoResult.data;
+      if(data.status == "success") {
+        const todoEdited = data.todoEdited;
+        setTodos((prevTodos) => {
+          // edit対象となるcategoryのtodo配列の取得
+          let targetTodoArray = prevTodos[prevTodoCategory];
+  
+          if(todoEdited.category == prevTodoCategory) {
+            // edit前と後でcategoryが同じ場合
+            // 対象のtodoにedit後のtodoを反映
+            targetTodoArray.filter(todo => todo.id == todoEdited.id)
+            .forEach(todo => {
+              todo.title = todoEdited.title;
+              todo.content =  todoEdited.content;
+              todo.category = todoEdited.category;
+              todo.date_limit = todoEdited.date_limit;
+            });
+  
+            return {
+              ...prevTodos,
+              [todoEdited.category]: targetTodoArray
+            };
+          }else {
+            // edit前と後でcategoryが違う場合
+            // 'targetTodoArray'より対象のtodoのインデックスの取得
+            const targetTodoIndex = prevTodos[prevTodoCategory]
+              .findIndex(prevTodo => prevTodo.id == todoEdited.id);
+            // 対象のtodoの取得
+            let targetTodo = prevTodos[prevTodoCategory].splice(targetTodoIndex, 1);
+            targetTodo.forEach(todo => {
+              todo.title = todoEdited.title;
+              todo.content = todoEdited.content;
+              todo.category = todoEdited.category;
+              todo.date_limit = todoEdited.date_limit;
+            });
+  
+            return {
+              ...prevTodos,
+              [todoEdited.category]: prevTodos[todoEdited.category].concat(targetTodo),
+            };
+          }
+        })
+  
+        // フォーム画面を閉じる
+        setIsShowForm(false);
+      }else {
+        // AxiosError
+        if(data.validationErrors) {
+          // バリデーションエラー
+          const validationErrors = data.validationErrors;
+          handleValidationErrors(validationErrors!);
         }else {
-          // edit前と後でcategoryが違う場合
-          // 'targetTodoArray'より対象のtodoのインデックスの取得
-          const targetTodoIndex = prevTodos[prevTodoCategory]
-            .findIndex(prevTodo => prevTodo.id == todoEdited.id);
-          // 対象のtodoの取得
-          let targetTodo = prevTodos[prevTodoCategory].splice(targetTodoIndex, 1);
-          targetTodo.forEach(todo => {
-            todo.title = todoEdited.title;
-            todo.content = todoEdited.content;
-            todo.category = todoEdited.category;
-            todo.date_limit = todoEdited.date_limit;
-          });
-
-          return {
-            ...prevTodos,
-            [todoEdited.category]: prevTodos[todoEdited.category].concat(targetTodo),
-          };
+          alert(`ERROR: ${putTodoResult.status}`);
         }
-      })
-
-      // フォーム画面を閉じる
-      setIsShowForm(false);
+      }
     }else {
-      // エラー
-      handleValidationErrors(response.validationErrors!);
+      // Error
+      alert("ERROR");
     }
-  };
+  }
 
   // バリデーションエラーの内容をstate'errorMessages'に反映する
   const handleValidationErrors = (responseValidationErrors: ValidationErrors) => {
@@ -249,23 +285,32 @@ const AppTodos: FC = () => {
 
   // todoの削除。削除後、画面に反映
   const deleteTodo: FnToHandleTodosTable = async () => {
-    const response = await TodoApi.deleteTodo(todo);
-    const todoDeleted = response.todoDeleted;
+    const deleteTodoResult = await TodoApi.deleteTodo(todo);
 
-    if(response.status == "success") {
-      setTodos(prevTodos => {
-        // 削除されたtodoが格納されている配列
-        let targetTodoArray = prevTodos[prevTodoCategory];
-        // 削除されたtodoのインデックスの取得
-        const targetTodoIndex = targetTodoArray.findIndex(todo => todo.id == todoDeleted.id);
-        // 削除
-        prevTodos[prevTodoCategory].splice(targetTodoIndex, 1);
-
-        return {
-          ...prevTodos,
-          [prevTodoCategory]: prevTodos[prevTodoCategory],
-        };
-      });
+    if(deleteTodoResult) {
+      const data = deleteTodoResult.data;
+      if(data.status == "success") {
+        const todoDeleted = data.todoDeleted;
+        setTodos(prevTodos => {
+          // 削除されたtodoが格納されている配列
+          let targetTodoArray = prevTodos[prevTodoCategory];
+          // 削除されたtodoのインデックスの取得
+          const targetTodoIndex = targetTodoArray.findIndex(todo => todo.id == todoDeleted.id);
+          // 削除
+          prevTodos[prevTodoCategory].splice(targetTodoIndex, 1);
+  
+          return {
+            ...prevTodos,
+            [prevTodoCategory]: prevTodos[prevTodoCategory],
+          };
+        });
+      }else {
+        // AxiosError
+        alert(`ERROR: ${deleteTodoResult.status}`);
+      }
+    }else {
+      // Error
+      alert("ERROR");
     }
   };
  
