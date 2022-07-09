@@ -8,8 +8,8 @@ const message = css({
 const FormErrorMessage: FC<{errorMessages: Array<string>}> = ({errorMessages}) => {
   return (
     <div>
-      {errorMessages.map((errorMessage) => (
-        <p css={message}>{errorMessage}</p>
+      {errorMessages.map((errorMessage, i) => (
+        <p css={message} key={i}>{errorMessage}</p>
       ))}
     </div>
   );
