@@ -108,7 +108,7 @@ const AppTodosCategoryColumn: FC<{
       content: "",
       category: title,
       date_limit: null,
-      date_created: null
+      date_created: ""
     });
     // フォームタイプをnewに設定
     setFormType("new");

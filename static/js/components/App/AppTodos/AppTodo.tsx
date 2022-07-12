@@ -51,7 +51,7 @@ const AppTodo: FC<{
     content: string;
     category: string;
     date_limit: string | null;
-    date_created: string | null;
+    date_created: string;
     todos: Todos;
     setTodos: Dispatch<SetStateAction<Todos>>;
     setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
@@ -162,7 +162,7 @@ const AppTodo: FC<{
       </div>
       <div css={todoContent}>
         <label>Date Created</label>
-        <p>{DateFunctions.convertStrDateToDispDate(date_created)}</p>
+        <p>{DateFunctions.convertUtcStrDateToDispDate(date_created)}</p>
       </div>
     </div>
   );

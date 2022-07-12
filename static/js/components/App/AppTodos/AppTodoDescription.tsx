@@ -159,7 +159,7 @@ const AppTodoDescription: FC<{
         </div>
         <div css={todoDescContent}>
           <label>Date Created</label>
-          <p>{DateFunctions.convertStrDateToDispDate(todo.date_created)}</p>
+          <p>{DateFunctions.convertUtcStrDateToDispDate(todo.date_created)}</p>
         </div>
         <div css={closeBtnkWrapper}>
           <FontAwesomeIcon

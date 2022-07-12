@@ -34,7 +34,7 @@ export interface Todo {
   content: string;
   category: string;
   date_limit: string | null;
-  date_created: string | null;
+  date_created: string;
 }
 
 export type Todos = CustomObject<Array<Todo>>;
@@ -50,7 +50,7 @@ const AppTodos: FC = () => {
     content: "",
     category: "",
     date_limit: null,
-    date_created: null,
+    date_created: "",
   });
 
   const [todos, setTodos] = useState<Todos>({

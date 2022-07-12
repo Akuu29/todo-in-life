@@ -38,9 +38,18 @@ export class DateFunctions {
       return "None";
     }
     const toDate = this.convertStrDateToDate(date);
-    const y = toDate!.getFullYear().toString();
-    const m = ("0" + (toDate!.getMonth() + 1).toString()).slice(-2);
-    const d = ("0" + toDate!.getDate().toString()).slice(-2);
+    return this.dispDateFormatter(toDate!);
+  }
+  // MysqlのDatetimeをNaiveDateTime型でしか取得できないため、'date_created'がUTCで取得される。
+  // https://docs.diesel.rs/diesel/mysql/types/struct.Datetime.html
+  static convertUtcStrDateToDispDate(date: string): string {
+    const toDate = new Date(date + "Z");
+    return this.dispDateFormatter(toDate);
+  }
+  static dispDateFormatter(date: Date): string {
+    const y = date.getFullYear().toString();
+    const m = ("0" + (date.getMonth() + 1).toString()).slice(-2);
+    const d = ("0" + date.getDate().toString()).slice(-2);
   
     return y + "/" + m + "/" + d;
   }
