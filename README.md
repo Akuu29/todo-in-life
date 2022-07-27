@@ -22,7 +22,7 @@ You can also manage todo's by grouping them into 'short', 'medium', 'long', and 
 
 ### Setup
 #### Client
-Execute the following command in the project root.
+Execute the following command in the project ./client.
 ```powershell
 # Install the dependencies for React
 npm install

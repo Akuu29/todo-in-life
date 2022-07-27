@@ -1,5 +1,4 @@
 /target
 .env
-/node_modules
-/static/bundle
-/static/js/components/App/SampleGetTodos.ts
+/client/node_modules
+/client/bundle

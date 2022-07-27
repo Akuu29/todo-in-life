@@ -36,13 +36,13 @@ async fn main() -> std::io::Result<()> {
             .name("auth-cookie")
             .http_only(true)
             .secure(false);
-        
+
         App::new()
             .wrap(IdentityService::new(policy))
             .wrap(Logger::default())
             .app_data(Data::new(pool.clone()))
             .app_data(Data::new(Tera::new("templates/**/*").unwrap()))
-            .service(Files::new("/static", "./static"))
+            .service(Files::new("/client", "./client"))
             .service(todos_scope::get_scope())
             .service(main_scope::get_scope())
     });
