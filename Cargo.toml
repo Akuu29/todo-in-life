@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 actix-files = "0.6.0"
 actix-identity = "0.4.0"
-actix-web = "4.0.1"
+actix-web = "4.2.1"
 argon2 = "0.4.0"
 chrono = { version = "0.4.19", features = ["serde"] }
 diesel = { version = "1.4.8", features = ["mysql", "r2d2", "chrono"] }
