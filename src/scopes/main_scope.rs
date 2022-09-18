@@ -111,11 +111,11 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, user_data: Form
             .finish()
     }
 
-    let db_connection = pool.get().expect("Failed getting db connection");
+    let mut db_connection = pool.get().expect("Failed getting db connection");
 
     let user = users::table
         .filter(users::username.eq(&user_data.username))
-        .first::<User>(&db_connection);
+        .first::<User>(&mut db_connection);
 
     match user {
         Ok(user) => {
@@ -185,7 +185,7 @@ async fn render_signup(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
     let response_body = tmpl
         .render("signup.html", &Context::new())
         .unwrap();
-    
+
     HttpResponse::Ok()
         .content_type("text/html")
         .body(response_body)
@@ -229,11 +229,11 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, user_data: For
         user_data.password.clone()
     );
 
-    let db_connection = pool.get().expect("Failed getting db connection");
+    let mut db_connection = pool.get().expect("Failed getting db connection");
 
     // インサート結果が返ってくるまでブロック
     let result = web::block(move || {
-        diesel::insert_into(users::table).values(user).execute(&db_connection)
+        diesel::insert_into(users::table).values(user).execute(&mut db_connection)
     }).await;
 
     // ブロック、インサートのResultで二重にラップされている

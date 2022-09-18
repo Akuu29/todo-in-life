@@ -6,8 +6,8 @@ use validator::Validate;
 use serde_json::json;
 use crate::Pool;
 use crate::todos::validate_todos_form::{
-    TodoData, 
-    EditTodoData, 
+    TodoData,
+    EditTodoData,
     UpdateTodoDataStatus,
     DeleteTodoData
 };
@@ -32,18 +32,18 @@ pub async fn get(identity: Identity, pool: Pool) -> impl Responder {
         return HttpResponse::Unauthorized().finish();
     }
 
-    let db_connection = pool.get().expect("Failed getting db connection");
+    let mut db_connection = pool.get().expect("Failed getting db connection");
 
     let user_id = users::table
         .filter(users::username.eq(&identity.identity().unwrap()))
-        .first::<User>(&db_connection)
+        .first::<User>(&mut db_connection)
         .unwrap()
         .id;
 
     let get_result = todos::table
         .filter(todos::user_id.eq(user_id))
         .order(todos::date_created)
-        .load::<Todo>(&db_connection);
+        .load::<Todo>(&mut db_connection);
 
     match get_result {
         Ok(todos) => HttpResponse::Ok().json(json!({"status": "success", "todos": todos})),
@@ -65,11 +65,11 @@ pub async fn create(identity: Identity, pool: Pool, todo_data: Json<TodoData>) -
             .json(json!({"status": "error", "validationErrors": validation_errors.field_errors()}));
     }
 
-    let db_connection = pool.get().expect("Failed getting db connection");
+    let mut db_connection = pool.get().expect("Failed getting db connection");
 
     let user_id = users::table
         .filter(users::username.eq(&identity.identity().unwrap()))
-        .first::<User>(&db_connection)
+        .first::<User>(&mut db_connection)
         .unwrap()
         .id;
 
@@ -86,7 +86,7 @@ pub async fn create(identity: Identity, pool: Pool, todo_data: Json<TodoData>) -
     let result = web::block(move || {
         diesel::insert_into(todos::table)
             .values(todo)
-            .execute(&db_connection)
+            .execute(&mut db_connection)
     }).await;
 
     match result {
@@ -109,18 +109,18 @@ pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData
             .json(json!({"status": "error", "validationErrors": validation_errors.field_errors()}));
     }
 
-    let db_connection = pool.get().expect("Failed getting db connection");
+    let mut db_connection = pool.get().expect("Failed getting db connection");
 
     let user_id = users::table
         .filter(users::username.eq(identity.identity().unwrap()))
-        .first::<User>(&db_connection)
+        .first::<User>(&mut db_connection)
         .unwrap()
         .id;
 
     // todoからuser_id取得
     let get_todo_result = todos::table
         .filter(todos::id.eq(todo_data.id.clone()))
-        .first::<Todo>(&db_connection);
+        .first::<Todo>(&mut db_connection);
     let todo_user_id = match get_todo_result {
         Ok(todo) => todo.user_id,
         Err(_) => return HttpResponse::Forbidden().finish(),
@@ -146,7 +146,7 @@ pub async fn update(identity: Identity, pool: Pool, todo_data: Json<EditTodoData
                 todos::category.eq(todo_data.category.clone()),
                 todos::date_limit.eq(convert_date_limit_to_naivedate),
             ))
-            .execute(&db_connection)
+            .execute(&mut db_connection)
     }).await;
 
     match update_result {
@@ -163,18 +163,18 @@ pub async fn update_category(identity: Identity, pool: Pool, todo_data: Json<Upd
         return HttpResponse::Unauthorized().finish();
     }
 
-    let db_connection = pool.get().expect("Failed getting db connection");
+    let mut db_connection = pool.get().expect("Failed getting db connection");
 
     let user_id = users::table
         .filter(users::username.eq(&identity.identity().unwrap()))
-        .first::<User>(&db_connection)
+        .first::<User>(&mut db_connection)
         .unwrap()
         .id;
-    
+
     // todoからuser_idを取得
     let get_todo_result = todos::table
         .filter(todos::id.eq(&todo_data.id))
-        .first::<Todo>(&db_connection);
+        .first::<Todo>(&mut db_connection);
     let todo_user_id = match get_todo_result  {
         Ok(todo) => todo.user_id,
         Err(_) => return HttpResponse::Forbidden().finish(),
@@ -190,7 +190,7 @@ pub async fn update_category(identity: Identity, pool: Pool, todo_data: Json<Upd
             .set(
                 todos::category.eq(&todo_data.category)
             )
-            .execute(&db_connection)
+            .execute(&mut db_connection)
     }).await;
 
     match update_status_result {
@@ -207,18 +207,18 @@ pub async fn delete(identity: Identity, pool: Pool, todo_data: Query<DeleteTodoD
         return HttpResponse::Unauthorized().finish();
     }
 
-    let db_connection = pool.get().expect("Failed getting db connection");
+    let mut db_connection = pool.get().expect("Failed getting db connection");
 
     let user_id = users::table
         .filter(users::username.eq(&identity.identity().unwrap()))
-        .first::<User>(&db_connection)
+        .first::<User>(&mut db_connection)
         .unwrap()
         .id;
 
     // todoからuser_idを取得
     let get_todo_result = todos::table
         .filter(todos::id.eq(&todo_data.id))
-        .first::<Todo>(&db_connection);
+        .first::<Todo>(&mut db_connection);
     let todo_user_id = match get_todo_result {
         Ok(todo) => todo.user_id,
         Err(_) => return HttpResponse::Forbidden().finish(),
@@ -234,7 +234,7 @@ pub async fn delete(identity: Identity, pool: Pool, todo_data: Query<DeleteTodoD
 
     let delete_result = web::block(move || {
         diesel::delete(todos::table.filter(todos::id.eq(&todo_data.id).and(todos::user_id.eq(user_id))))
-            .execute(&db_connection)
+            .execute(&mut db_connection)
     }).await;
 
     match delete_result {
