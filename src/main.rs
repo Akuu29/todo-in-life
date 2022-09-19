@@ -4,7 +4,7 @@ use actix_web::web::Data;
 use actix_web::middleware::Logger;
 use actix_files::Files;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
-use diesel::prelude::*;
+use diesel::pg::PgConnection;
 use diesel::r2d2::{self, ConnectionManager};
 use tera::Tera;
 use rand::Rng;
@@ -20,7 +20,7 @@ async fn main() -> std::io::Result<()> {
     // DB接続プールの作成
     let database_url = env::var("DATABASE_URL")
         .expect("Please set DATABASE_URL in .env");
-    let manager = ConnectionManager::<MysqlConnection>::new(database_url);
+    let manager = ConnectionManager::<PgConnection>::new(database_url);
     let pool = r2d2::Pool::builder().build(manager).expect("Filed to create db pool");
 
     let mut listenfd = ListenFd::from_env();

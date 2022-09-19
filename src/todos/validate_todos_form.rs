@@ -2,10 +2,11 @@ use std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationError};
 use chrono::{Utc};
-use crate::{convert_to_date};
+use uuid::Uuid;
+use crate::convert_to_date;
 
 #[derive(Debug, Validate, Deserialize)]
-pub struct TodoData {
+pub struct TodoForCreate {
     #[validate(length(
         min = 1,
         max = 50,
@@ -30,8 +31,8 @@ pub struct TodoData {
 }
 
 #[derive(Debug, Clone, Validate, Deserialize, Serialize)]
-pub struct EditTodoData {
-    pub id: String,
+pub struct TodoForEdit {
+    pub id: Uuid,
     #[validate(length(
         min = 1,
         max = 50,
@@ -73,12 +74,12 @@ fn validate_past_date(date_limit: &str) -> Result<(), ValidationError>{
 }
 
 #[derive(Debug, Deserialize)]
-pub struct UpdateTodoDataStatus {
-    pub id: String,
+pub struct TodoForUpdateStatus {
+    pub id: Uuid,
     pub category: String,
 }
 
-#[derive(Deserialize, Clone, Serialize)]
-pub struct DeleteTodoData {
-    pub id: String,
+#[derive(Debug, Deserialize, Serialize)]
+pub struct TodoForDelete {
+    pub id: Uuid,
 }

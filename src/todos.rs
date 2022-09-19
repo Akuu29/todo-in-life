@@ -1,3 +1,4 @@
-pub mod model_todos;
+mod model_todos;
 pub use model_todos::*;
-pub mod validate_todos_form;
+mod validate_todos_form;
+pub use validate_todos_form::*;

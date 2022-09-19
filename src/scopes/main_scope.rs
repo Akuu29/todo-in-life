@@ -6,8 +6,7 @@ use diesel::prelude::*;
 use validator::Validate;
 use argon2::Argon2;
 use argon2::password_hash::{PasswordHash, PasswordVerifier};
-use crate::users::User;
-use crate::users::validate_users_form::{SignupData, LoginData};
+use crate::users::{User, NewUser, SignupData, LoginData};
 use crate::Pool;
 use crate::schema::users;
 use crate::manage_cookie::{
@@ -81,8 +80,8 @@ async fn render_login(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
 }
 
 #[post("/login")]
-async fn login(req: HttpRequest, identity: Identity, pool: Pool, user_data: Form<LoginData>) -> impl Responder {
-    // サインアップ済みまたはログイン済みの場合、エラー
+async fn login(req: HttpRequest, identity: Identity, pool: Pool, form_data: Form<LoginData>) -> impl Responder {
+    // ログイン済みの場合、エラー
     if identity.identity().is_some() {
         return HttpResponse::Found()
             .append_header(("location", "/"))
@@ -93,7 +92,7 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, user_data: Form
     let mut cookie_messages = generate_cookie_messages(&req);
 
     // バリデーション
-    if let Err(validation_errors) = user_data.validate() {
+    if let Err(validation_errors) = form_data.validate() {
         // エラーメッセージをcookieに設定
         validation_errors.field_errors().iter().for_each(|(_, fields)| {
             fields.iter().for_each(|validation_error| {
@@ -113,19 +112,19 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, user_data: Form
 
     let mut db_connection = pool.get().expect("Failed getting db connection");
 
-    let user = users::table
-        .filter(users::username.eq(&user_data.username))
+    let result = users::table
+        .filter(users::username.eq(&form_data.username))
         .first::<User>(&mut db_connection);
 
-    match user {
-        Ok(user) => {
+    match result {
+        Ok(login_user) => {
             // 入力されたパスワードのハッシュ値を保存されているハッシュ値と比較
-            let parsed_hash = PasswordHash::new(&user.password).unwrap();
-            let is_match = Argon2::default().verify_password(user_data.password.as_bytes(), &parsed_hash);
+            let parsed_hash = PasswordHash::new(&login_user.password).unwrap();
+            let is_match = Argon2::default().verify_password(form_data.password.as_bytes(), &parsed_hash);
             match is_match {
                 Ok(_) => {
                     // cookieにID保存
-                    identity.remember(user.username);
+                    identity.remember(login_user.username);
 
                     // cookieにメッセージを保存
                     set_messages_in_cookie(
@@ -192,8 +191,8 @@ async fn render_signup(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
 }
 
 #[post("/signup")]
-async fn signup(req: HttpRequest, pool: Pool, identity: Identity, user_data: Form<SignupData>) -> impl Responder {
-    // サインアップまたはログイン済みの場合、早期リターン
+async fn signup(req: HttpRequest, pool: Pool, identity: Identity, form_data: Form<SignupData>) -> impl Responder {
+    // ログイン済みの場合、早期リターン
     if identity.identity().is_some() {
         return HttpResponse::Found()
             .append_header(("location", "/"))
@@ -204,7 +203,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, user_data: For
     let mut cookie_messages = generate_cookie_messages(&req);
 
     // バリデーション
-    if let Err(validation_errors) = user_data.validate() {
+    if let Err(validation_errors) = form_data.validate() {
         validation_errors.field_errors().iter().for_each(|(_, fields)| {
             fields.iter().for_each(|validation_error| {
                 // エラーメッセージをcookieに保存
@@ -223,26 +222,24 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, user_data: For
             .finish();
     }
 
-    let user = User::new(
-        user_data.username.clone(),
-        user_data.email.clone(),
-        user_data.password.clone()
-    );
+    // 登録用のユーザーの生成
+    let new_user = NewUser::generate(form_data);
 
     let mut db_connection = pool.get().expect("Failed getting db connection");
 
     // インサート結果が返ってくるまでブロック
     let result = web::block(move || {
-        diesel::insert_into(users::table).values(user).execute(&mut db_connection)
+        diesel::insert_into(users::table)
+            .values(new_user)
+            .get_result::<User>(&mut db_connection)
     }).await;
 
-    // ブロック、インサートのResultで二重にラップされている
     match result {
         Ok(insert_result) => {
             match insert_result {
-                Ok(_) => {
+                Ok(insert_user) => {
                     // cookieにID保存
-                    identity.remember(user_data.username.clone());
+                    identity.remember(insert_user.username);
 
                     // cookieにメッセージを保存
                     set_messages_in_cookie(

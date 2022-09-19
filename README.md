@@ -15,7 +15,7 @@ You can also manage todo's by grouping them into 'short', 'medium', 'long', and 
 #### Client
 * React
 #### Database
-* [Diesel](https://diesel.rs/ "diesel") ORM with MySql as default DB
+* [Diesel](https://diesel.rs/ "diesel") ORM with Postgresql as default DB
 #### Server
 * [actix-web](https://actix.rs/ "actix-web"), web framework for Rust
 
@@ -33,9 +33,9 @@ npm run prod
 Execute the following command in the project root.
 ```powershell
 # Install the 'diesel_cli' (If you have not installed this yet)
-cargo install diesel_cli --no-default--features --features mysql
+cargo install diesel_cli --no-default--features --features postgres
 # Set the 'DATABASE_URL' enviroment variable. Check the notes for more information.
-echo DATABASE_URL=mysql://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/todo_in_life >> .env
+echo DATABASE_URL=postgres://{USERNAME}:{PASSWORD}@{HOST}/todo_in_life >> .env
 # Create the datebase
 diesel setup
 # Create the schema
@@ -44,11 +44,10 @@ diesel migration run
 
 >Regarding 'DATABASE_URL' enviroment variable
 >
->Replace '{USERNAME}', '{PASSWORD}', '{HOST}' and '{PORT}' in 'DATABASE_URL' with the fllowing.  
->{USERNAME} -> mysql user's username  
->{PASSWORD} -> mysql user's password  
->{HOST} -> mysql user's host  
->{PORT} -> mysql port
+>Replace '{USERNAME}', '{PASSWORD}', '{HOST}' and '{PORT}' in 'DATABASE_URL' with the fllowing.
+>{USERNAME} -> user's username
+>{PASSWORD} -> user's password
+>{HOST} -> user's host
 
 #### Server
 Execute the following command in the project root.  

@@ -3,7 +3,8 @@ extern crate diesel;
 
 use actix_web::web::Data;
 use chrono::{NaiveDate};
-use diesel::prelude::*;
+// use diesel::prelude::*;
+use diesel::pg::PgConnection;
 use diesel::r2d2::{self, ConnectionManager};
 
 pub mod scopes;
@@ -12,7 +13,7 @@ mod todos;
 mod schema;
 mod manage_cookie;
 
-pub type Pool = Data<r2d2::Pool<ConnectionManager<MysqlConnection>>>;
+pub type Pool = Data<r2d2::Pool<ConnectionManager<PgConnection>>>;
 
 // 文字列日付をNaiveDateに変換して返却
 pub fn convert_to_date(date: &str) -> NaiveDate {

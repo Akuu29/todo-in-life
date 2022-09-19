@@ -1,31 +1,39 @@
+use actix_web::web::Form;
 use uuid::Uuid;
-use chrono::{NaiveDateTime, Utc};
+use chrono::NaiveDateTime;
 use argon2::Argon2;
 use argon2::password_hash::rand_core::OsRng;
 use argon2::password_hash::{PasswordHasher, SaltString};
 use crate::schema::users;
+use crate::users::SignupData;
 
-#[derive(Debug, Clone, Queryable, Insertable)]
-#[table_name="users"]
+#[derive(Debug, Clone, Queryable)]
 pub struct User {
-    pub id: String,
+    pub id: Uuid,
     pub username: String,
     pub email: String,
     pub password: String,
     pub date_created: NaiveDateTime,
 }
 
-impl User {
-    pub fn new(username: String, email: String, password: String) -> User {
-        User {
-            id: Uuid::new_v4().to_string(),
-            username,
-            email,
-            password: User::hash_password(password),
-            date_created: Utc::now().naive_utc(),
+#[derive(Debug, Insertable)]
+#[diesel(table_name = users)]
+pub struct NewUser {
+    pub username: String,
+    pub email: String,
+    pub password: String,
+}
+
+impl NewUser {
+    pub fn generate(form_data: Form<SignupData>) -> NewUser {
+        NewUser {
+            username: form_data.username.clone(),
+            email: form_data.email.clone(),
+            password: NewUser::convert_hash_password(form_data.password.clone())
         }
     }
-    fn hash_password(password: String) -> String {
+    // パスワードを文字列からハッシュに変換
+    fn convert_hash_password(password: String) -> String {
         let salt = SaltString::generate(&mut OsRng);
         let argon2 = Argon2::default();
 

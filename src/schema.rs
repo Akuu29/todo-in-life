@@ -1,26 +1,30 @@
-table! {
+// @generated automatically by Diesel CLI.
+
+diesel::table! {
     todos (id) {
-        id -> Char,
+        id -> Uuid,
         title -> Varchar,
         content -> Nullable<Varchar>,
         category -> Varchar,
         date_limit -> Nullable<Date>,
         date_created -> Timestamp,
-        user_id -> Char,
+        user_id -> Uuid,
     }
 }
 
-table! {
+diesel::table! {
     users (id) {
-        id -> Char,
+        id -> Uuid,
         username -> Varchar,
         email -> Varchar,
         password -> Varchar,
-        date_created -> Timestamp,
+        data_created -> Timestamp,
     }
 }
 
-allow_tables_to_appear_in_same_query!(
+diesel::joinable!(todos -> users (user_id));
+
+diesel::allow_tables_to_appear_in_same_query!(
     todos,
     users,
 );

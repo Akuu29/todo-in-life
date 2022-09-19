@@ -1,36 +1,40 @@
-use chrono::{NaiveDateTime, Utc, NaiveDate};
+use actix_web::web::Json;
+use chrono::{NaiveDateTime, NaiveDate};
 use serde::{Serialize};
 use uuid::Uuid;
+use diesel::prelude::*;
 use crate::schema::todos;
+use crate::todos::TodoForCreate;
 use crate::convert_to_date;
 
-#[derive(Debug, Clone, Queryable, Insertable, Serialize)]
-#[table_name="todos"]
+#[derive(Debug, Clone, Queryable, Serialize)]
 pub struct Todo {
-    pub id: String,
+    pub id: Uuid,
     pub title: String,
     pub content: Option<String>,
     pub category: String,
     pub date_limit: Option<NaiveDate>,
     pub date_created: NaiveDateTime,
-    pub user_id: String,
+    pub user_id: Uuid
 }
 
-impl Todo {
-    pub fn new(
-        title: String,
-        content: Option<String>,
-        category: String,
-        date_limit: Option<String>,
-        user_id: String
-    ) -> Self {
-        Todo {
-            id: Uuid::new_v4().to_string(),
-            title,
-            content,
-            category,
-            date_limit: Todo::convert_date_limit_to_naivedate(date_limit),
-            date_created: Utc::now().naive_utc(),
+#[derive(Debug, Insertable)]
+#[diesel(table_name = todos)]
+pub struct  NewTodo {
+    pub title: String,
+    pub content: Option<String>,
+    pub category: String,
+    pub date_limit: Option<NaiveDate>,
+    pub user_id: Uuid
+}
+
+impl NewTodo {
+    pub fn generate(todo_data: Json<TodoForCreate>, user_id: Uuid) -> NewTodo {
+        NewTodo {
+            title: todo_data.title.clone(),
+            content: todo_data.content.clone(),
+            category: todo_data.category.clone(),
+            date_limit: NewTodo::convert_date_limit_to_naivedate(todo_data.date_limit.clone()),
             user_id
         }
     }
