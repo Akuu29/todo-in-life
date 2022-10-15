@@ -223,7 +223,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, form_data: For
     }
 
     // 登録用のユーザーの生成
-    let new_user = NewUser::generate(form_data);
+    let new_user = NewUser::new(form_data);
 
     let mut db_connection = pool.get().expect("Failed getting db connection");
 

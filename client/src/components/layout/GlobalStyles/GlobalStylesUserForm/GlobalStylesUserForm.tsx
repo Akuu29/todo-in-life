@@ -34,7 +34,7 @@ const userForm = {
       top: "50%",
       left: "50%",
       transform: "translateY(-50%) translateX(-50%)",
-    }
+    },
   }),
   ".userFormContent": css({
     width: 300,
@@ -88,15 +88,13 @@ const userForm = {
       cursor: "pointer",
       "&:hover": {
         opacity: 0.6,
-      }
-    }
+      },
+    },
   }),
 };
 
 const GlobalStylesUserForm = () => {
-  return (
-    <Global styles={userForm} />
-  );
+  return <Global styles={userForm} />;
 };
 
 export default GlobalStylesUserForm;

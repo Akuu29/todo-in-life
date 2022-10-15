@@ -2,7 +2,7 @@ import { FC, ReactNode, useState } from "react";
 import { css, SerializedStyles } from "@emotion/react";
 
 const TOOLTIP_STYLES = {
-  "plusIcon": css({
+  plusIcon: css({
     position: "absolute",
     textAlign: "center",
     bottom: 20,
@@ -16,7 +16,7 @@ const TOOLTIP_STYLES = {
     height: 23,
     transform: "translateX(-40%)",
   }),
-  "DL": css({
+  DL: css({
     position: "absolute",
     textAlign: "center",
     bottom: 20,
@@ -31,7 +31,7 @@ const TOOLTIP_STYLES = {
     height: 35,
     transform: "translateX(-35%)",
   }),
-  "DC": css({
+  DC: css({
     position: "absolute",
     textAlign: "center",
     bottom: 20,
@@ -46,7 +46,7 @@ const TOOLTIP_STYLES = {
     height: 35,
     transform: "translateX(-48%)",
   }),
-  "editIcon": css({
+  editIcon: css({
     position: "absolute",
     bottom: 40,
     textAlign: "center",
@@ -58,7 +58,7 @@ const TOOLTIP_STYLES = {
     width: 50,
     transform: "translateX(90%)",
   }),
-  "trashIcon": css({
+  trashIcon: css({
     position: "absolute",
     bottom: 40,
     textAlign: "center",
@@ -73,11 +73,11 @@ const TOOLTIP_STYLES = {
 };
 
 const TOOLTIP_MSG = {
-  "plusIcon": "Create todo",
-  "DL": "Order by\nDeadline",
-  "DC": "Order by\nDate Created",
-  "editIcon": "Edit",
-  "trashIcon": "Delete",
+  plusIcon: "Create todo",
+  DL: "Order by\nDeadline",
+  DC: "Order by\nDate Created",
+  editIcon: "Edit",
+  trashIcon: "Delete",
 };
 
 interface TooltipType {
@@ -89,28 +89,27 @@ interface TooltipType {
 }
 
 const Tooltip: FC<{
-    children: ReactNode;
-    tooltipType: keyof TooltipType;
-    tooltipStyle: SerializedStyles | null;
-  }> = ({
-    children,
-    tooltipType,
-    tooltipStyle
-  }) => {
-
+  children: ReactNode;
+  tooltipType: keyof TooltipType;
+  tooltipStyle: SerializedStyles | null;
+}> = ({ children, tooltipType, tooltipStyle }) => {
   const [isShowTooltip, setIsTooltip] = useState<boolean>(false);
 
   return (
     <div css={tooltipStyle && tooltipStyle}>
       <div
-        onMouseEnter={() => {setIsTooltip(true)}}
-        onMouseLeave={() => {setIsTooltip(false)}}>
+        onMouseEnter={() => {
+          setIsTooltip(true);
+        }}
+        onMouseLeave={() => {
+          setIsTooltip(false);
+        }}
+      >
         {children}
       </div>
-      {isShowTooltip &&
-        <p css={TOOLTIP_STYLES[tooltipType]}>
-          {TOOLTIP_MSG[tooltipType]}
-        </p>}
+      {isShowTooltip && (
+        <p css={TOOLTIP_STYLES[tooltipType]}>{TOOLTIP_MSG[tooltipType]}</p>
+      )}
     </div>
   );
 };

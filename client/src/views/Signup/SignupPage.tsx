@@ -3,8 +3,7 @@ import { CookiesProvider } from "react-cookie";
 import GlobalStyles from "../../components/layout/GlobalStyles/GlobalStyles";
 import Header from "../../components/layout/Header/Header";
 import Footer from "../../components/layout/Footer/Footer";
-import UserFormErrorMessages
-  from "../../components/forms/UserFormErrorMessages/UserFormErrorMessages";
+import UserFormErrorMessages from "../../components/forms/UserFormErrorMessages/UserFormErrorMessages";
 import SignupForm from "./SignupForm";
 
 const SignupPage: FC = () => {
@@ -14,7 +13,7 @@ const SignupPage: FC = () => {
       <CookiesProvider>
         <GlobalStyles />
         <Header />
-        <UserFormErrorMessages formType="signup"/>
+        <UserFormErrorMessages formType="signup" />
         <SignupForm />
         <Footer />
       </CookiesProvider>

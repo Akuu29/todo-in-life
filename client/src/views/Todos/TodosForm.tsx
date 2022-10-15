@@ -1,9 +1,4 @@
-import {
-  FC,
-  Dispatch,
-  SetStateAction,
-  ChangeEvent
-} from "react";
+import { FC, Dispatch, SetStateAction, ChangeEvent } from "react";
 import { css } from "@emotion/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons/faRectangleXmark";
@@ -12,8 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Todo } from "./TodosContents";
 import { DateFormatters } from "../../utils/helpers/date.helpers";
 import { TODO_CATEGORIES } from "../../utils/constants/todoCategory.constants";
-import TodoFormErrorMessages from
-  "../../components/forms/TodoFormErrorMessages/TodoFormErrorMessages";
+import TodoFormErrorMessages from "../../components/forms/TodoFormErrorMessages/TodoFormErrorMessages";
 
 const todosFormContainer = css({
   display: "flex",
@@ -42,7 +36,7 @@ const titleWrapper = css({
     fontSize: 30,
     borderBottom: "solid",
     paddingBottom: 5,
-  }
+  },
 });
 
 const todoFormContent = css({
@@ -62,7 +56,7 @@ const todoFormContent = css({
   ".inputDate": {
     width: 150,
     display: "block",
-  }
+  },
 });
 
 const submitBtnWrapper = css({
@@ -78,8 +72,8 @@ const submitBtnWrapper = css({
     fontFamily: "Arial Black",
     "&:hover": {
       opacity: 0.6,
-    }
-  }
+    },
+  },
 });
 
 const closeBtnkWrapper = css({
@@ -91,29 +85,29 @@ const closeBtn = css({
   cursor: "pointer",
   "&:hover": {
     opacity: 0.6,
-  }
+  },
 });
 
-type HandleChangeEvent = ChangeEvent<HTMLInputElement> |
-  ChangeEvent<HTMLTextAreaElement> |
-  ChangeEvent<HTMLSelectElement>;
+type HandleChangeEvent =
+  | ChangeEvent<HTMLInputElement>
+  | ChangeEvent<HTMLTextAreaElement>
+  | ChangeEvent<HTMLSelectElement>;
 
 const TodosForm: FC<{
-    todo: Todo;
-    setTodo: Dispatch<SetStateAction<Todo>>;
-    setIsShowForm: Dispatch<SetStateAction<boolean>>;
-    todoFunction: FnToHandleTodosTable;
-    errorMessages: ErrorMessages;
-    setErrorMessages: Dispatch<SetStateAction<ErrorMessages>>;
-  }> = ({
-    todo,
-    setTodo,
-    setIsShowForm,
-    todoFunction,
-    errorMessages,
-    setErrorMessages
-  }) => {
-
+  todo: Todo;
+  setTodo: Dispatch<SetStateAction<Todo>>;
+  setIsShowForm: Dispatch<SetStateAction<boolean>>;
+  todoFunction: FnToHandleTodosTable;
+  errorMessages: ErrorMessages;
+  setErrorMessages: Dispatch<SetStateAction<ErrorMessages>>;
+}> = ({
+  todo,
+  setTodo,
+  setIsShowForm,
+  todoFunction,
+  errorMessages,
+  setErrorMessages,
+}) => {
   const handleChange = (event: HandleChangeEvent) => {
     const key = event.target.name;
     const val = event.target.value;
@@ -125,11 +119,11 @@ const TodosForm: FC<{
     });
   };
 
-  const handleChangeLimitDate  = (date: Date | null) => {
+  const handleChangeLimitDate = (date: Date | null) => {
     setTodo((todo) => {
       return {
         ...todo,
-        date_limit: DateFormatters.convertDateToString(date)
+        date_limit: DateFormatters.convertDateToString(date),
       };
     });
   };
@@ -158,32 +152,38 @@ const TodosForm: FC<{
             name="title"
             value={todo.title}
             required
-            onChange={handleChange} />
-          <TodoFormErrorMessages errorMessages={errorMessages.title}/>
+            onChange={handleChange}
+          />
+          <TodoFormErrorMessages errorMessages={errorMessages.title} />
         </div>
         <div css={todoFormContent}>
           <label>Content</label>
           <textarea
             name="content"
             value={todo.content}
-            onChange={handleChange} />
-          <TodoFormErrorMessages errorMessages={errorMessages.content}/>
+            onChange={handleChange}
+          />
+          <TodoFormErrorMessages errorMessages={errorMessages.content} />
         </div>
         <div css={todoFormContent}>
           <label>Category</label>
-          <select
-            name="category"
-            onChange={handleChange} >
-            <option value={TODO_CATEGORIES.SHORT}
-              selected={todo.category == TODO_CATEGORIES.SHORT}>
+          <select name="category" onChange={handleChange}>
+            <option
+              value={TODO_CATEGORIES.SHORT}
+              selected={todo.category == TODO_CATEGORIES.SHORT}
+            >
               {TODO_CATEGORIES.SHORT}
             </option>
-            <option value={TODO_CATEGORIES.MEDIUM}
-              selected={todo.category == TODO_CATEGORIES.MEDIUM}>
+            <option
+              value={TODO_CATEGORIES.MEDIUM}
+              selected={todo.category == TODO_CATEGORIES.MEDIUM}
+            >
               {TODO_CATEGORIES.MEDIUM}
             </option>
-            <option value={TODO_CATEGORIES.LONG}
-              selected={todo.category == TODO_CATEGORIES.LONG}>
+            <option
+              value={TODO_CATEGORIES.LONG}
+              selected={todo.category == TODO_CATEGORIES.LONG}
+            >
               {TODO_CATEGORIES.LONG}
             </option>
           </select>
@@ -193,8 +193,9 @@ const TodosForm: FC<{
           <DatePicker
             dateFormat="yyyy/MM/dd"
             selected={DateFormatters.convertStrDateToDate(todo.date_limit)}
-            onChange={handleChangeLimitDate} />
-          <TodoFormErrorMessages errorMessages={errorMessages.date_limit}/>
+            onChange={handleChangeLimitDate}
+          />
+          <TodoFormErrorMessages errorMessages={errorMessages.date_limit} />
         </div>
         <div css={submitBtnWrapper}>
           <input type="button" value="POST" onClick={todoFunction} />
@@ -204,7 +205,8 @@ const TodosForm: FC<{
             icon={faRectangleXmark}
             size="2x"
             css={closeBtn}
-            onClick={handleCloseBtn} />
+            onClick={handleCloseBtn}
+          />
         </div>
       </div>
     </div>

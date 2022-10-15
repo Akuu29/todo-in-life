@@ -44,10 +44,10 @@ diesel migration run
 
 >Regarding 'DATABASE_URL' enviroment variable
 >
->Replace '{USERNAME}', '{PASSWORD}', '{HOST}' and '{PORT}' in 'DATABASE_URL' with the fllowing.
->{USERNAME} -> user's username
->{PASSWORD} -> user's password
->{HOST} -> user's host
+>Replace '{USERNAME}', '{PASSWORD}', '{HOST}' and '{PORT}' in 'DATABASE_URL' with the fllowing.  
+>{USERNAME} -> user's username  
+>{PASSWORD} -> user's password  
+>{HOST} -> user's host  
 
 #### Server
 Execute the following command in the project root.  

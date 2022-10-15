@@ -6,7 +6,7 @@ const header = css({
   width: "100%",
   paddingTop: 60,
   paddingBottom: 40,
-  borderBottom: "solid 5px #000000"
+  borderBottom: "solid 5px #000000",
 });
 
 const titleWrapper = css({
@@ -22,7 +22,7 @@ const title = css({
 
 const btnList = css({
   display: "flex",
-  justifyContent: "flex-end"
+  justifyContent: "flex-end",
 });
 
 const navgationBtn = css({
@@ -37,7 +37,7 @@ const btn = css({
   fontSize: 20,
   "&:hover": css({
     textDecoration: "underline",
-  })
+  }),
 });
 
 const Header: FC = () => {
@@ -48,9 +48,9 @@ const Header: FC = () => {
   useEffect(() => {
     const manageLoginStatus = () => {
       const cookieMessages = cookies.messages;
-      if(cookieMessages.length && cookieMessages[0].title) {
+      if (cookieMessages.length && cookieMessages[0].title) {
         const resultLoginOrSignup = cookieMessages[0].title;
-        if(resultLoginOrSignup == "success") {
+        if (resultLoginOrSignup == "success") {
           setIsLoggedIn(true);
         }
       }
@@ -64,30 +64,40 @@ const Header: FC = () => {
       {/* CookiesProviderでラップしているコンポーネント内でcookieの管理が可能*/}
       <CookiesProvider>
         <h1 css={titleWrapper}>
-          <a css={title} href="/">TODO IN LIFE</a>
+          <a css={title} href="/">
+            TODO IN LIFE
+          </a>
         </h1>
         <nav>
           <ul css={btnList}>
-            {isLoggedIn && 
+            {isLoggedIn && (
               <li css={navgationBtn}>
-                <a css={btn} href="/app">HOME</a>
+                <a css={btn} href="/app">
+                  HOME
+                </a>
               </li>
-            }
-            {!isLoggedIn &&
+            )}
+            {!isLoggedIn && (
               <li css={navgationBtn}>
-                <a css={btn} href="/signup">Sign up</a>
+                <a css={btn} href="/signup">
+                  Sign up
+                </a>
               </li>
-            }
-            {!isLoggedIn && 
+            )}
+            {!isLoggedIn && (
               <li css={navgationBtn}>
-                <a css={btn} href="/login">Log in</a>
+                <a css={btn} href="/login">
+                  Log in
+                </a>
               </li>
-            }
-            {isLoggedIn && 
+            )}
+            {isLoggedIn && (
               <li css={navgationBtn}>
-                <a css={btn} href="/logout">Log out</a>
+                <a css={btn} href="/logout">
+                  Log out
+                </a>
               </li>
-            }
+            )}
           </ul>
         </nav>
       </CookiesProvider>

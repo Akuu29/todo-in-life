@@ -27,7 +27,7 @@ interface Message {
   content: string;
 }
 
-const UserFormErrorMessages: FC<{formType: string}> = ({formType}) => {
+const UserFormErrorMessages: FC<{ formType: string }> = ({ formType }) => {
   const [cookies, setCookie] = useCookies(["messages"]);
 
   const [isError, setIsError] = useState(false);
@@ -40,14 +40,14 @@ const UserFormErrorMessages: FC<{formType: string}> = ({formType}) => {
 
       const messages: Array<Message> = [];
 
-      if(messagesFromCookie) {
+      if (messagesFromCookie) {
         messagesFromCookie
           .filter((message: Message) => formType == message.form_type)
           .forEach((message: Message) => {
-          if(message.title == "error") {
-            messages.push(message);
-          }
-        });
+            if (message.title == "error") {
+              messages.push(message);
+            }
+          });
       }
 
       setErrorMessages(messages);
@@ -58,27 +58,27 @@ const UserFormErrorMessages: FC<{formType: string}> = ({formType}) => {
 
   useEffect(() => {
     const controlErrorMessagesDisp = () => {
-      if(errorMessages.length) {
+      if (errorMessages.length) {
         setIsError(true);
       }
-    }
+    };
 
     controlErrorMessagesDisp();
   }, [errorMessages]);
 
   return (
     <div css={errorMessageContainer}>
-      {isError &&
+      {isError && (
         <div css={errorMessageWrapper}>
           {errorMessages.map((errorMessage, i) => {
             return (
               <div css={errorMessageContent} key={i}>
                 ・{errorMessage.content}
               </div>
-            )
+            );
           })}
         </div>
-      }
+      )}
     </div>
   );
 };

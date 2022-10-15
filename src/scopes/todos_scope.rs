@@ -74,7 +74,7 @@ pub async fn create(identity: Identity, pool: Pool, todo_data: Json<TodoForCreat
         .unwrap()
         .id;
 
-    let new_todo = NewTodo::generate(todo_data, user_id);
+    let new_todo = NewTodo::new(todo_data, user_id);
 
     let create_todo_result = web::block(move || {
         diesel::insert_into(todos::table)

@@ -29,7 +29,7 @@ pub struct  NewTodo {
 }
 
 impl NewTodo {
-    pub fn generate(todo_data: Json<TodoForCreate>, user_id: Uuid) -> NewTodo {
+    pub fn new(todo_data: Json<TodoForCreate>, user_id: Uuid) -> Self {
         NewTodo {
             title: todo_data.title.clone(),
             content: todo_data.content.clone(),

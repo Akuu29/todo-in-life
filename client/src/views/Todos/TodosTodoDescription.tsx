@@ -1,8 +1,4 @@
-import {
-  FC,
-  Dispatch,
-  SetStateAction
-} from "react";
+import { FC, Dispatch, SetStateAction } from "react";
 import { css } from "@emotion/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons/faRectangleXmark";
@@ -44,7 +40,7 @@ const titleAndBtnWrapper = css({
   paddingBottom: 5,
   "& h1": {
     fontSize: 30,
-  }
+  },
 });
 
 const editIcon = css({
@@ -54,7 +50,7 @@ const editIcon = css({
   cursor: "pointer",
   "&:hover": {
     opacity: 0.6,
-  }
+  },
 });
 
 const trashIcon = css({
@@ -63,8 +59,8 @@ const trashIcon = css({
   right: 0,
   cursor: "pointer",
   "&:hover": {
-    opacity: 0.6
-  }
+    opacity: 0.6,
+  },
 });
 
 const todoDescContent = css({
@@ -72,11 +68,11 @@ const todoDescContent = css({
   marginBottom: 40,
   "& p": {
     fontFamily: "none",
-  }
+  },
 });
 
 const sentence = css({
-  whiteSpace: "pre-wrap"
+  whiteSpace: "pre-wrap",
 });
 
 const closeBtnkWrapper = css({
@@ -88,23 +84,16 @@ const closeBtn = css({
   cursor: "pointer",
   "&:hover": {
     opacity: 0.6,
-  }
+  },
 });
 
 const TodoDescription: FC<{
-    todo: Todo,
-    setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
-    setIsShowForm: Dispatch<SetStateAction<boolean>>;
-    setFormType: Dispatch<SetStateAction<string>>;
-    deleteTodo: FnToHandleTodosTable;
-  }> = ({
-    todo,
-    setIsShowTodoDesc,
-    setIsShowForm,
-    setFormType,
-    deleteTodo
-  }) => {
-
+  todo: Todo;
+  setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
+  setIsShowForm: Dispatch<SetStateAction<boolean>>;
+  setFormType: Dispatch<SetStateAction<string>>;
+  deleteTodo: FnToHandleTodosTable;
+}> = ({ todo, setIsShowTodoDesc, setIsShowForm, setFormType, deleteTodo }) => {
   const handleEditIcon = () => {
     // todo詳細ページを非表示
     setIsShowTodoDesc(false);
@@ -119,27 +108,30 @@ const TodoDescription: FC<{
     deleteTodo();
     // todo詳細ページを非表示
     setIsShowTodoDesc(false);
-  }
+  };
 
   return (
-    <div css={todoDescContainer} >
+    <div css={todoDescContainer}>
       <div css={todoDescription}>
         <div css={titleAndBtnWrapper}>
           <h1>Description</h1>
-          {todo.category != TODO_CATEGORIES.COMPLETE &&
+          {todo.category != TODO_CATEGORIES.COMPLETE && (
             <Tooltip tooltipType="editIcon" tooltipStyle={null}>
               <FontAwesomeIcon
                 icon={faPenToSquare}
                 css={editIcon}
                 size="2x"
-                onClick={handleEditIcon} />
-            </Tooltip>}
+                onClick={handleEditIcon}
+              />
+            </Tooltip>
+          )}
           <Tooltip tooltipType="trashIcon" tooltipStyle={null}>
             <FontAwesomeIcon
               icon={faTrash}
               size="2x"
               css={trashIcon}
-              onClick={handleDeleteIcon} />
+              onClick={handleDeleteIcon}
+            />
           </Tooltip>
         </div>
         <div css={todoDescContent}>
@@ -167,7 +159,8 @@ const TodoDescription: FC<{
             icon={faRectangleXmark}
             size="2x"
             css={closeBtn}
-            onClick={() => setIsShowTodoDesc(false)} />
+            onClick={() => setIsShowTodoDesc(false)}
+          />
         </div>
       </div>
     </div>

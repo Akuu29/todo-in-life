@@ -3,14 +3,13 @@ import {
   useState,
   ChangeEventHandler,
   ChangeEvent,
-  MouseEventHandler
+  MouseEventHandler,
 } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 import { faEyeSlash } from "@fortawesome/free-solid-svg-icons/faEyeSlash";
 
-import GlobalStylesUserForm from
-  "../../components/layout/GlobalStyles/GlobalStylesUserForm/GlobalStylesUserForm";
+import GlobalStylesUserForm from "../../components/layout/GlobalStyles/GlobalStylesUserForm/GlobalStylesUserForm";
 
 const LoginForm: FC = () => {
   const [userInfo, setUserInfo] = useState({
@@ -21,11 +20,13 @@ const LoginForm: FC = () => {
   // パスワードの表示、非表示の切り替え用のstate
   const [isShowPassword, setIsShowPassword] = useState(false);
 
-  const handleChange: ChangeEventHandler = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChange: ChangeEventHandler = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
     const key = event.target.name;
     const val = event.target.value;
-    setUserInfo({...userInfo, [key]: val});
-// TODO formバリデーション
+    setUserInfo({ ...userInfo, [key]: val });
+    // TODO formバリデーション
   };
 
   const handleChangeIsShow: MouseEventHandler = () => {
@@ -35,7 +36,7 @@ const LoginForm: FC = () => {
   return (
     <div className="userFormContainer">
       <GlobalStylesUserForm />
-      <form action="/login" method="POST" className="userForm" >
+      <form action="/login" method="POST" className="userForm">
         <div className="titleWrapper">
           <h1>Log in</h1>
         </div>
@@ -46,7 +47,8 @@ const LoginForm: FC = () => {
             name="username"
             placeholder="username"
             required
-            onChange={handleChange} />
+            onChange={handleChange}
+          />
         </div>
         <div className="userFormContentPassWord">
           <label className="inputLabel">password</label>
@@ -55,12 +57,13 @@ const LoginForm: FC = () => {
             name="password"
             placeholder="password"
             required
-            onChange={handleChange} />
+            onChange={handleChange}
+          />
           <span onClick={handleChangeIsShow}>
             {isShowPassword ? (
-              <FontAwesomeIcon icon={faEyeSlash} />
-            ) : (
               <FontAwesomeIcon icon={faEye} />
+            ) : (
+              <FontAwesomeIcon icon={faEyeSlash} />
             )}
           </span>
         </div>

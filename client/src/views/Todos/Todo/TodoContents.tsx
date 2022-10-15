@@ -1,8 +1,4 @@
-import {
-  FC,
-  Dispatch,
-  SetStateAction
-} from "react";
+import { FC, Dispatch, SetStateAction } from "react";
 import { useDrag } from "react-dnd";
 import { css } from "@emotion/react";
 import { Todos, Todo } from "../TodosContents";
@@ -20,7 +16,7 @@ const todoContainer = css({
   "& p": {
     marginTop: 3,
     fontFamily: "none",
-  }
+  },
 });
 
 const todoContent = css({
@@ -47,48 +43,55 @@ interface DropResultMember {
 type DropResult = DropResultMember | null;
 
 const TodoContents: FC<{
-    id: string;
-    title: string;
-    content: string;
-    category: string;
-    date_limit: string | null;
-    date_created: string;
-    todos: Todos;
-    setTodos: Dispatch<SetStateAction<Todos>>;
-    setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
-    setTodo: Dispatch<SetStateAction<Todo>>;
-    setPrevTodoCategory: Dispatch<SetStateAction<string>>;
-  }> = ({
-    id,
-    title,
-    content,
-    category,
-    date_limit,
-    date_created,
-    todos,
-    setTodos,
-    setIsShowTodoDesc,
-    setTodo,
-    setPrevTodoCategory
-  }) => {
-
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  date_limit: string | null;
+  date_created: string;
+  todos: Todos;
+  setTodos: Dispatch<SetStateAction<Todos>>;
+  setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
+  setTodo: Dispatch<SetStateAction<Todo>>;
+  setPrevTodoCategory: Dispatch<SetStateAction<string>>;
+}> = ({
+  id,
+  title,
+  content,
+  category,
+  date_limit,
+  date_created,
+  todos,
+  setTodos,
+  setIsShowTodoDesc,
+  setTodo,
+  setPrevTodoCategory,
+}) => {
   // 他カテゴリーへのdrag&dropがあった際のstate更新
-  const changeTodoColumn = async (currentTodo: CurrentTodo, columnName: string, todos: Todos) => {
-    let todosCopy = {...todos};
+  const changeTodoColumn = async (
+    currentTodo: CurrentTodo,
+    columnName: string,
+    todos: Todos
+  ) => {
+    let todosCopy = { ...todos };
     // 移動するtodoインデックスの取得
-    const targetTodoIndex = todosCopy[currentTodo.category]
-      .findIndex(todo => todo.id == currentTodo.id);
+    const targetTodoIndex = todosCopy[currentTodo.category].findIndex(
+      (todo) => todo.id == currentTodo.id
+    );
     // 移動するtodoの取得
-    let targetTodo = todosCopy[currentTodo.category].splice(targetTodoIndex, 1)[0];
+    let targetTodo = todosCopy[currentTodo.category].splice(
+      targetTodoIndex,
+      1
+    )[0];
     // categoryの書き換え
     targetTodo.category = columnName;
 
     // DB更新
     const patchTodoResult = await TodoApi.patchTodo(targetTodo);
 
-    if(patchTodoResult) {
+    if (patchTodoResult) {
       const data = patchTodoResult.data;
-      if(data.status == "success") {
+      if (data.status == "success") {
         setTodos(() => {
           return {
             ...todosCopy,
@@ -96,17 +99,17 @@ const TodoContents: FC<{
             [columnName]: todosCopy[columnName].concat(targetTodo),
           };
         });
-      }else {
+      } else {
         // AxiosError
         alert(`ERROR: ${patchTodoResult.status}`);
       }
-    }else {
+    } else {
       // Error
       alert("ERROR");
     }
   };
 
-  const [{isDragging}, drag] = useDrag({
+  const [{ isDragging }, drag] = useDrag({
     type: "todo",
     item: {
       id,
@@ -114,13 +117,13 @@ const TodoContents: FC<{
     },
     end: (item, monitor) => {
       const dropResult: DropResult = monitor.getDropResult();
-      if(dropResult && dropResult.name === TODO_CATEGORIES.SHORT) {
+      if (dropResult && dropResult.name === TODO_CATEGORIES.SHORT) {
         changeTodoColumn(item, TODO_CATEGORIES.SHORT, todos);
-      }else if(dropResult && dropResult.name == TODO_CATEGORIES.MEDIUM) {
+      } else if (dropResult && dropResult.name == TODO_CATEGORIES.MEDIUM) {
         changeTodoColumn(item, TODO_CATEGORIES.MEDIUM, todos);
-      }else if(dropResult && dropResult.name == TODO_CATEGORIES.LONG) {
+      } else if (dropResult && dropResult.name == TODO_CATEGORIES.LONG) {
         changeTodoColumn(item, TODO_CATEGORIES.LONG, todos);
-      }else {
+      } else {
         changeTodoColumn(item, TODO_CATEGORIES.COMPLETE, todos);
       }
     },
@@ -145,10 +148,12 @@ const TodoContents: FC<{
   const opacity = isDragging ? 0.4 : 1;
 
   return (
-    <div css={todoContainer}
+    <div
+      css={todoContainer}
       ref={drag}
-      style={{opacity}}
-      onClick={handleDispTodoDesc}>
+      style={{ opacity }}
+      onClick={handleDispTodoDesc}
+    >
       <div css={todoContent}>
         <label>Title</label>
         <p css={sentence}>{title}</p>

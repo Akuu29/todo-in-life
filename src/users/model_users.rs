@@ -25,7 +25,7 @@ pub struct NewUser {
 }
 
 impl NewUser {
-    pub fn generate(form_data: Form<SignupData>) -> NewUser {
+    pub fn new(form_data: Form<SignupData>) -> Self {
         NewUser {
             username: form_data.username.clone(),
             email: form_data.email.clone(),

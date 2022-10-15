@@ -29,7 +29,7 @@ pub fn set_messages_in_cookie(
     message_title: String,
     message_content: String
 ) {
-    let mut messages = 
+    let mut messages =
         serde_json::from_str::<Vec<Message>>(cookie_messages.value()).unwrap();
     let message = Message {
         form_type,

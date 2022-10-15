@@ -1,6 +1,6 @@
 export class DateFormatters {
   static convertDateToString(date: Date | null): string | null {
-    if(!date) {
+    if (!date) {
       return date;
     }
     const y = date.getFullYear().toString();
@@ -10,7 +10,7 @@ export class DateFormatters {
     return y + "-" + m + "-" + d;
   }
   static convertStrDateToDate(date: string | null): Date | null {
-    if(typeof date == "string") {
+    if (typeof date == "string") {
       const dateToDate = new Date(date);
       return dateToDate;
     }
@@ -18,7 +18,7 @@ export class DateFormatters {
     return date;
   }
   static convertStrDateToDispDate(date: string | null): string {
-    if(!date) {
+    if (!date) {
       return "None";
     }
     const toDate = this.convertStrDateToDate(date);

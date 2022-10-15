@@ -1,10 +1,6 @@
-import {
-  FC,
-  useEffect,
-  useState
-} from "react";
+import { FC, useEffect, useState } from "react";
 import { css } from "@emotion/react";
-import { DndProvider }  from "react-dnd";
+import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import TodoContents from "./Todo/TodoContents";
 import TodosCategoryColumn from "./TodosCategoryColumn";
@@ -59,18 +55,18 @@ const TodosContens: FC = () => {
       };
 
       const getTodosResult = await TodoApi.getTodos();
-      if(getTodosResult) {
+      if (getTodosResult) {
         const data = getTodosResult.data;
-        if(data.status == "success") {
+        if (data.status == "success") {
           data.todos.forEach((todo: Todo) => {
             const key: keyof Todos = todo.category;
             initialTodosData[key].push(todo);
           });
-        }else {
+        } else {
           // AxiosError
           alert(`ERROR: ${getTodosResult.status}`);
         }
-      }else {
+      } else {
         // Error
         alert("ERROR");
       }
@@ -82,10 +78,18 @@ const TodosContens: FC = () => {
   }, []);
 
   // それぞれのカテゴリ内における現在のページと最大のページ数
-  const [[currentPageShort, maxPageShort], setPageShort] = useState<[number, number]>([0, 0]);
-  const [[currentPageMedium, maxPageMedium], setPageMedium] = useState<[number, number]>([0, 0]);
-  const [[currentPageLong, maxPageLong], setPageLong] = useState<[number, number]>([0, 0]);
-  const [[currentPageCompleted, maxPageCompleted], setPageCompleted] = useState<[number, number]>([0, 0]);
+  const [[currentPageShort, maxPageShort], setPageShort] = useState<
+    [number, number]
+  >([0, 0]);
+  const [[currentPageMedium, maxPageMedium], setPageMedium] = useState<
+    [number, number]
+  >([0, 0]);
+  const [[currentPageLong, maxPageLong], setPageLong] = useState<
+    [number, number]
+  >([0, 0]);
+  const [[currentPageCompleted, maxPageCompleted], setPageCompleted] = useState<
+    [number, number]
+  >([0, 0]);
 
   // todosの更新時に実行される
   useEffect(() => {
@@ -94,16 +98,16 @@ const TodosContens: FC = () => {
       Object.keys(todos).forEach((key) => {
         let todosLen = todos[key].length;
         let todosMaxPage = Math.ceil(todosLen / 6) - 1;
-        if(key == TODO_CATEGORIES.SHORT) {
+        if (key == TODO_CATEGORIES.SHORT) {
           setPageShort([currentPageShort, todosMaxPage]);
-        }else if(key == TODO_CATEGORIES.MEDIUM) {
+        } else if (key == TODO_CATEGORIES.MEDIUM) {
           setPageMedium([currentPageMedium, todosMaxPage]);
-        }else if(key == TODO_CATEGORIES.LONG) {
+        } else if (key == TODO_CATEGORIES.LONG) {
           setPageLong([currentPageLong, todosMaxPage]);
-        }else {
+        } else {
           setPageCompleted([currentPageCompleted, todosMaxPage]);
         }
-      })
+      });
     };
 
     setMaxPage();
@@ -124,10 +128,10 @@ const TodosContens: FC = () => {
 
   // 各'AppTodosCategoryColumn'にtodoを描画する
   const returnTodosForColumn = (columnName: string, page: number) => {
-    if(todos[columnName].length) {
+    if (todos[columnName].length) {
       // 1pageに6件表示
       return todos[columnName]
-        .filter((_, i) => ((i >= 6 * page) && (i < 6 * (page + 1))))
+        .filter((_, i) => i >= 6 * page && i < 6 * (page + 1))
         .map((todo) => (
           <TodoContents
             key={todo.id}
@@ -141,7 +145,8 @@ const TodosContens: FC = () => {
             setTodos={setTodos}
             setIsShowTodoDesc={setIsShowTodoDesc}
             setTodo={setTodo}
-            setPrevTodoCategory={setPrevTodoCategory} />
+            setPrevTodoCategory={setPrevTodoCategory}
+          />
         ));
     }
   };
@@ -157,31 +162,28 @@ const TodosContens: FC = () => {
   const createTodo: FnToHandleTodosTable = async () => {
     const postTodoResult = await TodoApi.postTodo(todo);
 
-    if(postTodoResult) {
+    if (postTodoResult) {
       const data = postTodoResult.data;
-      if(data.status == "success") {
+      if (data.status == "success") {
         const todoCreated = data.todo;
         setTodos({
           ...todos,
-          [todoCreated.category]: [
-            ...todos[todoCreated.category],
-            todoCreated
-          ]
+          [todoCreated.category]: [...todos[todoCreated.category], todoCreated],
         });
 
         // フォーム画面を閉じる
         setIsShowForm(false);
-      }else {
+      } else {
         // AxiosError
-        if(data.validationErrors) {
+        if (data.validationErrors) {
           // バリデーションエラー
           const validationErrors = data.validationErrors;
           handleValidationErrors(validationErrors);
-        }else {
+        } else {
           alert(`ERROR: ${postTodoResult.status}`);
         }
       }
-    }else {
+    } else {
       // Error
       alert("ERROR");
     }
@@ -191,37 +193,42 @@ const TodosContens: FC = () => {
   const editTodo: FnToHandleTodosTable = async () => {
     const putTodoResult = await TodoApi.putTodo(todo);
 
-    if(putTodoResult) {
+    if (putTodoResult) {
       const data = putTodoResult.data;
-      if(data.status == "success") {
+      if (data.status == "success") {
         const todoEdited = data.todoEdited;
         setTodos((prevTodos) => {
           // edit対象となるcategoryのtodo配列の取得
           let targetTodoArray = prevTodos[prevTodoCategory];
 
-          if(todoEdited.category == prevTodoCategory) {
+          if (todoEdited.category == prevTodoCategory) {
             // edit前と後でcategoryが同じ場合
             // 対象のtodoにedit後のtodoを反映
-            targetTodoArray.filter(todo => todo.id == todoEdited.id)
-            .forEach(todo => {
-              todo.title = todoEdited.title;
-              todo.content =  todoEdited.content;
-              todo.category = todoEdited.category;
-              todo.date_limit = todoEdited.date_limit;
-            });
+            targetTodoArray
+              .filter((todo) => todo.id == todoEdited.id)
+              .forEach((todo) => {
+                todo.title = todoEdited.title;
+                todo.content = todoEdited.content;
+                todo.category = todoEdited.category;
+                todo.date_limit = todoEdited.date_limit;
+              });
 
             return {
               ...prevTodos,
-              [todoEdited.category]: targetTodoArray
+              [todoEdited.category]: targetTodoArray,
             };
-          }else {
+          } else {
             // edit前と後でcategoryが違う場合
             // 'targetTodoArray'より対象のtodoのインデックスの取得
-            const targetTodoIndex = prevTodos[prevTodoCategory]
-              .findIndex(prevTodo => prevTodo.id == todoEdited.id);
+            const targetTodoIndex = prevTodos[prevTodoCategory].findIndex(
+              (prevTodo) => prevTodo.id == todoEdited.id
+            );
             // 対象のtodoの取得
-            let targetTodo = prevTodos[prevTodoCategory].splice(targetTodoIndex, 1);
-            targetTodo.forEach(todo => {
+            let targetTodo = prevTodos[prevTodoCategory].splice(
+              targetTodoIndex,
+              1
+            );
+            targetTodo.forEach((todo) => {
               todo.title = todoEdited.title;
               todo.content = todoEdited.content;
               todo.category = todoEdited.category;
@@ -230,31 +237,34 @@ const TodosContens: FC = () => {
 
             return {
               ...prevTodos,
-              [todoEdited.category]: prevTodos[todoEdited.category].concat(targetTodo),
+              [todoEdited.category]:
+                prevTodos[todoEdited.category].concat(targetTodo),
             };
           }
-        })
+        });
 
         // フォーム画面を閉じる
         setIsShowForm(false);
-      }else {
+      } else {
         // AxiosError
-        if(data.validationErrors) {
+        if (data.validationErrors) {
           // バリデーションエラー
           const validationErrors = data.validationErrors;
           handleValidationErrors(validationErrors!);
-        }else {
+        } else {
           alert(`ERROR: ${putTodoResult.status}`);
         }
       }
-    }else {
+    } else {
       // Error
       alert("ERROR");
     }
-  }
+  };
 
   // バリデーションエラーの内容をstate'errorMessages'に反映する
-  const handleValidationErrors = (responseValidationErrors: ValidationErrors) => {
+  const handleValidationErrors = (
+    responseValidationErrors: ValidationErrors
+  ) => {
     let validationErrorMessages: ErrorMessages = {
       title: [],
       content: [],
@@ -265,8 +275,8 @@ const TodosContens: FC = () => {
       const validationErrors = responseValidationErrors[key];
       validationErrors.forEach((validationError: ValidationError) => {
         validationErrorMessages[key].push(validationError.message);
-      })
-    })
+      });
+    });
     // validationErrorMessagesをerrorMessagesにセットする
     setErrorMessages(validationErrorMessages);
   };
@@ -275,15 +285,17 @@ const TodosContens: FC = () => {
   const deleteTodo: FnToHandleTodosTable = async () => {
     const deleteTodoResult = await TodoApi.deleteTodo(todo);
 
-    if(deleteTodoResult) {
+    if (deleteTodoResult) {
       const data = deleteTodoResult.data;
-      if(data.status == "success") {
+      if (data.status == "success") {
         const todoDeleted = data.todoDeleted;
-        setTodos(prevTodos => {
+        setTodos((prevTodos) => {
           // 削除されたtodoが格納されている配列
           let targetTodoArray = prevTodos[prevTodoCategory];
           // 削除されたtodoのインデックスの取得
-          const targetTodoIndex = targetTodoArray.findIndex(todo => todo.id == todoDeleted.id);
+          const targetTodoIndex = targetTodoArray.findIndex(
+            (todo) => todo.id == todoDeleted.id
+          );
           // 削除
           prevTodos[prevTodoCategory].splice(targetTodoIndex, 1);
 
@@ -292,11 +304,11 @@ const TodosContens: FC = () => {
             [prevTodoCategory]: prevTodos[prevTodoCategory],
           };
         });
-      }else {
+      } else {
         // AxiosError
         alert(`ERROR: ${deleteTodoResult.status}`);
       }
-    }else {
+    } else {
       // Error
       alert("ERROR");
     }
@@ -304,20 +316,25 @@ const TodosContens: FC = () => {
 
   return (
     <div css={todosContainer}>
-      {isShowForm && <TodosForm
-        todo={todo}
-        setTodo={setTodo}
-        setIsShowForm={setIsShowForm}
-        todoFunction={formType == "new" ?
-          createTodo : editTodo}
-        errorMessages={errorMessages}
-        setErrorMessages={setErrorMessages} />}
-      {isShowTodoDesc && <TodoDescription
-        todo={todo}
-        setIsShowTodoDesc={setIsShowTodoDesc}
-        setIsShowForm={setIsShowForm}
-        setFormType={setFormType}
-        deleteTodo={deleteTodo} /> }
+      {isShowForm && (
+        <TodosForm
+          todo={todo}
+          setTodo={setTodo}
+          setIsShowForm={setIsShowForm}
+          todoFunction={formType == "new" ? createTodo : editTodo}
+          errorMessages={errorMessages}
+          setErrorMessages={setErrorMessages}
+        />
+      )}
+      {isShowTodoDesc && (
+        <TodoDescription
+          todo={todo}
+          setIsShowTodoDesc={setIsShowTodoDesc}
+          setIsShowForm={setIsShowForm}
+          setFormType={setFormType}
+          deleteTodo={deleteTodo}
+        />
+      )}
       {/* DndProviderでラップされいるコンポーネント間でdrag&dropが可能 */}
       <DndProvider backend={HTML5Backend}>
         <TodosCategoryColumn
@@ -328,7 +345,8 @@ const TodosContens: FC = () => {
           setPage={setPageShort}
           setTodo={setTodo}
           setFormType={setFormType}
-          setTodos={setTodos} >
+          setTodos={setTodos}
+        >
           {returnTodosForColumn(TODO_CATEGORIES.SHORT, currentPageShort)}
         </TodosCategoryColumn>
         <TodosCategoryColumn
@@ -339,7 +357,8 @@ const TodosContens: FC = () => {
           setPage={setPageMedium}
           setTodo={setTodo}
           setFormType={setFormType}
-          setTodos={setTodos} >
+          setTodos={setTodos}
+        >
           {returnTodosForColumn(TODO_CATEGORIES.MEDIUM, currentPageMedium)}
         </TodosCategoryColumn>
         <TodosCategoryColumn
@@ -350,7 +369,8 @@ const TodosContens: FC = () => {
           setPage={setPageLong}
           setTodo={setTodo}
           setFormType={setFormType}
-          setTodos={setTodos} >
+          setTodos={setTodos}
+        >
           {returnTodosForColumn(TODO_CATEGORIES.LONG, currentPageLong)}
         </TodosCategoryColumn>
         <TodosCategoryColumn
@@ -361,7 +381,8 @@ const TodosContens: FC = () => {
           setPage={setPageCompleted}
           setTodo={setTodo}
           setFormType={setFormType}
-          setTodos={setTodos} >
+          setTodos={setTodos}
+        >
           {returnTodosForColumn(TODO_CATEGORIES.COMPLETE, currentPageCompleted)}
         </TodosCategoryColumn>
       </DndProvider>

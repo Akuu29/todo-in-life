@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { css } from "@emotion/react"
+import { css } from "@emotion/react";
 
 const messageWrapper = css({
   height: 600,
@@ -19,13 +19,17 @@ const TopContents: FC = () => {
   return (
     <div css={messageWrapper}>
       <p css={message}>
-        There is much todo in life.<br/>
-        Manage them here.<br/>
-        Todo can be managed in three categories:<br/>
-        short term, medium term, and long term.<br/>
+        There is much todo in life.
+        <br />
+        Manage them here.
+        <br />
+        Todo can be managed in three categories:
+        <br />
+        short term, medium term, and long term.
+        <br />
       </p>
     </div>
-  )
+  );
 };
 
 export default TopContents;
