@@ -9,9 +9,7 @@ pub struct SignupData {
         message = "Username must be between 4 and 32 characters"
     ))]
     pub username: String,
-    #[validate(email(
-        message = "Email address entered is invalid"
-    ))]
+    #[validate(email(message = "Email address entered is invalid"))]
     pub email: String,
     #[validate(length(
         min = 8,

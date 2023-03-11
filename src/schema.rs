@@ -24,7 +24,4 @@ diesel::table! {
 
 diesel::joinable!(todos -> users (user_id));
 
-diesel::allow_tables_to_appear_in_same_query!(
-    todos,
-    users,
-);
+diesel::allow_tables_to_appear_in_same_query!(todos, users,);

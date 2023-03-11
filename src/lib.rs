@@ -2,16 +2,16 @@
 extern crate diesel;
 
 use actix_web::web::Data;
-use chrono::{NaiveDate};
+use chrono::NaiveDate;
 // use diesel::prelude::*;
 use diesel::pg::PgConnection;
 use diesel::r2d2::{self, ConnectionManager};
 
-pub mod scopes;
-mod users;
-mod todos;
-mod schema;
 mod manage_cookie;
+mod schema;
+pub mod scopes;
+mod todos;
+mod users;
 
 pub type Pool = Data<r2d2::Pool<ConnectionManager<PgConnection>>>;
 
@@ -22,6 +22,6 @@ pub fn convert_to_date(date: &str) -> NaiveDate {
     NaiveDate::from_ymd(
         y.parse::<i32>().unwrap(),
         m.parse::<u32>().unwrap(),
-        d.parse::<u32>().unwrap()
+        d.parse::<u32>().unwrap(),
     )
 }

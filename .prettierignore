@@ -3,5 +3,5 @@ client/node_modules/
 client/package-lock.json
 client/package.json
 client/tsconfig.json
-client/webpacl.config.js
+client/webpack.config.js
 README.md

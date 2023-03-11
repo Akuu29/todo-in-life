@@ -1,18 +1,15 @@
-use actix_web::{get, post, Scope, Responder, HttpResponse, HttpRequest};
-use actix_web::web::{self, Data, Form};
-use actix_identity::Identity;
-use tera::{Tera, Context};
-use diesel::prelude::*;
-use validator::Validate;
-use argon2::Argon2;
-use argon2::password_hash::{PasswordHash, PasswordVerifier};
-use crate::users::{User, NewUser, SignupData, LoginData};
-use crate::Pool;
+use crate::manage_cookie::{generate_cookie_messages, set_messages_in_cookie};
 use crate::schema::users;
-use crate::manage_cookie::{
-    generate_cookie_messages,
-    set_messages_in_cookie
-};
+use crate::users::{LoginData, NewUser, SignupData, User};
+use crate::Pool;
+use actix_identity::Identity;
+use actix_web::web::{self, Data, Form};
+use actix_web::{get, post, HttpRequest, HttpResponse, Responder, Scope};
+use argon2::password_hash::{PasswordHash, PasswordVerifier};
+use argon2::Argon2;
+use diesel::prelude::*;
+use tera::{Context, Tera};
+use validator::Validate;
 
 pub fn get_scope() -> Scope {
     web::scope("")
@@ -27,17 +24,15 @@ pub fn get_scope() -> Scope {
 
 #[get("/")]
 async fn index(req: HttpRequest, identity: Identity, tmpl: Data<Tera>) -> impl Responder {
-    let response_body = tmpl
-        .render("index.html", &Context::new())
-        .unwrap();
+    let response_body = tmpl.render("index.html", &Context::new()).unwrap();
 
     // 未ログインの場合、cookie_messagesの初期化
     if identity.identity().is_none() {
         let cookie_messages = generate_cookie_messages(&req);
         return HttpResponse::Ok()
-                .cookie(cookie_messages)
-                .content_type("text/html")
-                .body(response_body);
+            .cookie(cookie_messages)
+            .content_type("text/html")
+            .body(response_body);
     }
 
     HttpResponse::Ok()
@@ -52,9 +47,7 @@ async fn app(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
         return HttpResponse::NotFound().finish();
     }
 
-    let response_body = tmpl
-        .render("app.html", &Context::new())
-        .unwrap();
+    let response_body = tmpl.render("app.html", &Context::new()).unwrap();
 
     HttpResponse::Ok()
         .content_type("text/html")
@@ -70,9 +63,7 @@ async fn render_login(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
             .finish();
     }
 
-    let response_body = tmpl
-        .render("login.html", &Context::new())
-        .unwrap();
+    let response_body = tmpl.render("login.html", &Context::new()).unwrap();
 
     HttpResponse::Ok()
         .content_type("text/html")
@@ -80,7 +71,12 @@ async fn render_login(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
 }
 
 #[post("/login")]
-async fn login(req: HttpRequest, identity: Identity, pool: Pool, form_data: Form<LoginData>) -> impl Responder {
+async fn login(
+    req: HttpRequest,
+    identity: Identity,
+    pool: Pool,
+    form_data: Form<LoginData>,
+) -> impl Responder {
     // ログイン済みの場合、エラー
     if identity.identity().is_some() {
         return HttpResponse::Found()
@@ -94,20 +90,23 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, form_data: Form
     // バリデーション
     if let Err(validation_errors) = form_data.validate() {
         // エラーメッセージをcookieに設定
-        validation_errors.field_errors().iter().for_each(|(_, fields)| {
-            fields.iter().for_each(|validation_error| {
-                set_messages_in_cookie(
-                    &mut cookie_messages,
-                    "login".to_string(),
-                    "error".to_string(),
-                    validation_error.message.as_ref().unwrap().to_string(),
-                );
-            })
-        });
+        validation_errors
+            .field_errors()
+            .iter()
+            .for_each(|(_, fields)| {
+                fields.iter().for_each(|validation_error| {
+                    set_messages_in_cookie(
+                        &mut cookie_messages,
+                        "login".to_string(),
+                        "error".to_string(),
+                        validation_error.message.as_ref().unwrap().to_string(),
+                    );
+                })
+            });
         return HttpResponse::Found()
             .append_header(("location", "/login"))
             .cookie(cookie_messages)
-            .finish()
+            .finish();
     }
 
     let mut db_connection = pool.get().expect("Failed getting db connection");
@@ -120,7 +119,8 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, form_data: Form
         Ok(login_user) => {
             // 入力されたパスワードのハッシュ値を保存されているハッシュ値と比較
             let parsed_hash = PasswordHash::new(&login_user.password).unwrap();
-            let is_match = Argon2::default().verify_password(form_data.password.as_bytes(), &parsed_hash);
+            let is_match =
+                Argon2::default().verify_password(form_data.password.as_bytes(), &parsed_hash);
             match is_match {
                 Ok(_) => {
                     // cookieにID保存
@@ -131,7 +131,7 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, form_data: Form
                         &mut cookie_messages,
                         "login".to_string(),
                         "success".to_string(),
-                        "Successfully logged in".to_string()
+                        "Successfully logged in".to_string(),
                     );
 
                     HttpResponse::Found()
@@ -145,7 +145,7 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, form_data: Form
                         &mut cookie_messages,
                         "login".to_string(),
                         "error".to_string(),
-                        "Username or password of both are incorrect".to_string()
+                        "Username or password of both are incorrect".to_string(),
                     );
 
                     HttpResponse::Found()
@@ -161,7 +161,7 @@ async fn login(req: HttpRequest, identity: Identity, pool: Pool, form_data: Form
                 &mut cookie_messages,
                 "login".to_string(),
                 "error".to_string(),
-                "Username or password of both are incorrect".to_string()
+                "Username or password of both are incorrect".to_string(),
             );
 
             HttpResponse::Found()
@@ -181,9 +181,7 @@ async fn render_signup(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
             .finish();
     }
 
-    let response_body = tmpl
-        .render("signup.html", &Context::new())
-        .unwrap();
+    let response_body = tmpl.render("signup.html", &Context::new()).unwrap();
 
     HttpResponse::Ok()
         .content_type("text/html")
@@ -191,7 +189,12 @@ async fn render_signup(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
 }
 
 #[post("/signup")]
-async fn signup(req: HttpRequest, pool: Pool, identity: Identity, form_data: Form<SignupData>) -> impl Responder {
+async fn signup(
+    req: HttpRequest,
+    pool: Pool,
+    identity: Identity,
+    form_data: Form<SignupData>,
+) -> impl Responder {
     // ログイン済みの場合、早期リターン
     if identity.identity().is_some() {
         return HttpResponse::Found()
@@ -204,17 +207,20 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, form_data: For
 
     // バリデーション
     if let Err(validation_errors) = form_data.validate() {
-        validation_errors.field_errors().iter().for_each(|(_, fields)| {
-            fields.iter().for_each(|validation_error| {
-                // エラーメッセージをcookieに保存
-                set_messages_in_cookie(
-                    &mut cookie_messages,
-                    "signup".to_string(),
-                    "error".to_string(),
-                    validation_error.message.as_ref().unwrap().to_string(),
-                );
-            })
-        });
+        validation_errors
+            .field_errors()
+            .iter()
+            .for_each(|(_, fields)| {
+                fields.iter().for_each(|validation_error| {
+                    // エラーメッセージをcookieに保存
+                    set_messages_in_cookie(
+                        &mut cookie_messages,
+                        "signup".to_string(),
+                        "error".to_string(),
+                        validation_error.message.as_ref().unwrap().to_string(),
+                    );
+                })
+            });
 
         return HttpResponse::Found()
             .append_header(("location", "/signup"))
@@ -232,7 +238,8 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, form_data: For
         diesel::insert_into(users::table)
             .values(new_user)
             .get_result::<User>(&mut db_connection)
-    }).await;
+    })
+    .await;
 
     match result {
         Ok(insert_result) => {
@@ -246,7 +253,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, form_data: For
                         &mut cookie_messages,
                         "signup".to_string(),
                         "success".to_string(),
-                        "Successfully sign up".to_string()
+                        "Successfully sign up".to_string(),
                     );
 
                     HttpResponse::Found()
@@ -260,7 +267,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, form_data: For
                         &mut cookie_messages,
                         "signup".to_string(),
                         "error".to_string(),
-                        "Username or email or both are already registered".to_string()
+                        "Username or email or both are already registered".to_string(),
                     );
 
                     HttpResponse::Found()
@@ -276,7 +283,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, form_data: For
                 &mut cookie_messages,
                 "signup".to_string(),
                 "error".to_string(),
-                "Username or email or both are already registered".to_string()
+                "Username or email or both are already registered".to_string(),
             );
 
             HttpResponse::Found()
@@ -288,7 +295,7 @@ async fn signup(req: HttpRequest, pool: Pool, identity: Identity, form_data: For
 }
 
 #[get("/logout")]
-async fn logout(identity: Identity) -> impl Responder{
+async fn logout(identity: Identity) -> impl Responder {
     // 未ログインの場合エラー
     if identity.identity().is_none() {
         return HttpResponse::NotFound().finish();

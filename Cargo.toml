@@ -13,8 +13,8 @@ argon2 = "0.4.0"
 chrono = { version = "0.4.22", features = ["serde"] }
 diesel = { version = "2.0.0", features = ["postgres", "r2d2", "chrono", "uuid"] }
 dotenv = "0.15.0"
-env_logger = "0.9.0"
-listenfd = "0.5.0"
+# env_logger = "0.9.0"
+# listenfd = "0.5.0"
 rand = "0.8.5"
 rand_core = { version = "0.6.3", features = ["std"] }
 serde = { version = "1.0.145", features = ["derive"] }
