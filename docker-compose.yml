@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  actix-backend:
+    build:
+      context: ./Docker/rust
+      dockerfile: Dockerfile
+      target: builder
+    tty: true
+    environment:
+      DATABASE_URL: postgres://admin:admin@db:5432/todos
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/todo-in-life
+    depends_on:
+      - db
+  db:
+    build:
+      context: ./Docker/postgres
+      dockerfile: Dockerfile
+      target: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: todos
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+volumes:
+  postgres-data:
