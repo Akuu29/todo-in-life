@@ -20,16 +20,15 @@ pub fn get_scope() -> Scope {
 }
 
 #[get("/todos")]
-pub async fn get(identity: Identity, pool: Pool) -> impl Responder {
-    // 未ログインの場合、エラー
-    if identity.identity().is_none() {
+pub async fn get(user: Option<Identity>, pool: Pool) -> impl Responder {
+    if user.is_none() {
         return HttpResponse::Unauthorized().finish();
     }
 
     let mut db_connection = pool.get().expect("Failed getting db connection");
 
     let user_id = users::table
-        .filter(users::username.eq(&identity.identity().unwrap()))
+        .filter(users::username.eq(user.unwrap().id().unwrap()))
         .get_result::<User>(&mut db_connection)
         .unwrap()
         .id;
@@ -47,12 +46,11 @@ pub async fn get(identity: Identity, pool: Pool) -> impl Responder {
 
 #[post("/todos")]
 pub async fn create(
-    identity: Identity,
+    user: Option<Identity>,
     pool: Pool,
     todo_data: Json<TodoForCreate>,
 ) -> impl Responder {
-    // 未ログインの場合、エラー
-    if identity.identity().is_none() {
+    if user.is_none() {
         return HttpResponse::Unauthorized().finish();
     }
 
@@ -66,7 +64,7 @@ pub async fn create(
     let mut db_connection = pool.get().expect("Failed getting db connection");
 
     let user_id = users::table
-        .filter(users::username.eq(&identity.identity().unwrap()))
+        .filter(users::username.eq(user.unwrap().id().unwrap()))
         .get_result::<User>(&mut db_connection)
         .unwrap()
         .id;
@@ -89,12 +87,11 @@ pub async fn create(
 
 #[put("/todos")]
 pub async fn update(
-    identity: Identity,
+    user: Option<Identity>,
     pool: Pool,
     todo_data: Json<TodoForEdit>,
 ) -> impl Responder {
-    // 未ログインの場合、エラー
-    if identity.identity().is_none() {
+    if user.is_none() {
         return HttpResponse::Unauthorized().finish();
     }
 
@@ -108,7 +105,7 @@ pub async fn update(
     let mut db_connection = pool.get().expect("Failed getting db connection");
 
     let user_id = users::table
-        .filter(users::username.eq(identity.identity().unwrap()))
+        .filter(users::username.eq(user.unwrap().id().unwrap()))
         .get_result::<User>(&mut db_connection)
         .unwrap()
         .id;
@@ -156,19 +153,18 @@ pub async fn update(
 
 #[patch("/todos")]
 pub async fn update_category(
-    identity: Identity,
+    user: Option<Identity>,
     pool: Pool,
     todo_data: Json<TodoForUpdateStatus>,
 ) -> impl Responder {
-    // 未ログインの場合、エラー
-    if identity.identity().is_none() {
+    if user.is_none() {
         return HttpResponse::Unauthorized().finish();
     }
 
     let mut db_connection = pool.get().expect("Failed getting db connection");
 
     let user_id = users::table
-        .filter(users::username.eq(&identity.identity().unwrap()))
+        .filter(users::username.eq(user.unwrap().id().unwrap()))
         .get_result::<User>(&mut db_connection)
         .unwrap()
         .id;
@@ -205,19 +201,18 @@ pub async fn update_category(
 
 #[delete("/todos")]
 pub async fn delete(
-    identity: Identity,
+    user: Option<Identity>,
     pool: Pool,
     todo_data: Query<TodoForDelete>,
 ) -> impl Responder {
-    // 未ログインの場合、エラー
-    if identity.identity().is_none() {
+    if user.is_none() {
         return HttpResponse::Unauthorized().finish();
     }
 
     let mut db_connection = pool.get().expect("Failed getting db connection");
 
     let user_id = users::table
-        .filter(users::username.eq(&identity.identity().unwrap()))
+        .filter(users::username.eq(user.unwrap().id().unwrap()))
         .get_result::<User>(&mut db_connection)
         .unwrap()
         .id;
