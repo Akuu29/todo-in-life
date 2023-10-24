@@ -3,8 +3,11 @@
 diesel::table! {
     todos (id) {
         id -> Uuid,
+        #[max_length = 150]
         title -> Varchar,
+        #[max_length = 900]
         content -> Nullable<Varchar>,
+        #[max_length = 18]
         category -> Varchar,
         date_limit -> Nullable<Date>,
         date_created -> Timestamp,
@@ -15,8 +18,11 @@ diesel::table! {
 diesel::table! {
     users (id) {
         id -> Uuid,
+        #[max_length = 32]
         username -> Varchar,
+        #[max_length = 255]
         email -> Varchar,
+        #[max_length = 255]
         password -> Varchar,
         data_created -> Timestamp,
     }

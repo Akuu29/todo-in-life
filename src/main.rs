@@ -1,22 +1,25 @@
 use actix_files::Files;
-use actix_identity::{CookieIdentityPolicy, IdentityService};
+use actix_identity::IdentityMiddleware;
+use actix_session::{storage::CookieSessionStore, SessionMiddleware};
+use actix_web::cookie::Key;
 use actix_web::web::Data;
 use actix_web::{App, HttpServer};
 use diesel::pg::PgConnection;
 use diesel::r2d2::{self, ConnectionManager};
 use dotenv::dotenv;
-use rand::Rng;
 use std::env;
 use tera::Tera;
 use todo_in_life::scopes::{main_scope, todos_scope};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // .envから環境変数ロード
+    // 環境変数ロード
     dotenv().ok();
 
-    let host = env::var("HOST").expect("Please set HOST in .env");
-    let port = env::var("PORT").expect("Please set PORT in .env");
+    // logging初期化
+    let log_level = env::var("RUST_LOG").unwrap_or("info".to_string());
+    env::set_var("RUST_LOG", log_level);
+    tracing_subscriber::fmt::init();
 
     // DB接続プールの作成
     let database_url = env::var("DATABASE_URL").expect("Please set DATABASE_URL in .env");
@@ -25,27 +28,24 @@ async fn main() -> std::io::Result<()> {
         .build(manager)
         .expect("Filed to create db pool");
 
-    // CookieIdentityPolicyに使う秘密鍵の指定
-    // private_keyが変更された場合全てのCookieに保存されたIDは無効になる
-    let private_key = rand::thread_rng().gen::<[u8; 32]>();
-
-    let server = HttpServer::new(move || {
-        // CookieIdentityPolicyの生成
-        // CookieをIDの保存場所として使う
-        let policy = CookieIdentityPolicy::new(&private_key)
-            .name("auth-cookie")
-            .http_only(true)
-            .secure(false);
-
+    let secret_key = Key::generate();
+    let host = env::var("HOST").expect("Please set HOST in .env");
+    let port = env::var("PORT").expect("Please set PORT in .env");
+    tracing::debug!("Listening on http://{}:{}", host, port);
+    HttpServer::new(move || {
         App::new()
-            .wrap(IdentityService::new(policy))
+            .wrap(IdentityMiddleware::default())
+            .wrap(SessionMiddleware::new(
+                CookieSessionStore::default(),
+                secret_key.clone(),
+            ))
             .app_data(Data::new(pool.clone()))
             .app_data(Data::new(Tera::new("templates/**/*").unwrap()))
             .service(Files::new("/client", "./client"))
             .service(todos_scope::get_scope())
             .service(main_scope::get_scope())
     })
-    .bind(format!("{}:{}", host, port))?;
-
-    server.run().await
+    .bind(format!("{}:{}", host, port))?
+    .run()
+    .await
 }

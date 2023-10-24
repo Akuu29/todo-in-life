@@ -4,7 +4,7 @@ use crate::users::{LoginData, NewUser, SignupData, User};
 use crate::Pool;
 use actix_identity::Identity;
 use actix_web::web::{self, Data, Form};
-use actix_web::{get, post, HttpRequest, HttpResponse, Responder, Scope};
+use actix_web::{get, post, HttpMessage, HttpRequest, HttpResponse, Responder, Scope};
 use argon2::password_hash::{PasswordHash, PasswordVerifier};
 use argon2::Argon2;
 use diesel::prelude::*;
@@ -23,28 +23,27 @@ pub fn get_scope() -> Scope {
 }
 
 #[get("/")]
-async fn index(req: HttpRequest, identity: Identity, tmpl: Data<Tera>) -> impl Responder {
+async fn index(req: HttpRequest, user: Option<Identity>, tmpl: Data<Tera>) -> impl Responder {
     let response_body = tmpl.render("index.html", &Context::new()).unwrap();
-
-    // 未ログインの場合、cookie_messagesの初期化
-    if identity.identity().is_none() {
-        let cookie_messages = generate_cookie_messages(&req);
+    if user.is_some() {
         return HttpResponse::Ok()
-            .cookie(cookie_messages)
             .content_type("text/html")
             .body(response_body);
     }
 
+    let cookie_messages = generate_cookie_messages(&req);
     HttpResponse::Ok()
+        .cookie(cookie_messages)
         .content_type("text/html")
         .body(response_body)
 }
 
 #[get("/app")]
-async fn app(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
-    // 未ログインの場合、エラー
-    if identity.identity().is_none() {
-        return HttpResponse::NotFound().finish();
+async fn app(user: Option<Identity>, tmpl: Data<Tera>) -> impl Responder {
+    if user.is_none() {
+        return HttpResponse::TemporaryRedirect()
+            .insert_header(("location", "/login"))
+            .finish();
     }
 
     let response_body = tmpl.render("app.html", &Context::new()).unwrap();
@@ -55,11 +54,10 @@ async fn app(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
 }
 
 #[get("/login")]
-async fn render_login(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
-    // サインアップ済みまたはログイン済みの場合、エラー
-    if identity.identity().is_some() {
-        return HttpResponse::Found()
-            .append_header(("location", "/"))
+async fn render_login(user: Option<Identity>, tmpl: Data<Tera>) -> impl Responder {
+    if user.is_some() {
+        return HttpResponse::TemporaryRedirect()
+            .insert_header(("location", "/"))
             .finish();
     }
 
@@ -73,14 +71,13 @@ async fn render_login(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
 #[post("/login")]
 async fn login(
     req: HttpRequest,
-    identity: Identity,
+    user: Option<Identity>,
     pool: Pool,
     form_data: Form<LoginData>,
 ) -> impl Responder {
-    // ログイン済みの場合、エラー
-    if identity.identity().is_some() {
-        return HttpResponse::Found()
-            .append_header(("location", "/"))
+    if user.is_some() {
+        return HttpResponse::TemporaryRedirect()
+            .insert_header(("location", "/"))
             .finish();
     }
 
@@ -123,8 +120,8 @@ async fn login(
                 Argon2::default().verify_password(form_data.password.as_bytes(), &parsed_hash);
             match is_match {
                 Ok(_) => {
-                    // cookieにID保存
-                    identity.remember(login_user.username);
+                    // TODO: ログイン処理結果分岐の実装
+                    Identity::login(&req.extensions(), login_user.username);
 
                     // cookieにメッセージを保存
                     set_messages_in_cookie(
@@ -173,11 +170,10 @@ async fn login(
 }
 
 #[get("/signup")]
-async fn render_signup(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
-    // サインアップ済みまたはログイン済みの場合、エラー
-    if identity.identity().is_some() {
-        return HttpResponse::Found()
-            .append_header(("location", "/"))
+async fn render_signup(user: Option<Identity>, tmpl: Data<Tera>) -> impl Responder {
+    if user.is_some() {
+        return HttpResponse::TemporaryRedirect()
+            .insert_header(("location", "/"))
             .finish();
     }
 
@@ -192,13 +188,12 @@ async fn render_signup(identity: Identity, tmpl: Data<Tera>) -> impl Responder {
 async fn signup(
     req: HttpRequest,
     pool: Pool,
-    identity: Identity,
+    user: Option<Identity>,
     form_data: Form<SignupData>,
 ) -> impl Responder {
-    // ログイン済みの場合、早期リターン
-    if identity.identity().is_some() {
-        return HttpResponse::Found()
-            .append_header(("location", "/"))
+    if user.is_some() {
+        return HttpResponse::TemporaryRedirect()
+            .insert_header(("location", "/"))
             .finish();
     }
 
@@ -245,8 +240,8 @@ async fn signup(
         Ok(insert_result) => {
             match insert_result {
                 Ok(insert_user) => {
-                    // cookieにID保存
-                    identity.remember(insert_user.username);
+                    // TODO: ログイン処理結果分岐の実装
+                    Identity::login(&req.extensions(), insert_user.username);
 
                     // cookieにメッセージを保存
                     set_messages_in_cookie(
@@ -295,16 +290,15 @@ async fn signup(
 }
 
 #[get("/logout")]
-async fn logout(identity: Identity) -> impl Responder {
-    // 未ログインの場合エラー
-    if identity.identity().is_none() {
-        return HttpResponse::NotFound().finish();
+async fn logout(user: Option<Identity>) -> impl Responder {
+    if user.is_none() {
+        return HttpResponse::TemporaryRedirect()
+            .insert_header(("location", "/login"))
+            .finish();
     }
 
-    // ID破棄
-    identity.forget();
-
-    HttpResponse::Found()
+    user.unwrap().logout();
+    return HttpResponse::Found()
         .append_header(("location", "/"))
-        .finish()
+        .finish();
 }
