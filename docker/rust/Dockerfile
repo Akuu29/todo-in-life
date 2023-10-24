@@ -1,7 +1,15 @@
-FROM rust:1.67 as builder
+FROM rust:1.72.1 as builder
 
-RUN rustup component add rustfmt clippy rust-analysis &&\
+RUN rustup component add rustfmt clippy &&\
     cargo install cargo-watch &&\
-    cargo install iesel_cli --no-default--features --features postgres
+    cargo install diesel_cli --no-default-features --features postgres
 
+ENV CARGO_BUILD_TARGET_DIR=/tmp/target
+
+RUN USER=root cargo new --bin todo-in-life
 WORKDIR /todo-in-life
+COPY ./Cargo.toml Cargo.toml
+COPY ./Cargo.lock Cargo.lock
+
+RUN cargo build --release --color never &&\
+    rm src/*.rs
