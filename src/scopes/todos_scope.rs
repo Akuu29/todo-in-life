@@ -1,12 +1,11 @@
-use crate::convert_to_date;
-use crate::schema::{todos, users};
-use crate::todos::{NewTodo, Todo, TodoForCreate, TodoForDelete, TodoForEdit, TodoForUpdateStatus};
-use crate::users::User;
-use crate::Pool;
+use crate::repository::RepositoryForDb;
+use crate::todos::{
+    NewTodo, TodoForCreate, TodoForDelete, TodoForUpdate, TodoForUpdateStatus, TodosRepository,
+};
+use crate::users::UsersRepository;
 use actix_identity::Identity;
-use actix_web::web::{self, Json, Query};
+use actix_web::web;
 use actix_web::{delete, get, patch, post, put, HttpResponse, Responder, Scope};
-use diesel::prelude::*;
 use serde_json::json;
 use validator::Validate;
 
@@ -20,25 +19,20 @@ pub fn get_scope() -> Scope {
 }
 
 #[get("/todos")]
-pub async fn get(user: Option<Identity>, pool: Pool) -> impl Responder {
+pub async fn get(user: Option<Identity>, repository: web::Data<RepositoryForDb>) -> impl Responder {
     if user.is_none() {
         return HttpResponse::Unauthorized().finish();
     }
 
-    let mut db_connection = pool.get().expect("Failed getting db connection");
-
-    let user_id = users::table
-        .filter(users::username.eq(user.unwrap().id().unwrap()))
-        .get_result::<User>(&mut db_connection)
-        .unwrap()
+    let user_id = repository
+        .get(user.unwrap().id().unwrap())
+        .await
+        .expect("Failed getting user_id")
         .id;
 
-    let get_todos_result = todos::table
-        .filter(todos::user_id.eq(user_id))
-        .order(todos::date_created)
-        .get_results::<Todo>(&mut db_connection);
+    let result = repository.get_todo_by_user_id(user_id).await;
 
-    match get_todos_result {
+    match result {
         Ok(todos) => HttpResponse::Ok().json(json!({"status": "success", "todos": todos})),
         Err(_) => HttpResponse::InternalServerError().finish(),
     }
@@ -47,40 +41,33 @@ pub async fn get(user: Option<Identity>, pool: Pool) -> impl Responder {
 #[post("/todos")]
 pub async fn create(
     user: Option<Identity>,
-    pool: Pool,
-    todo_data: Json<TodoForCreate>,
+    repository: web::Data<RepositoryForDb>,
+    web::Json(payload): web::Json<TodoForCreate>,
 ) -> impl Responder {
+    dbg!(&payload);
     if user.is_none() {
         return HttpResponse::Unauthorized().finish();
     }
 
-    // バリデーション
-    if let Err(validation_errors) = todo_data.validate() {
+    // Validation
+    if let Err(validation_errors) = payload.validate() {
         return HttpResponse::UnprocessableEntity().json(
             json!({"status": "error", "validationErrors": validation_errors.field_errors()}),
         );
     }
 
-    let mut db_connection = pool.get().expect("Failed getting db connection");
-
-    let user_id = users::table
-        .filter(users::username.eq(user.unwrap().id().unwrap()))
-        .get_result::<User>(&mut db_connection)
-        .unwrap()
+    let user_id = repository
+        .get(user.unwrap().id().unwrap())
+        .await
+        .expect("Failed getting user_id")
         .id;
 
-    let new_todo = NewTodo::new(todo_data, user_id);
+    let new_todo = NewTodo::new(payload, user_id);
 
-    let create_todo_result = web::block(move || {
-        diesel::insert_into(todos::table)
-            .values(new_todo)
-            .get_result::<Todo>(&mut db_connection)
-    })
-    .await;
+    let result = repository.create_todo(new_todo).await;
 
-    match create_todo_result {
-        // ブロック、インサートのResultで二重にラップされている
-        Ok(Ok(todo)) => HttpResponse::Created().json(json!({"status": "success", "todo": todo})),
+    match result {
+        Ok(todo) => HttpResponse::Created().json(json!({"status": "success", "todo": todo})),
         _ => HttpResponse::InternalServerError().finish(),
     }
 }
@@ -88,65 +75,24 @@ pub async fn create(
 #[put("/todos")]
 pub async fn update(
     user: Option<Identity>,
-    pool: Pool,
-    todo_data: Json<TodoForEdit>,
+    repository: web::Data<RepositoryForDb>,
+    web::Json(payload): web::Json<TodoForUpdate>,
 ) -> impl Responder {
     if user.is_none() {
         return HttpResponse::Unauthorized().finish();
     }
 
-    // バリデーション
-    if let Err(validation_errors) = todo_data.validate() {
+    // Validation
+    if let Err(validation_errors) = payload.validate() {
         return HttpResponse::UnprocessableEntity().json(
             json!({"status": "error", "validationErrors": validation_errors.field_errors()}),
         );
     }
 
-    let mut db_connection = pool.get().expect("Failed getting db connection");
+    let result = repository.update_todo(payload).await;
 
-    let user_id = users::table
-        .filter(users::username.eq(user.unwrap().id().unwrap()))
-        .get_result::<User>(&mut db_connection)
-        .unwrap()
-        .id;
-
-    // todoからuser_id取得
-    let get_todo_result = todos::table
-        .filter(todos::id.eq(todo_data.id))
-        .get_result::<Todo>(&mut db_connection);
-    let todo_user_id = match get_todo_result {
-        Ok(todo) => todo.user_id,
-        Err(_) => return HttpResponse::Forbidden().finish(),
-    };
-
-    // user_id と todo_user_idが一致しない場合エラー
-    if user_id != todo_user_id {
-        return HttpResponse::Forbidden().finish();
-    }
-
-    // date_limitをOption<NaiveDate>に変換
-    let convert_date_limit_to_naivedate = todo_data
-        .date_limit
-        .clone()
-        .map(|date| convert_to_date(&date));
-
-    let edit_todo_result = web::block(move || {
-        diesel::update(
-            todos::table.filter(todos::id.eq(&todo_data.id).and(todos::user_id.eq(user_id))),
-        )
-        .set((
-            todos::title.eq(todo_data.title.clone()),
-            todos::content.eq(todo_data.content.clone()),
-            todos::category.eq(todo_data.category.clone()),
-            todos::date_limit.eq(convert_date_limit_to_naivedate),
-        ))
-        .get_result::<Todo>(&mut db_connection)
-    })
-    .await;
-
-    match edit_todo_result {
-        // ブロック、アップデートのResultで二重にラップされている
-        Ok(Ok(todo)) => HttpResponse::Ok().json(json!({"status": "success", "todoEdited": todo})),
+    match result {
+        Ok(todo) => HttpResponse::Ok().json(json!({"status": "success", "todoEdited": todo})),
         _ => HttpResponse::InternalServerError().finish(),
     }
 }
@@ -154,47 +100,17 @@ pub async fn update(
 #[patch("/todos")]
 pub async fn update_category(
     user: Option<Identity>,
-    pool: Pool,
-    todo_data: Json<TodoForUpdateStatus>,
+    repository: web::Data<RepositoryForDb>,
+    web::Json(payload): web::Json<TodoForUpdateStatus>,
 ) -> impl Responder {
     if user.is_none() {
         return HttpResponse::Unauthorized().finish();
     }
 
-    let mut db_connection = pool.get().expect("Failed getting db connection");
+    let result = repository.update_todo_status(payload).await;
 
-    let user_id = users::table
-        .filter(users::username.eq(user.unwrap().id().unwrap()))
-        .get_result::<User>(&mut db_connection)
-        .unwrap()
-        .id;
-
-    // todoからuser_idを取得
-    let get_todo_result = todos::table
-        .filter(todos::id.eq(&todo_data.id))
-        .get_result::<Todo>(&mut db_connection);
-    let todo_user_id = match get_todo_result {
-        Ok(todo) => todo.user_id,
-        Err(_) => return HttpResponse::Forbidden().finish(),
-    };
-
-    // user_id と todo_user_idが一致しない場合エラー
-    if user_id != todo_user_id {
-        return HttpResponse::Forbidden().finish();
-    }
-
-    let update_todo_status_result = web::block(move || {
-        diesel::update(
-            todos::table.filter(todos::id.eq(&todo_data.id).and(todos::user_id.eq(user_id))),
-        )
-        .set(todos::category.eq(&todo_data.category))
-        .get_result::<Todo>(&mut db_connection)
-    })
-    .await;
-
-    match update_todo_status_result {
-        // ブロック、アップデートのResultで二重にラップされている
-        Ok(Ok(_)) => HttpResponse::Ok().json(json!({"status": "success"})),
+    match result {
+        Ok(()) => HttpResponse::Ok().json(json!({"status": "success"})),
         _ => HttpResponse::InternalServerError().finish(),
     }
 }
@@ -202,46 +118,17 @@ pub async fn update_category(
 #[delete("/todos")]
 pub async fn delete(
     user: Option<Identity>,
-    pool: Pool,
-    todo_data: Query<TodoForDelete>,
+    repository: web::Data<RepositoryForDb>,
+    web::Query(payload): web::Query<TodoForDelete>,
 ) -> impl Responder {
     if user.is_none() {
         return HttpResponse::Unauthorized().finish();
     }
 
-    let mut db_connection = pool.get().expect("Failed getting db connection");
+    let result = repository.delete_todo(payload).await;
 
-    let user_id = users::table
-        .filter(users::username.eq(user.unwrap().id().unwrap()))
-        .get_result::<User>(&mut db_connection)
-        .unwrap()
-        .id;
-
-    // todoからuser_idを取得
-    let get_todo_result = todos::table
-        .filter(todos::id.eq(&todo_data.id))
-        .get_result::<Todo>(&mut db_connection);
-    let todo_user_id = match get_todo_result {
-        Ok(todo) => todo.user_id,
-        Err(_) => return HttpResponse::Forbidden().finish(),
-    };
-
-    // user_id と todo_user_idが一致しない場合エラー
-    if user_id != todo_user_id {
-        return HttpResponse::Forbidden().finish();
-    }
-
-    let delete_result = web::block(move || {
-        diesel::delete(
-            todos::table.filter(todos::id.eq(&todo_data.id).and(todos::user_id.eq(user_id))),
-        )
-        .get_result::<Todo>(&mut db_connection)
-    })
-    .await;
-
-    match delete_result {
-        // ブロック、デリートのResultで二重にラップされている
-        Ok(Ok(todo)) => HttpResponse::Ok().json(json!({"status": "success", "todoDeleted": todo})),
+    match result {
+        Ok(todo) => HttpResponse::Ok().json(json!({"status": "success", "todoDeleted": todo})),
         _ => HttpResponse::InternalServerError().finish(),
     }
 }

@@ -1,13 +1,11 @@
 use crate::manage_cookie::{generate_cookie_messages, set_messages_in_cookie};
-use crate::schema::users;
-use crate::users::{LoginData, NewUser, SignupData, User};
-use crate::Pool;
+use crate::repository::RepositoryForDb;
+use crate::users::{LoginUser, NewUser, SignupUser, UsersRepository};
 use actix_identity::Identity;
-use actix_web::web::{self, Data, Form};
+use actix_web::web;
 use actix_web::{get, post, HttpMessage, HttpRequest, HttpResponse, Responder, Scope};
 use argon2::password_hash::{PasswordHash, PasswordVerifier};
 use argon2::Argon2;
-use diesel::prelude::*;
 use tera::{Context, Tera};
 use validator::Validate;
 
@@ -23,8 +21,8 @@ pub fn get_scope() -> Scope {
 }
 
 #[get("/")]
-async fn index(req: HttpRequest, user: Option<Identity>, tmpl: Data<Tera>) -> impl Responder {
-    let response_body = tmpl.render("index.html", &Context::new()).unwrap();
+async fn index(req: HttpRequest, user: Option<Identity>, tmpl: web::Data<Tera>) -> impl Responder {
+    let response_body = tmpl.render("top.html", &Context::new()).unwrap();
     if user.is_some() {
         return HttpResponse::Ok()
             .content_type("text/html")
@@ -39,14 +37,14 @@ async fn index(req: HttpRequest, user: Option<Identity>, tmpl: Data<Tera>) -> im
 }
 
 #[get("/app")]
-async fn app(user: Option<Identity>, tmpl: Data<Tera>) -> impl Responder {
+async fn app(user: Option<Identity>, tmpl: web::Data<Tera>) -> impl Responder {
     if user.is_none() {
         return HttpResponse::TemporaryRedirect()
             .insert_header(("location", "/login"))
             .finish();
     }
 
-    let response_body = tmpl.render("app.html", &Context::new()).unwrap();
+    let response_body = tmpl.render("todos.html", &Context::new()).unwrap();
 
     HttpResponse::Ok()
         .content_type("text/html")
@@ -54,7 +52,7 @@ async fn app(user: Option<Identity>, tmpl: Data<Tera>) -> impl Responder {
 }
 
 #[get("/login")]
-async fn render_login(user: Option<Identity>, tmpl: Data<Tera>) -> impl Responder {
+async fn render_login(user: Option<Identity>, tmpl: web::Data<Tera>) -> impl Responder {
     if user.is_some() {
         return HttpResponse::TemporaryRedirect()
             .insert_header(("location", "/"))
@@ -72,8 +70,8 @@ async fn render_login(user: Option<Identity>, tmpl: Data<Tera>) -> impl Responde
 async fn login(
     req: HttpRequest,
     user: Option<Identity>,
-    pool: Pool,
-    form_data: Form<LoginData>,
+    payload: web::Form<LoginUser>,
+    repository: web::Data<RepositoryForDb>,
 ) -> impl Responder {
     if user.is_some() {
         return HttpResponse::TemporaryRedirect()
@@ -81,12 +79,10 @@ async fn login(
             .finish();
     }
 
-    // cookie_messagesの生成
     let mut cookie_messages = generate_cookie_messages(&req);
 
-    // バリデーション
-    if let Err(validation_errors) = form_data.validate() {
-        // エラーメッセージをcookieに設定
+    // Validation
+    if let Err(validation_errors) = payload.validate() {
         validation_errors
             .field_errors()
             .iter()
@@ -106,24 +102,20 @@ async fn login(
             .finish();
     }
 
-    let mut db_connection = pool.get().expect("Failed getting db connection");
-
-    let result = users::table
-        .filter(users::username.eq(&form_data.username))
-        .first::<User>(&mut db_connection);
+    let username = payload.username.clone();
+    let result = repository.get(username).await;
 
     match result {
-        Ok(login_user) => {
+        Ok(logined_user) => {
             // 入力されたパスワードのハッシュ値を保存されているハッシュ値と比較
-            let parsed_hash = PasswordHash::new(&login_user.password).unwrap();
+            let parsed_hash = PasswordHash::new(&logined_user.password).unwrap();
             let is_match =
-                Argon2::default().verify_password(form_data.password.as_bytes(), &parsed_hash);
+                Argon2::default().verify_password(payload.password.as_bytes(), &parsed_hash);
             match is_match {
                 Ok(_) => {
                     // TODO: ログイン処理結果分岐の実装
-                    Identity::login(&req.extensions(), login_user.username);
+                    Identity::login(&req.extensions(), logined_user.username);
 
-                    // cookieにメッセージを保存
                     set_messages_in_cookie(
                         &mut cookie_messages,
                         "login".to_string(),
@@ -137,7 +129,6 @@ async fn login(
                         .finish()
                 }
                 Err(_) => {
-                    // cookieにメッセージを保存
                     set_messages_in_cookie(
                         &mut cookie_messages,
                         "login".to_string(),
@@ -153,7 +144,6 @@ async fn login(
             }
         }
         Err(_) => {
-            // cookieにメッセージを保存
             set_messages_in_cookie(
                 &mut cookie_messages,
                 "login".to_string(),
@@ -170,7 +160,7 @@ async fn login(
 }
 
 #[get("/signup")]
-async fn render_signup(user: Option<Identity>, tmpl: Data<Tera>) -> impl Responder {
+async fn render_signup(user: Option<Identity>, tmpl: web::Data<Tera>) -> impl Responder {
     if user.is_some() {
         return HttpResponse::TemporaryRedirect()
             .insert_header(("location", "/"))
@@ -187,9 +177,9 @@ async fn render_signup(user: Option<Identity>, tmpl: Data<Tera>) -> impl Respond
 #[post("/signup")]
 async fn signup(
     req: HttpRequest,
-    pool: Pool,
     user: Option<Identity>,
-    form_data: Form<SignupData>,
+    payload: web::Form<SignupUser>,
+    repository: web::Data<RepositoryForDb>,
 ) -> impl Responder {
     if user.is_some() {
         return HttpResponse::TemporaryRedirect()
@@ -197,11 +187,9 @@ async fn signup(
             .finish();
     }
 
-    // cookie_messagesの生成
     let mut cookie_messages = generate_cookie_messages(&req);
 
-    // バリデーション
-    if let Err(validation_errors) = form_data.validate() {
+    if let Err(validation_errors) = payload.validate() {
         validation_errors
             .field_errors()
             .iter()
@@ -223,57 +211,26 @@ async fn signup(
             .finish();
     }
 
-    // 登録用のユーザーの生成
-    let new_user = NewUser::new(form_data);
-
-    let mut db_connection = pool.get().expect("Failed getting db connection");
-
-    // インサート結果が返ってくるまでブロック
-    let result = web::block(move || {
-        diesel::insert_into(users::table)
-            .values(new_user)
-            .get_result::<User>(&mut db_connection)
-    })
-    .await;
+    let new_user = NewUser::new(payload);
+    let result = repository.create(new_user).await;
 
     match result {
-        Ok(insert_result) => {
-            match insert_result {
-                Ok(insert_user) => {
-                    // TODO: ログイン処理結果分岐の実装
-                    Identity::login(&req.extensions(), insert_user.username);
+        Ok(signuped_user) => {
+            Identity::login(&req.extensions(), signuped_user.username);
 
-                    // cookieにメッセージを保存
-                    set_messages_in_cookie(
-                        &mut cookie_messages,
-                        "signup".to_string(),
-                        "success".to_string(),
-                        "Successfully sign up".to_string(),
-                    );
+            set_messages_in_cookie(
+                &mut cookie_messages,
+                "signup".to_string(),
+                "success".to_string(),
+                "Successfully sign up".to_string(),
+            );
 
-                    HttpResponse::Found()
-                        .append_header(("location", "/app"))
-                        .cookie(cookie_messages)
-                        .finish()
-                }
-                Err(_) => {
-                    // cookieにメッセージを保存
-                    set_messages_in_cookie(
-                        &mut cookie_messages,
-                        "signup".to_string(),
-                        "error".to_string(),
-                        "Username or email or both are already registered".to_string(),
-                    );
-
-                    HttpResponse::Found()
-                        .append_header(("location", "/signup"))
-                        .cookie(cookie_messages)
-                        .finish()
-                }
-            }
+            HttpResponse::Found()
+                .append_header(("location", "/app"))
+                .cookie(cookie_messages)
+                .finish()
         }
         Err(_) => {
-            // cookieにメッセージを保存
             set_messages_in_cookie(
                 &mut cookie_messages,
                 "signup".to_string(),
