@@ -2,7 +2,7 @@ FROM rust:1.72.1 as builder
 
 RUN rustup component add rustfmt clippy &&\
     cargo install cargo-watch &&\
-    cargo install diesel_cli --no-default-features --features postgres
+    cargo install sqlx-cli
 
 ENV CARGO_BUILD_TARGET_DIR=/tmp/target
 
