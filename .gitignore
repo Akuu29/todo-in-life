@@ -3,3 +3,4 @@
 /client/node_modules
 /client/bundle
 .devcontainer
+Cargo.lock
