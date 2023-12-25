@@ -1,11 +1,11 @@
-import { FC, Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { css } from "@emotion/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons/faRectangleXmark";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons/faPenToSquare";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import Tooltip from "../../components/layout/Tooltip/Tooltip";
-import { Todo } from "./TodosContents";
+import { useTodo } from "../../components/context/TodoContext";
 import { TODO_CATEGORIES } from "../../utils/constants/todoCategory.constants";
 import { DateFormatters } from "../../utils/helpers/date.helpers";
 
@@ -87,13 +87,20 @@ const closeBtn = css({
   },
 });
 
-const TodoDescription: FC<{
-  todo: Todo;
-  setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
-  setIsShowForm: Dispatch<SetStateAction<boolean>>;
-  setFormType: Dispatch<SetStateAction<string>>;
-  deleteTodo: FnToHandleTodosTable;
-}> = ({ todo, setIsShowTodoDesc, setIsShowForm, setFormType, deleteTodo }) => {
+function TodoDescription(
+  {
+    setIsShowTodoDesc,
+    setIsShowForm,
+    setFormType,
+    deleteTodo
+  }: {
+    setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
+    setIsShowForm: Dispatch<SetStateAction<boolean>>;
+    setFormType: Dispatch<SetStateAction<string>>;
+    deleteTodo: FnToHandleTodosTable;
+  }) {
+  const { todo } = useTodo();
+
   const handleEditIcon = () => {
     // todo詳細ページを非表示
     setIsShowTodoDesc(false);
@@ -148,11 +155,11 @@ const TodoDescription: FC<{
         </div>
         <div css={todoDescContent}>
           <label>Deadline</label>
-          <p>{DateFormatters.convertStrDateToDispDate(todo.date_limit)}</p>
+          <p>{DateFormatters.convertISOStringToDispDate(todo.date_limit)}</p>
         </div>
         <div css={todoDescContent}>
-          <label>Date Created</label>
-          <p>{DateFormatters.convertUtcStrDateToDispDate(todo.date_created)}</p>
+          <label>Created at</label>
+          <p>{DateFormatters.convertISOStringToDispDate(todo.created_at)}</p>
         </div>
         <div css={closeBtnkWrapper}>
           <FontAwesomeIcon
@@ -165,6 +172,6 @@ const TodoDescription: FC<{
       </div>
     </div>
   );
-};
+}
 
 export default TodoDescription;

@@ -1,10 +1,10 @@
-import { FC, ReactNode, Dispatch, SetStateAction, useState } from "react";
+import { ReactNode, Dispatch, SetStateAction, useState } from "react";
 import { useDrop } from "react-dnd";
 import { css } from "@emotion/react";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Tooltip from "../../components/layout/Tooltip/Tooltip";
-import { Todo, Todos } from "./TodosContents";
+import { useTodo } from "../../components/context/TodoContext";
 import { TODO_CATEGORIES } from "../../utils/constants/todoCategory.constants";
 
 const categoryTitle = css({
@@ -13,10 +13,11 @@ const categoryTitle = css({
 });
 
 const todosContainer = css({
-  width: 330,
-  height: 1160,
+  width: 310,
+  height: "70vh",
   border: "solid",
   borderRadius: 8,
+  borderWidth: 3,
   backgroundColor: "#f5f5f5",
 });
 
@@ -66,27 +67,25 @@ const nextBtn = css({
   },
 });
 
-const TodosCategoryColumn: FC<{
-  children: ReactNode;
-  title: string;
-  setIsShowForm: Dispatch<SetStateAction<boolean>>;
-  currentPage: number;
-  maxPage: number;
-  setPage: Dispatch<SetStateAction<[number, number]>>;
-  setTodo: Dispatch<SetStateAction<Todo>>;
-  setFormType: Dispatch<SetStateAction<string>>;
-  setTodos: Dispatch<SetStateAction<Todos>>;
-}> = ({
+function TodosCategoryColumn({
   children,
   title,
   setIsShowForm,
   currentPage,
   maxPage,
   setPage,
-  setTodo,
   setFormType,
-  setTodos,
-}) => {
+}: {
+  children: ReactNode;
+  title: string;
+  setIsShowForm: Dispatch<SetStateAction<boolean>>;
+  currentPage: number;
+  maxPage: number;
+  setPage: Dispatch<SetStateAction<[number, number]>>;
+  setFormType: Dispatch<SetStateAction<string>>;
+}) {
+  const { setTodo, setTodosByCategory } = useTodo();
+
   const [, drop] = useDrop({
     accept: "todo",
     drop: () => ({ name: title }),
@@ -102,7 +101,9 @@ const TodosCategoryColumn: FC<{
       content: "",
       category: title,
       date_limit: null,
-      date_created: "",
+      created_at: null,
+      updated_at: null,
+      user_id: null,
     });
     // フォームタイプをnewに設定
     setFormType("new");
@@ -133,23 +134,23 @@ const TodosCategoryColumn: FC<{
     if (todosOrder == "dcDescending") {
       // 'todosOrder'がDate Created で降順の場合は、昇順にする
       // ソート
-      sortByDate("date_created", true);
+      sortByDate("created_at", true);
       // 'todosOrder'にソートの名称をセット
       setTodosOrder("dcAscending");
     } else {
       // 'todosOrder'がDate Createdで降順以外の場合は、降順にする
       // ソート
-      sortByDate("date_created", false);
+      sortByDate("created_at", false);
       // 'todosOrder'にソートの名称をセット
       setTodosOrder("dcDescending");
     }
   };
 
   const sortByDate = (
-    dateType: "date_limit" | "date_created",
+    dateType: "date_limit" | "created_at",
     isAscending: boolean
   ) => {
-    setTodos((prevTodos) => {
+    setTodosByCategory((prevTodos) => {
       const todosSorted = prevTodos[title].sort((a, b) => {
         if (!a[dateType]) return 1;
         if (!b[dateType]) return -1;
@@ -158,8 +159,8 @@ const TodosCategoryColumn: FC<{
             ? 1
             : -1
           : a[dateType]! < b[dateType]!
-          ? 1
-          : -1;
+            ? 1
+            : -1;
       });
 
       return {
@@ -233,6 +234,6 @@ const TodosCategoryColumn: FC<{
       </div>
     </div>
   );
-};
+}
 
 export default TodosCategoryColumn;

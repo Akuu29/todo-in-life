@@ -13,8 +13,8 @@ const font = css({
   },
 });
 
-const GlobalStyles = () => {
+function GlobalStyles() {
   return <Global styles={[reset, font]} />;
-};
+}
 
 export default GlobalStyles;

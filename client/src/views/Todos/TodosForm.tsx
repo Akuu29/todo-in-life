@@ -1,13 +1,14 @@
-import { FC, Dispatch, SetStateAction, ChangeEvent } from "react";
+import { Dispatch, SetStateAction, ChangeEvent } from "react";
 import { css } from "@emotion/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons/faRectangleXmark";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Todo } from "./TodosContents";
-import { DateFormatters } from "../../utils/helpers/date.helpers";
+import { Todo } from "../../utils/types/todo.types";
+import { useTodo } from "../../components/context/TodoContext";
 import { TODO_CATEGORIES } from "../../utils/constants/todoCategory.constants";
 import TodoFormErrorMessages from "../../components/forms/TodoFormErrorMessages/TodoFormErrorMessages";
+import { DateFormatters } from "../../utils/helpers/date.helpers";
 
 const todosFormContainer = css({
   display: "flex",
@@ -93,25 +94,23 @@ type HandleChangeEvent =
   | ChangeEvent<HTMLTextAreaElement>
   | ChangeEvent<HTMLSelectElement>;
 
-const TodosForm: FC<{
-  todo: Todo;
-  setTodo: Dispatch<SetStateAction<Todo>>;
-  setIsShowForm: Dispatch<SetStateAction<boolean>>;
-  todoFunction: FnToHandleTodosTable;
-  errorMessages: ErrorMessages;
-  setErrorMessages: Dispatch<SetStateAction<ErrorMessages>>;
-}> = ({
-  todo,
-  setTodo,
+function TodosForm({
   setIsShowForm,
   todoFunction,
   errorMessages,
   setErrorMessages,
-}) => {
+}: {
+  setIsShowForm: Dispatch<SetStateAction<boolean>>;
+  todoFunction: FnToHandleTodosTable;
+  errorMessages: ErrorMessages;
+  setErrorMessages: Dispatch<SetStateAction<ErrorMessages>>;
+}) {
+  const { todo, setTodo } = useTodo();
+
   const handleChange = (event: HandleChangeEvent) => {
     const key = event.target.name;
     const val = event.target.value;
-    setTodo((todo) => {
+    setTodo((todo: Todo) => {
       return {
         ...todo,
         [key]: val,
@@ -120,10 +119,10 @@ const TodosForm: FC<{
   };
 
   const handleChangeLimitDate = (date: Date | null) => {
-    setTodo((todo) => {
+    setTodo((todo: Todo) => {
       return {
         ...todo,
-        date_limit: DateFormatters.convertDateToString(date),
+        date_limit: date?.toISOString().slice(0, -1),
       };
     });
   };
@@ -192,7 +191,7 @@ const TodosForm: FC<{
           <label>Deadline</label>
           <DatePicker
             dateFormat="yyyy/MM/dd"
-            selected={DateFormatters.convertStrDateToDate(todo.date_limit)}
+            selected={DateFormatters.convertISOStringToDate(todo.date_limit)}
             onChange={handleChangeLimitDate}
           />
           <TodoFormErrorMessages errorMessages={errorMessages.date_limit} />
@@ -211,6 +210,6 @@ const TodosForm: FC<{
       </div>
     </div>
   );
-};
+}
 
 export default TodosForm;

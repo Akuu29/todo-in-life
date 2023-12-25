@@ -1,16 +1,16 @@
-import { FC, Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { useDrag } from "react-dnd";
 import { css } from "@emotion/react";
-import { Todos, Todo } from "../TodosContents";
+import { Todo, TodosByCategory } from "../../../utils/types/todo.types";
 import { TODO_CATEGORIES } from "../../../utils/constants/todoCategory.constants";
-import { DateFormatters } from "../../../utils/helpers/date.helpers";
 import { TodoApi } from "../../../services/api/todoApi";
+import { useTodo } from "../../../components/context/TodoContext";
 
 const todoContainer = css({
-  width: 290,
   backgroundColor: "#ffffff",
   border: "solid",
   borderRadius: 8,
+  borderWidth: 2,
   margin: 20,
   cursor: "pointer",
   "& p": {
@@ -21,13 +21,17 @@ const todoContainer = css({
 
 const todoContent = css({
   margin: 5,
-});
-
-const sentence = css({
-  width: "100%",
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
+  marginTop: 10,
+  marginBottom: 10,
+  "& label": {
+    fontSize: 18,
+  },
+  "& p": {
+    width: "100%",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  }
 });
 
 interface CurrentTodo {
@@ -42,44 +46,31 @@ interface DropResultMember {
 
 type DropResult = DropResultMember | null;
 
-const TodoContents: FC<{
-  id: string;
-  title: string;
-  content: string;
-  category: string;
-  date_limit: string | null;
-  date_created: string;
-  todos: Todos;
-  setTodos: Dispatch<SetStateAction<Todos>>;
-  setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
-  setTodo: Dispatch<SetStateAction<Todo>>;
-  setPrevTodoCategory: Dispatch<SetStateAction<string>>;
-}> = ({
-  id,
-  title,
-  content,
-  category,
-  date_limit,
-  date_created,
-  todos,
-  setTodos,
-  setIsShowTodoDesc,
-  setTodo,
-  setPrevTodoCategory,
-}) => {
+function TodoContents(
+  {
+    todo,
+    setIsShowTodoDesc,
+    setPrevTodoCategory,
+  }: {
+    todo: Todo;
+    setIsShowTodoDesc: Dispatch<SetStateAction<boolean>>;
+    setPrevTodoCategory: Dispatch<SetStateAction<string>>;
+  }) {
+  const { setTodo, todosByCategory, setTodosByCategory } = useTodo();
+
   // 他カテゴリーへのdrag&dropがあった際のstate更新
   const changeTodoColumn = async (
     currentTodo: CurrentTodo,
     columnName: string,
-    todos: Todos
+    todosByCategory: TodosByCategory
   ) => {
-    let todosCopy = { ...todos };
+    const todosCopy = { ...todosByCategory };
     // 移動するtodoインデックスの取得
     const targetTodoIndex = todosCopy[currentTodo.category].findIndex(
       (todo) => todo.id == currentTodo.id
     );
     // 移動するtodoの取得
-    let targetTodo = todosCopy[currentTodo.category].splice(
+    const targetTodo = todosCopy[currentTodo.category].splice(
       targetTodoIndex,
       1
     )[0];
@@ -92,7 +83,7 @@ const TodoContents: FC<{
     if (patchTodoResult) {
       const data = patchTodoResult.data;
       if (data.status == "success") {
-        setTodos(() => {
+        setTodosByCategory(() => {
           return {
             ...todosCopy,
             [currentTodo.category]: todosCopy[currentTodo.category],
@@ -112,19 +103,19 @@ const TodoContents: FC<{
   const [{ isDragging }, drag] = useDrag({
     type: "todo",
     item: {
-      id,
-      category,
+      id: todo.id,
+      category: todo.category,
     },
     end: (item, monitor) => {
       const dropResult: DropResult = monitor.getDropResult();
       if (dropResult && dropResult.name === TODO_CATEGORIES.SHORT) {
-        changeTodoColumn(item, TODO_CATEGORIES.SHORT, todos);
+        changeTodoColumn(item, TODO_CATEGORIES.SHORT, todosByCategory);
       } else if (dropResult && dropResult.name == TODO_CATEGORIES.MEDIUM) {
-        changeTodoColumn(item, TODO_CATEGORIES.MEDIUM, todos);
+        changeTodoColumn(item, TODO_CATEGORIES.MEDIUM, todosByCategory);
       } else if (dropResult && dropResult.name == TODO_CATEGORIES.LONG) {
-        changeTodoColumn(item, TODO_CATEGORIES.LONG, todos);
+        changeTodoColumn(item, TODO_CATEGORIES.LONG, todosByCategory);
       } else {
-        changeTodoColumn(item, TODO_CATEGORIES.COMPLETE, todos);
+        changeTodoColumn(item, TODO_CATEGORIES.COMPLETE, todosByCategory);
       }
     },
     collect: (monitor) => ({
@@ -134,15 +125,8 @@ const TodoContents: FC<{
 
   const handleDispTodoDesc = () => {
     setIsShowTodoDesc(true);
-    setTodo({
-      id,
-      title,
-      content,
-      category,
-      date_limit,
-      date_created,
-    });
-    setPrevTodoCategory(category);
+    setTodo(todo);
+    setPrevTodoCategory(todo.category);
   };
 
   const opacity = isDragging ? 0.4 : 1;
@@ -155,23 +139,11 @@ const TodoContents: FC<{
       onClick={handleDispTodoDesc}
     >
       <div css={todoContent}>
-        <label>Title</label>
-        <p css={sentence}>{title}</p>
-      </div>
-      <div css={todoContent}>
-        <label>Content</label>
-        <p css={sentence}>{!content.length ? "None" : content}</p>
-      </div>
-      <div css={todoContent}>
-        <label>Deadline</label>
-        <p>{DateFormatters.convertStrDateToDispDate(date_limit)}</p>
-      </div>
-      <div css={todoContent}>
-        <label>Date Created</label>
-        <p>{DateFormatters.convertUtcStrDateToDispDate(date_created)}</p>
+        <label>{todo.title}</label>
+        <p>{!todo.content.length ? "None" : todo.content}</p>
       </div>
     </div>
   );
-};
+}
 
 export default TodoContents;

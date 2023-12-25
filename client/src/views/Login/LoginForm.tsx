@@ -1,5 +1,4 @@
 import {
-  FC,
   useState,
   ChangeEventHandler,
   ChangeEvent,
@@ -11,7 +10,7 @@ import { faEyeSlash } from "@fortawesome/free-solid-svg-icons/faEyeSlash";
 
 import GlobalStylesUserForm from "../../components/layout/GlobalStyles/GlobalStylesUserForm/GlobalStylesUserForm";
 
-const LoginForm: FC = () => {
+function LoginForm() {
   const [userInfo, setUserInfo] = useState({
     username: "",
     password: "",
@@ -73,6 +72,6 @@ const LoginForm: FC = () => {
       </form>
     </div>
   );
-};
+}
 
 export default LoginForm;

@@ -10,13 +10,14 @@ export default defineConfig({
     })
   ],
   build: {
+    manifest: true,
     outDir: "dist",
     rollupOptions: {
       input: {
-        top: path.resolve(__dirname, "src", "clientTop.tsx"),
-        todos: path.resolve(__dirname, "src", "clientTodos.tsx"),
-        signup: path.resolve(__dirname, "src", "clientSignup.tsx"),
-        login: path.resolve(__dirname, "src", "clientLogin.tsx"),
+        top: path.resolve(__dirname, "dev-server/template", "index.html"),
+        todos: path.resolve(__dirname, "dev-server/template", "todos.html"),
+        login: path.resolve(__dirname, "dev-server/template", "login.html"),
+        signup: path.resolve(__dirname, "dev-server/template", "signup.html"),
       },
       output: {
         entryFileNames: chunk => `${chunk.name}.bundle.js`,

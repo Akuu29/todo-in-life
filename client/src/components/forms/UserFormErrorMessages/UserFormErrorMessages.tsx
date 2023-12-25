@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import { useCookies } from "react-cookie";
 
@@ -27,8 +27,8 @@ interface Message {
   content: string;
 }
 
-const UserFormErrorMessages: FC<{ formType: string }> = ({ formType }) => {
-  const [cookies, setCookie] = useCookies(["messages"]);
+function UserFormErrorMessages({ formType }: { formType: string }) {
+  const [cookies,] = useCookies(["messages"]);
 
   const [isError, setIsError] = useState(false);
 
@@ -81,6 +81,6 @@ const UserFormErrorMessages: FC<{ formType: string }> = ({ formType }) => {
       )}
     </div>
   );
-};
+}
 
 export default UserFormErrorMessages;

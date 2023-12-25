@@ -1,5 +1,4 @@
 import {
-  FC,
   useState,
   ChangeEventHandler,
   ChangeEvent,
@@ -10,7 +9,7 @@ import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 import { faEyeSlash } from "@fortawesome/free-solid-svg-icons/faEyeSlash";
 import GlobalStylesUserForm from "../../components/layout/GlobalStyles/GlobalStylesUserForm/GlobalStylesUserForm";
 
-const SinupForm: FC = () => {
+function SignUpForm() {
   const [userInfo, setUserInfo] = useState({
     username: "",
     email: "",
@@ -83,6 +82,6 @@ const SinupForm: FC = () => {
       </form>
     </div>
   );
-};
+}
 
-export default SinupForm;
+export default SignUpForm;

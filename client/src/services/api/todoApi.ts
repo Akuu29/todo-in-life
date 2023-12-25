@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { Todo } from "../../views/Todos/TodosContents";
+import { Todo } from "../../utils/types/todo.types";
 import { handleErrorResponse } from "../../utils/helpers/errorResponse.helpers";
 
 type Response<T> = AxiosResponse<T | ValueOfError> | undefined;
@@ -53,6 +53,9 @@ export class TodoApi {
         return handleErrorResponse(error);
       });
 
+    console.log("response");
+    console.log(response)
+
     return response;
   }
   static async postTodo(
@@ -63,6 +66,9 @@ export class TodoApi {
       .catch((error: AxiosError | Error) => {
         return handleErrorResponse(error);
       });
+
+    console.log("response");
+    console.log(response)
 
     return response;
   }
@@ -75,6 +81,9 @@ export class TodoApi {
         return handleErrorResponse(error);
       });
 
+    console.log("response");
+    console.log(response)
+
     return response;
   }
   static async patchTodo(
@@ -85,6 +94,9 @@ export class TodoApi {
       .catch((error: AxiosError | Error) => {
         return handleErrorResponse(error);
       });
+
+    console.log("response");
+    console.log(response)
 
     return response;
   }
@@ -102,6 +114,9 @@ export class TodoApi {
       .catch((error: AxiosError | Error) => {
         return handleErrorResponse(error);
       });
+
+    console.log("response");
+    console.log(response)
 
     return response;
   }

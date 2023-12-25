@@ -1,4 +1,4 @@
-import { FC, ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 import { css, SerializedStyles } from "@emotion/react";
 
 const TOOLTIP_STYLES = {
@@ -74,8 +74,8 @@ const TOOLTIP_STYLES = {
 
 const TOOLTIP_MSG = {
   plusIcon: "Create todo",
-  DL: "Order by\nDeadline",
-  DC: "Order by\nDate Created",
+  DL: "Order by\ndeadline",
+  DC: "Order by\ncreated date",
   editIcon: "Edit",
   trashIcon: "Delete",
 };
@@ -88,11 +88,12 @@ interface TooltipType {
   trashIcon: string;
 }
 
-const Tooltip: FC<{
-  children: ReactNode;
-  tooltipType: keyof TooltipType;
-  tooltipStyle: SerializedStyles | null;
-}> = ({ children, tooltipType, tooltipStyle }) => {
+function Tooltip({ children, tooltipType, tooltipStyle }:
+  {
+    children: ReactNode;
+    tooltipType: keyof TooltipType;
+    tooltipStyle: SerializedStyles | null;
+  }) {
   const [isShowTooltip, setIsTooltip] = useState<boolean>(false);
 
   return (
@@ -112,6 +113,6 @@ const Tooltip: FC<{
       )}
     </div>
   );
-};
+}
 
 export default Tooltip;

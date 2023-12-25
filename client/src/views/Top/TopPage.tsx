@@ -1,18 +1,17 @@
-import { FC } from "react";
 import GlobalStyles from "../../components/layout/GlobalStyles/GlobalStyles";
 import Header from "../../components/layout/Header/Header";
 import Footer from "../../components/layout/Footer/Footer";
 import TopContents from "./TopContents";
 
-const TopPage: FC = () => {
+function TopPage() {
   return (
-    <div>
+    < div >
       <GlobalStyles />
       <Header />
       <TopContents />
       <Footer />
-    </div>
+    </div >
   );
-};
+}
 
 export default TopPage;

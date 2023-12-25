@@ -5,28 +5,22 @@ const todosRouter = express.Router();
 todosRouter.get("/todos", async (req, res) => {
   console.log("get todos");
 
-  const todos = [
-    {
-      "id": 1,
-      "title": "todo1",
-      "content": "todo1 content",
-      "category": "short",
-      "date_limit": "2021-10-01",
-      "created_at": "2021-09-01",
-      "updated_at": "2021-09-02",
-      "user_id": 1,
-    },
-    {
-      "id": 2,
-      "title": "todo2",
-      "content": "todo2 content",
-      "category": "medium",
-      "date_limit": "2021-11-01",
-      "created_at": "2021-09-01",
-      "updated_at": "2021-09-03",
-      "user_id": 1,
+  let todos = [];
+
+  for (let category of ["short", "medium", "long"]) {
+    for (let i = 1; i <= 11; i++) {
+      todos.push({
+        "id": i,
+        "title": `todo${i}`,
+        "content": `todo${i} content content content content`,
+        "category": category,
+        "date_limit": new Date("2021-10-01"),
+        "created_at": new Date("2021-09-01"),
+        "updated_at": new Date("2021-09-02"),
+        "user_id": 1,
+      })
     }
-  ];
+  }
 
   res.status(200).json({ status: "success", todos: todos });
 })
