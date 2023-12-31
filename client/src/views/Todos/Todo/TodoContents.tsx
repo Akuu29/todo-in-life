@@ -78,7 +78,7 @@ function TodoContents(
     targetTodo.category = columnName;
 
     // DB更新
-    const patchTodoResult = await TodoApi.patchTodo(targetTodo);
+    const patchTodoResult = await TodoApi.putTodo(targetTodo);
 
     if (patchTodoResult) {
       const data = patchTodoResult.data;

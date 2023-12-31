@@ -75,7 +75,7 @@ async fn login(
 ) -> impl Responder {
     if user.is_some() {
         return HttpResponse::TemporaryRedirect()
-            .insert_header(("location", "/"))
+            .insert_header(("location", "/app"))
             .finish();
     }
 
@@ -113,8 +113,7 @@ async fn login(
                 Argon2::default().verify_password(payload.password.as_bytes(), &parsed_hash);
             match is_match {
                 Ok(_) => {
-                    // TODO: ログイン処理結果分岐の実装
-                    Identity::login(&req.extensions(), logined_user.username);
+                    let _ = Identity::login(&req.extensions(), logined_user.username);
 
                     set_messages_in_cookie(
                         &mut cookie_messages,

@@ -34,10 +34,6 @@ interface ValueOfSuccessfulPutTodo extends ValueOfBasic {
   };
 }
 
-interface ValueOfSuccessfulPatchTodo extends ValueOfBasic {
-  status: "success";
-}
-
 interface ValueOfSuccessfulDeleteTodo extends ValueOfBasic {
   status: "success";
   todoDeleted: {
@@ -53,9 +49,6 @@ export class TodoApi {
         return handleErrorResponse(error);
       });
 
-    console.log("response");
-    console.log(response)
-
     return response;
   }
   static async postTodo(
@@ -67,56 +60,29 @@ export class TodoApi {
         return handleErrorResponse(error);
       });
 
-    console.log("response");
-    console.log(response)
-
     return response;
   }
+
   static async putTodo(
     todo: Todo
   ): Promise<Response<ValueOfSuccessfulPutTodo>> {
     const response: Response<ValueOfSuccessfulPutTodo> = await axios
-      .put("api/todos", todo)
+      .put(`api/todos/${todo.id}`, todo)
       .catch((error: AxiosError | Error) => {
         return handleErrorResponse(error);
       });
 
-    console.log("response");
-    console.log(response)
-
     return response;
   }
-  static async patchTodo(
-    todo: Todo
-  ): Promise<Response<ValueOfSuccessfulPatchTodo>> {
-    const response: Response<ValueOfSuccessfulPatchTodo> = await axios
-      .patch("api/todos", todo)
-      .catch((error: AxiosError | Error) => {
-        return handleErrorResponse(error);
-      });
 
-    console.log("response");
-    console.log(response)
-
-    return response;
-  }
   static async deleteTodo(
     todo: Todo
   ): Promise<Response<ValueOfSuccessfulDeleteTodo>> {
-    const config = {
-      params: {
-        id: todo.id,
-      },
-    };
-
     const response: Response<ValueOfSuccessfulDeleteTodo> = await axios
-      .delete("api/todos", config)
+      .delete(`api/todos/${todo.id}`)
       .catch((error: AxiosError | Error) => {
         return handleErrorResponse(error);
       });
-
-    console.log("response");
-    console.log(response)
 
     return response;
   }

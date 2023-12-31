@@ -1,11 +1,9 @@
 use crate::repository::RepositoryForDb;
-use crate::todos::{
-    NewTodo, TodoForCreate, TodoForDelete, TodoForUpdate, TodoForUpdateStatus, TodosRepository,
-};
+use crate::todos::{EditTodo, NewTodo, TodosRepository};
 use crate::users::UsersRepository;
 use actix_identity::Identity;
 use actix_web::web;
-use actix_web::{delete, get, patch, post, put, HttpResponse, Responder, Scope};
+use actix_web::{delete, get, post, put, HttpResponse, Responder, Scope};
 use serde_json::json;
 use validator::Validate;
 
@@ -14,7 +12,6 @@ pub fn get_scope() -> Scope {
         .service(get)
         .service(create)
         .service(update)
-        .service(update_category)
         .service(delete)
 }
 
@@ -42,14 +39,12 @@ pub async fn get(user: Option<Identity>, repository: web::Data<RepositoryForDb>)
 pub async fn create(
     user: Option<Identity>,
     repository: web::Data<RepositoryForDb>,
-    web::Json(payload): web::Json<TodoForCreate>,
+    web::Json(payload): web::Json<NewTodo>,
 ) -> impl Responder {
-    dbg!(&payload);
     if user.is_none() {
         return HttpResponse::Unauthorized().finish();
     }
 
-    // Validation
     if let Err(validation_errors) = payload.validate() {
         return HttpResponse::UnprocessableEntity().json(
             json!({"status": "error", "validationErrors": validation_errors.field_errors()}),
@@ -62,9 +57,7 @@ pub async fn create(
         .expect("Failed getting user_id")
         .id;
 
-    let new_todo = NewTodo::new(payload, user_id);
-
-    let result = repository.create_todo(new_todo).await;
+    let result = repository.create_todo(payload, user_id).await;
 
     match result {
         Ok(todo) => HttpResponse::Created().json(json!({"status": "success", "todo": todo})),
@@ -72,24 +65,24 @@ pub async fn create(
     }
 }
 
-#[put("/todos")]
+#[put("/todos/{todo_id}")]
 pub async fn update(
     user: Option<Identity>,
     repository: web::Data<RepositoryForDb>,
-    web::Json(payload): web::Json<TodoForUpdate>,
+    todo_id: web::Path<i32>,
+    web::Json(payload): web::Json<EditTodo>,
 ) -> impl Responder {
     if user.is_none() {
         return HttpResponse::Unauthorized().finish();
     }
 
-    // Validation
     if let Err(validation_errors) = payload.validate() {
         return HttpResponse::UnprocessableEntity().json(
             json!({"status": "error", "validationErrors": validation_errors.field_errors()}),
         );
     }
 
-    let result = repository.update_todo(payload).await;
+    let result = repository.update_todo(payload, todo_id.into_inner()).await;
 
     match result {
         Ok(todo) => HttpResponse::Ok().json(json!({"status": "success", "todoEdited": todo})),
@@ -97,35 +90,17 @@ pub async fn update(
     }
 }
 
-#[patch("/todos")]
-pub async fn update_category(
-    user: Option<Identity>,
-    repository: web::Data<RepositoryForDb>,
-    web::Json(payload): web::Json<TodoForUpdateStatus>,
-) -> impl Responder {
-    if user.is_none() {
-        return HttpResponse::Unauthorized().finish();
-    }
-
-    let result = repository.update_todo_status(payload).await;
-
-    match result {
-        Ok(()) => HttpResponse::Ok().json(json!({"status": "success"})),
-        _ => HttpResponse::InternalServerError().finish(),
-    }
-}
-
-#[delete("/todos")]
+#[delete("/todos/{todo_id}")]
 pub async fn delete(
     user: Option<Identity>,
     repository: web::Data<RepositoryForDb>,
-    web::Query(payload): web::Query<TodoForDelete>,
+    todo_id: web::Path<i32>,
 ) -> impl Responder {
     if user.is_none() {
         return HttpResponse::Unauthorized().finish();
     }
 
-    let result = repository.delete_todo(payload).await;
+    let result = repository.delete_todo(todo_id.into_inner()).await;
 
     match result {
         Ok(todo) => HttpResponse::Ok().json(json!({"status": "success", "todoDeleted": todo})),

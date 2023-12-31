@@ -60,9 +60,9 @@ function LoginForm() {
           />
           <span onClick={handleChangeIsShow}>
             {isShowPassword ? (
-              <FontAwesomeIcon icon={faEye} />
-            ) : (
               <FontAwesomeIcon icon={faEyeSlash} />
+            ) : (
+              <FontAwesomeIcon icon={faEye} />
             )}
           </span>
         </div>
