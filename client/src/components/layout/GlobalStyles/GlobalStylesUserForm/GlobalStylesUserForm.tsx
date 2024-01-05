@@ -1,8 +1,3 @@
-/*
- * このコンポーネントは'SignupForm.tsx','LoginForm.tsx'に使用する。
- * 'SignupForm.tsx', 'LoginForm.tsx'ともにstyleがほとんど変わらないため、
- * 共通のstyleを用意した。
- */
 import { css, Global } from "@emotion/react";
 
 const userForm = {
@@ -10,6 +5,7 @@ const userForm = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    height: "50vh",
   }),
   ".userForm": css({
     width: 400,
@@ -93,8 +89,8 @@ const userForm = {
   }),
 };
 
-const GlobalStylesUserForm = () => {
+function GlobalStylesUserForm() {
   return <Global styles={userForm} />;
-};
+}
 
 export default GlobalStylesUserForm;

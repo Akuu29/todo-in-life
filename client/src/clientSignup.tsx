@@ -1,5 +1,9 @@
-import ReactDOM from "react-dom";
-import SignupPage from "./views/Signup/SignupPage";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import SignUpPage from "./views/SignUp/SignUpPage";
 
-const signup = document.getElementById("signup");
-ReactDOM.render(<SignupPage />, signup);
+ReactDOM.createRoot(document.getElementById("signUp")!).render(
+  <React.StrictMode>
+    <SignUpPage />
+  </React.StrictMode>
+);

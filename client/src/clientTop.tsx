@@ -1,5 +1,9 @@
-import ReactDOM from "react-dom";
+import React from "react";
+import ReactDOM from "react-dom/client";
 import TopPage from "./views/Top/TopPage";
 
-const top = document.getElementById("top");
-ReactDOM.render(<TopPage />, top);
+ReactDOM.createRoot(document.getElementById("top")!).render(
+  <React.StrictMode>
+    <TopPage />
+  </React.StrictMode>
+);

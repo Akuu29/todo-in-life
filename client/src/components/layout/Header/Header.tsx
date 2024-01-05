@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import { CookiesProvider, useCookies } from "react-cookie";
 
@@ -40,15 +40,15 @@ const btn = css({
   }),
 });
 
-const Header: FC = () => {
-  const [cookies, setCookie] = useCookies(["messages"]);
+function Header() {
+  const [cookies,] = useCookies(["messages"]);
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
     const manageLoginStatus = () => {
       const cookieMessages = cookies.messages;
-      if (cookieMessages.length && cookieMessages[0].title) {
+      if (cookieMessages && cookieMessages.length && cookieMessages[0].title) {
         const resultLoginOrSignup = cookieMessages[0].title;
         if (resultLoginOrSignup == "success") {
           setIsLoggedIn(true);
@@ -103,6 +103,6 @@ const Header: FC = () => {
       </CookiesProvider>
     </div>
   );
-};
+}
 
 export default Header;

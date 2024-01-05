@@ -1,13 +1,14 @@
-import { FC, Dispatch, SetStateAction, ChangeEvent } from "react";
+import { Dispatch, SetStateAction, ChangeEvent } from "react";
 import { css } from "@emotion/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRectangleXmark } from "@fortawesome/free-solid-svg-icons/faRectangleXmark";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { Todo } from "./TodosContents";
-import { DateFormatters } from "../../utils/helpers/date.helpers";
+import { Todo } from "../../utils/types/todo.types";
+import { useTodo } from "../../components/context/TodoContext";
 import { TODO_CATEGORIES } from "../../utils/constants/todoCategory.constants";
 import TodoFormErrorMessages from "../../components/forms/TodoFormErrorMessages/TodoFormErrorMessages";
+import { DateFormatters } from "../../utils/helpers/date.helpers";
+import { TodoApi } from "../../services/api/todoApi";
 
 const todosFormContainer = css({
   display: "flex",
@@ -93,25 +94,25 @@ type HandleChangeEvent =
   | ChangeEvent<HTMLTextAreaElement>
   | ChangeEvent<HTMLSelectElement>;
 
-const TodosForm: FC<{
-  todo: Todo;
-  setTodo: Dispatch<SetStateAction<Todo>>;
-  setIsShowForm: Dispatch<SetStateAction<boolean>>;
-  todoFunction: FnToHandleTodosTable;
-  errorMessages: ErrorMessages;
-  setErrorMessages: Dispatch<SetStateAction<ErrorMessages>>;
-}> = ({
-  todo,
-  setTodo,
-  setIsShowForm,
-  todoFunction,
+function TodosForm({
+  formType,
+  prevTodoCategory,
   errorMessages,
+  setIsShowForm,
   setErrorMessages,
-}) => {
+}: {
+  formType: string;
+  prevTodoCategory: string;
+  errorMessages: ErrorMessages;
+  setIsShowForm: Dispatch<SetStateAction<boolean>>;
+  setErrorMessages: Dispatch<SetStateAction<ErrorMessages>>;
+}) {
+  const { todo, setTodo, todosByCategory, setTodosByCategory } = useTodo();
+
   const handleChange = (event: HandleChangeEvent) => {
     const key = event.target.name;
     const val = event.target.value;
-    setTodo((todo) => {
+    setTodo((todo: Todo) => {
       return {
         ...todo,
         [key]: val,
@@ -120,10 +121,10 @@ const TodosForm: FC<{
   };
 
   const handleChangeLimitDate = (date: Date | null) => {
-    setTodo((todo) => {
+    setTodo((todo: Todo) => {
       return {
         ...todo,
-        date_limit: DateFormatters.convertDateToString(date),
+        date_limit: date?.toISOString().slice(0, -1),
       };
     });
   };
@@ -137,6 +138,129 @@ const TodosForm: FC<{
     });
     // フォームを閉じる
     setIsShowForm(false);
+  };
+
+  // todoの作成。作成後、画面に反映
+  const createTodo: FnToHandleTodosTable = async () => {
+    const postTodoResult = await TodoApi.postTodo(todo);
+
+    if (postTodoResult) {
+      const data = postTodoResult.data;
+      if (data.status == "success") {
+        const todoCreated = data.todo;
+        setTodosByCategory({
+          ...todosByCategory,
+          [todoCreated.category]: [...todosByCategory[todoCreated.category], todoCreated],
+        });
+
+        // フォーム画面を閉じる
+        setIsShowForm(false);
+      } else {
+        // AxiosError
+        if (data.validationErrors) {
+          // バリデーションエラー
+          const validationErrors = data.validationErrors;
+          handleValidationErrors(validationErrors);
+        } else {
+          alert(`ERROR: ${postTodoResult.status}`);
+        }
+      }
+    } else {
+      // Error
+      alert("ERROR");
+    }
+  };
+
+  // todoの編集。編集内容を画面に反映
+  const editTodo: FnToHandleTodosTable = async () => {
+    const putTodoResult = await TodoApi.putTodo(todo);
+
+    if (putTodoResult) {
+      const data = putTodoResult.data;
+      if (data.status == "success") {
+        const todoEdited = data.todoEdited;
+        setTodosByCategory((prevTodos) => {
+          // edit対象となるcategoryのtodo配列の取得
+          const targetTodoArray = prevTodos[prevTodoCategory];
+
+          if (todoEdited.category == prevTodoCategory) {
+            // edit前と後でcategoryが同じ場合
+            // 対象のtodoにedit後のtodoを反映
+            targetTodoArray
+              .filter((todo) => todo.id == todoEdited.id)
+              .forEach((todo) => {
+                todo.title = todoEdited.title;
+                todo.content = todoEdited.content;
+                todo.category = todoEdited.category;
+                todo.date_limit = todoEdited.date_limit;
+              });
+
+            return {
+              ...prevTodos,
+              [todoEdited.category]: targetTodoArray,
+            };
+          } else {
+            // edit前と後でcategoryが違う場合
+            // 'targetTodoArray'より対象のtodoのインデックスの取得
+            const targetTodoIndex = prevTodos[prevTodoCategory].findIndex(
+              (prevTodo) => prevTodo.id == todoEdited.id
+            );
+            // 対象のtodoの取得
+            const targetTodo = prevTodos[prevTodoCategory].splice(
+              targetTodoIndex,
+              1
+            );
+            targetTodo.forEach((todo) => {
+              todo.title = todoEdited.title;
+              todo.content = todoEdited.content;
+              todo.category = todoEdited.category;
+              todo.date_limit = todoEdited.date_limit;
+            });
+
+            return {
+              ...prevTodos,
+              [todoEdited.category]:
+                prevTodos[todoEdited.category].concat(targetTodo),
+            };
+          }
+        });
+
+        // フォーム画面を閉じる
+        setIsShowForm(false);
+      } else {
+        // AxiosError
+        if (data.validationErrors) {
+          // バリデーションエラー
+          const validationErrors = data.validationErrors;
+          handleValidationErrors(validationErrors!);
+        } else {
+          alert(`ERROR: ${putTodoResult.status}`);
+        }
+      }
+    } else {
+      // Error
+      alert("ERROR");
+    }
+  };
+
+  // バリデーションエラーの内容をstate'errorMessages'に反映する
+  const handleValidationErrors = (
+    responseValidationErrors: ValidationErrors
+  ) => {
+    const validationErrorMessages: ErrorMessages = {
+      title: [],
+      content: [],
+      date_limit: [],
+    };
+    // validationErrorsのメッセージをvalidationErrorMessagesに追加していく
+    Object.keys(responseValidationErrors).forEach((key) => {
+      const validationErrors = responseValidationErrors[key];
+      validationErrors.forEach((validationError: ValidationError) => {
+        validationErrorMessages[key].push(validationError.message);
+      });
+    });
+    // validationErrorMessagesをerrorMessagesにセットする
+    setErrorMessages(validationErrorMessages);
   };
 
   return (
@@ -192,13 +316,13 @@ const TodosForm: FC<{
           <label>Deadline</label>
           <DatePicker
             dateFormat="yyyy/MM/dd"
-            selected={DateFormatters.convertStrDateToDate(todo.date_limit)}
+            selected={DateFormatters.convertISOStringToDate(todo.date_limit)}
             onChange={handleChangeLimitDate}
           />
           <TodoFormErrorMessages errorMessages={errorMessages.date_limit} />
         </div>
         <div css={submitBtnWrapper}>
-          <input type="button" value="POST" onClick={todoFunction} />
+          <input type="button" value="POST" onClick={formType == "new" ? createTodo : editTodo} />
         </div>
         <div css={closeBtnkWrapper}>
           <FontAwesomeIcon
@@ -211,6 +335,6 @@ const TodosForm: FC<{
       </div>
     </div>
   );
-};
+}
 
 export default TodosForm;

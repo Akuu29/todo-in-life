@@ -1,18 +1,20 @@
-import { FC } from "react";
 import GlobalStyles from "../../components/layout/GlobalStyles/GlobalStyles";
 import Header from "../../components/layout/Header/Header";
 import Footer from "../../components/layout/Footer/Footer";
-import TodosContens from "./TodosContents";
+import TodosContents from "./TodosContents";
+import { TodoProvider } from "../../components/context/TodoContext";
 
-const TodosPage: FC = () => {
+function TodosPage() {
   return (
     <div>
       <GlobalStyles />
       <Header />
-      <TodosContens />
+      <TodoProvider>
+        <TodosContents />
+      </TodoProvider>
       <Footer />
     </div>
   );
-};
+}
 
 export default TodosPage;

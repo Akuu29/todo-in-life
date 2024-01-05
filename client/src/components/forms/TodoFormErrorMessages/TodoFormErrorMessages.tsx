@@ -1,13 +1,12 @@
-import { FC } from "react";
 import { css } from "@emotion/react";
 
 const message = css({
   color: "#CC0033",
 });
 
-const TodoFormErrorMessages: FC<{ errorMessages: Array<string> }> = ({
-  errorMessages,
-}) => {
+function TodoFormErrorMessages(
+  { errorMessages }:
+    { errorMessages: Array<string> }) {
   return (
     <div>
       {errorMessages.map((errorMessage, i) => (
@@ -17,6 +16,6 @@ const TodoFormErrorMessages: FC<{ errorMessages: Array<string> }> = ({
       ))}
     </div>
   );
-};
+}
 
 export default TodoFormErrorMessages;

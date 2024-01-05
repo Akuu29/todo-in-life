@@ -1,5 +1,9 @@
-import ReactDOM from "react-dom";
+import React from "react";
+import ReactDOM from "react-dom/client";
 import TodosPage from "./views/Todos/TodosPage";
 
-const todos = document.getElementById("todos");
-ReactDOM.render(<TodosPage />, todos);
+ReactDOM.createRoot(document.getElementById("todos")!).render(
+  <React.StrictMode>
+    <TodosPage />
+  </React.StrictMode>
+);

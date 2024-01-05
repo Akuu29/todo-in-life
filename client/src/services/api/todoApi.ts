@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { Todo } from "../../views/Todos/TodosContents";
+import { Todo } from "../../utils/types/todo.types";
 import { handleErrorResponse } from "../../utils/helpers/errorResponse.helpers";
 
 type Response<T> = AxiosResponse<T | ValueOfError> | undefined;
@@ -34,10 +34,6 @@ interface ValueOfSuccessfulPutTodo extends ValueOfBasic {
   };
 }
 
-interface ValueOfSuccessfulPatchTodo extends ValueOfBasic {
-  status: "success";
-}
-
 interface ValueOfSuccessfulDeleteTodo extends ValueOfBasic {
   status: "success";
   todoDeleted: {
@@ -66,39 +62,24 @@ export class TodoApi {
 
     return response;
   }
+
   static async putTodo(
     todo: Todo
   ): Promise<Response<ValueOfSuccessfulPutTodo>> {
     const response: Response<ValueOfSuccessfulPutTodo> = await axios
-      .put("api/todos", todo)
+      .put(`api/todos/${todo.id}`, todo)
       .catch((error: AxiosError | Error) => {
         return handleErrorResponse(error);
       });
 
     return response;
   }
-  static async patchTodo(
-    todo: Todo
-  ): Promise<Response<ValueOfSuccessfulPatchTodo>> {
-    const response: Response<ValueOfSuccessfulPatchTodo> = await axios
-      .patch("api/todos", todo)
-      .catch((error: AxiosError | Error) => {
-        return handleErrorResponse(error);
-      });
 
-    return response;
-  }
   static async deleteTodo(
     todo: Todo
   ): Promise<Response<ValueOfSuccessfulDeleteTodo>> {
-    const config = {
-      params: {
-        id: todo.id,
-      },
-    };
-
     const response: Response<ValueOfSuccessfulDeleteTodo> = await axios
-      .delete("api/todos", config)
+      .delete(`api/todos/${todo.id}`)
       .catch((error: AxiosError | Error) => {
         return handleErrorResponse(error);
       });

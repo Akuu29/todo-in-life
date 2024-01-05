@@ -1,12 +1,11 @@
-import { FC } from "react";
 import { CookiesProvider } from "react-cookie";
 import GlobalStyles from "../../components/layout/GlobalStyles/GlobalStyles";
 import Header from "../../components/layout/Header/Header";
 import Footer from "../../components/layout/Footer/Footer";
 import UserFormErrorMessages from "../../components/forms/UserFormErrorMessages/UserFormErrorMessages";
-import SignupForm from "./SignupForm";
+import SignUpForm from "./SignUpForm";
 
-const SignupPage: FC = () => {
+function SignUpPage() {
   return (
     <div>
       {/* CookiesProviderでラップしているコンポーネント内でcookieの管理が可能 */}
@@ -14,11 +13,11 @@ const SignupPage: FC = () => {
         <GlobalStyles />
         <Header />
         <UserFormErrorMessages formType="signup" />
-        <SignupForm />
+        <SignUpForm />
         <Footer />
       </CookiesProvider>
     </div>
   );
-};
+}
 
-export default SignupPage;
+export default SignUpPage;

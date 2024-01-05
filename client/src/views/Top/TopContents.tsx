@@ -1,35 +1,29 @@
-import { FC } from "react";
 import { css } from "@emotion/react";
 
 const messageWrapper = css({
-  height: 600,
-  maxWidth: 800,
-  margin: "0 auto",
-  textAlign: "center",
-  marginTop: 80,
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  height: "70vh",
+  testAlign: "center",
 });
 
 const message = css({
-  display: "inline-block",
-  textAlign: "left",
   fontSize: 30,
+  lineHeight: 1.5,
 });
 
-const TopContents: FC = () => {
+function TopContents() {
   return (
     <div css={messageWrapper}>
       <p css={message}>
-        There is much todo in life.
-        <br />
-        Manage them here.
-        <br />
-        Todo can be managed in three categories:
-        <br />
-        short term, medium term, and long term.
-        <br />
+        There is much todo in life.<br />
+        Manage them here.<br />
+        Todo can be managed in three categories:<br />
+        short term, medium term, and long term.<br />
       </p>
     </div>
   );
-};
+}
 
 export default TopContents;
